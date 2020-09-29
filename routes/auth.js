@@ -23,14 +23,18 @@ router.post('/', async (req, res) => {
     const { error } = validate(req.body);
     if(error) return res.status(400).send(`Bad Request: ${error.details[0].message}`);
 
-    // This needs to change as its based on mongoose/mongoDB
-    // TODO Convert to mssql equivalent
-    let user = await User.findOne({ email: req.body.email });
-    // ^^^
+    // Something similar to this WHERE email is email
+    let query = `select * from patientUsers p WHERE p.email == ${req.body.email};`;
+    const user = [
+      {name: 'id', sqltype: sql.Int, value: 10}
+    ];
+    doQuery(res, query, params, function(data) {
+      res.send(data.recordset);
+    });
 
     if (!user) return res.status(400).send(`Bad Request: Invalid login credentials.`);
 
-    const validPassword = await bcrypt.compare(req.body.password, user.password);
+    const validPassword = await bcrypt.compare(req.body.password, user.pword);
     if (!validPassword) return res.status(400).send(`Bad Request: Invalid login credentials.`);
 
     const token = user.generateAuthToken();
