@@ -24,6 +24,8 @@
     "flat": "^5.0.0",
     "geo-tz": "^5.1.0",
     "is-empty": "^1.2.0",
+    "joi": "^17.2.1",
+    "joi-password-complexity": "^4.2.1",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.27",

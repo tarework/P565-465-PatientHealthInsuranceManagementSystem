@@ -1,3 +1,12 @@
+// Reference
+// JS Data Type To SQL Data Type Map
+// String -> sql.NVarChar
+// Number -> sql.Int
+// Boolean -> sql.Bit
+// Date -> sql.DateTime
+// Buffer -> sql.VarBinary
+// sql.Table -> sql.TVP
+
 const sql = require('mssql');
 const { DB_PASS } = require('./utils/constants');
 const config = {
