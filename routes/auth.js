@@ -5,6 +5,14 @@ const { User } = require('../models/loginuser')
 const express = require('express');
 const router = express.Router();
 
+// JS Data Type To SQL Data Type Map
+// String -> sql.NVarChar
+// Number -> sql.Int
+// Boolean -> sql.Bit
+// Date -> sql.DateTime
+// Buffer -> sql.VarBinary
+// sql.Table -> sql.TVP
+
 const passwordOptions = {
     min: 12,
     max: 255,
@@ -23,13 +31,11 @@ router.post('/', async (req, res) => {
     const { error } = validate(req.body);
     if(error) return res.status(400).send(`Bad Request: ${error.details[0].message}`);
 
-    // Something similar to this WHERE email is email
     let query = `select * from patientUsers p WHERE p.email == ${req.body.email};`;
-    const user = [
-      {name: 'id', sqltype: sql.Int, value: 10}
-    ];
+    let params = [];
+    let user = {};
     doQuery(res, query, params, function(data) {
-      res.send(data.recordset);
+        user = data.recordset;
     });
 
     if (!user) return res.status(400).send(`Bad Request: Invalid login credentials.`);
