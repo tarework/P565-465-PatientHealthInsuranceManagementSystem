@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const Joi = require('Joi');
 const JoiPC = require('joi-password-complexity');
-const { userModel, passwordOptions, generateAuthToken, validateLoginUser } = require('../models/user')
+const { passwordOptions } = require('../models/user')
 const express = require('express');
 const router = express.Router();
 
@@ -10,32 +10,40 @@ const router = express.Router();
 
 // Login User
 router.post('/', async (req, res) => {
+    // Validate information in request
     const { error } = validate(req.body);
     if(error) return res.status(400).send(`Bad Request: ${error.details[0].message}`);
 
-    let query = `select * from patientUsers p WHERE p.email == ${req.body.email};`;
-    let params = [];
+    // Make sure email is already 
+    // in proper database table!!
     let user = {};
+    let query = `SELECT * FROM ${constants.userTypeToTableName(req.body.userType)} u WHERE u.email == ${req.body.email};`;
+    let params = [];
     doQuery(res, query, params, function(data) {
+        // TODO - this isn't working properly
         user = data.recordset;
     });
+    // TODO - this isn't working properly
+    if (!empty(user)) return res.status(400).send(`Bad Request: Invalid login credentials.`);
 
-    if (!user) return res.status(400).send(`Bad Request: Invalid login credentials.`);
-
+    // Check password is correct
     const validPassword = await bcrypt.compare(req.body.password, user.pword);
     if (!validPassword) return res.status(400).send(`Bad Request: Invalid login credentials.`);
 
+    // Build user for auth token
+    user = {
+        "id": user['id'],
+        //"email": req.body.email,
+        //"pword": req.body.pword,
+        //"fName": req.body.fName,
+        //"lName": req.body.lName,
+        //"phoneNumber": req.body.phoneNumber,
+        "userType": req.body.userType,
+    };
+
+    // Return authenication token
     const token = user.generateAuthToken();
     res.send(token);
 });
-
-function validate(request) {
-    const schema = Joi.object({
-        email: Joi.string().min(5).max(255).required().email(),
-        password: JoiPC(passwordOptions)
-    });
-
-    return schema.validate(request);
-}
 
 module.exports = router;

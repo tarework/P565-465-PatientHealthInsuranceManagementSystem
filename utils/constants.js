@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const DB_PASS = process.env.DB_PASS;
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = 'MyLittleSecret';//process.env.JWT_SECRET;
 const GMAIL_PASSWORD = process.env.GMAIL_PASSWORD;
 const USER_TYPES = {
     PATIENT: 'patient', //puser

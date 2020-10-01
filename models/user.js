@@ -18,94 +18,29 @@ function generateAuthToken(user){
     return jwt.sign({ _id: user._id, userType: user.userType }, constants.JWT_SECRET);
 }
 
-function validateUser(user) {
+function validateRegistration(user) {
     const joiValidateSchema = Joi.object({
         email: Joi.string().min(5).max(255).required().email(),
         pword: JoiPC(passwordOptions),
         fName: Joi.string().min(1).max(255).required(),
         lName: Joi.string().min(1).max(255).required(),
         phoneNumber: Joi.string().phoneNumber({defaultCountry: 'US'}).required(),
+        userType: Joi.string().allow('patient', 'doctor', 'insuranceProvider')
     });
 
     return joiValidateSchema.validate(user);
 }
 
+function validateLogin(request) {
+    const schema = Joi.object({
+        email: Joi.string().min(5).max(255).required().email(),
+        password: JoiPC(passwordOptions),
+        userType: Joi.string().allow('patient', 'doctor', 'insuranceProvider')
+    });
+
+    return schema.validate(request);
+}
+
 module.exports.generateAuthToken = generateAuthToken;
-module.exports.validateUser = validateUser;
-
-// keeping for a bit until we get registration / login working
-
-// function validateEmail(email) {
-//     return Joi.object({
-//         email: Joi.string().min(5).max(255).required().email(),
-//     }).validate(email);
-// }
-
-// function validatePassword(password) {
-//     return Joi.object({
-//         password: JoiPC(passwordOptions)
-//     }).validate(password);
-// }
-
-// class LoginUser {
-    //     constructor() {
-    //         this._id = null;
-    //         this.email = null;
-    //         this.password = null;
-    //         this.userType = null;
-    //     }
-    
-    //     initModel(data) {
-    //         validateLoginUser(data);
-    //         this._id = data._id;
-    //         this.email = data.email;
-    //         this.password = data.password;
-    //         this.userType = data.userType;
-    //     }
-    
-    //     getUserType() { return this.userType; }
-    
-    //     getEmail() { return this.email; }
-    
-    //     setEmail(email) { 
-    //         validateEmail(email);
-    //         this.email = email;
-    //     }
-    
-    //     setPassword(password) {
-    //         validatePassword(password);
-    //         this.password = password;
-    //     }
-    // }
-
-// Probably not needed
-// class LoginUser {
-//     constructor() {
-//         this._id = null;
-//         this.email = null;
-//         this.password = null;
-//         this.userType = null;
-//     }
-
-//     initModel(data) {
-//         validateLoginUser(data);
-//         this._id = data._id;
-//         this.email = data.email;
-//         this.password = data.password;
-//         this.userType = data.userType;
-//     }
-
-//     getUserType() { return this.userType; }
-
-//     getEmail() { return this.email; }
-
-//     setEmail(email) { 
-//         validateEmail(email);
-//         this.email = email;
-//     }
-
-//     setPassword(password) {
-//         validatePassword(password);
-//         this.password = password;
-//     }
-// }
+module.exports.validateRegistration = validateRegistration;
+module.exports.validateLogin = validateLogin;

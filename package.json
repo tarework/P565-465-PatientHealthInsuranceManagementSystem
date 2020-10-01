@@ -20,6 +20,7 @@
     "data-uri-to-buffer": "^3.0.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
     "file-type": "^13.1.2",
     "flat": "^5.0.0",
     "geo-tz": "^5.1.0",
@@ -40,6 +41,7 @@
     "stripe": "^7.14.0",
     "twilio": "^3.37.1",
     "validator": "^11.1.0",
+    "winston": "^3.3.3",
     "xlsx-populate": "^1.20.1",
     "zipcode-to-timezone": "0.0.9"
   }
