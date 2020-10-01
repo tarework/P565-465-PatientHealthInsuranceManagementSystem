@@ -9,8 +9,10 @@ var express = require('express'),
         cors = require('cors'),
         example = require('./routes/example'),
         register = require('./routes/register'),
+        login = require('./routers/login'),
         error = require('./middleware/error')
 
+// Winston Log Configuration
 winston.configure({
   format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
   transports: [
@@ -18,13 +20,11 @@ winston.configure({
     new winston.transports.File({ filename: "logfile.log"})
   ]
 });
-
 process.on('uncaughtException', (ex) => {
     // In the case of uncaught exceptions
     winston.error(`UNCAUGHT EXCEPTION: ${ex.message}`, ex);
     process.kill(-1);
 });
-
 process.on('unhandledRejection', (ex) => {
   // In the case of unhandled promise rejections
   winston.error(`UNHANDLED REJECTION: ${ex.message}`, ex);
@@ -44,6 +44,7 @@ app.use(function(req, res, next) {
 app.use('/', express.static(path.join(__dirname, 'build')));
 
 app.use('/register', register);
+app.use('/login', login);
 app.use("/api/example", example);
 app.use(error);
 
