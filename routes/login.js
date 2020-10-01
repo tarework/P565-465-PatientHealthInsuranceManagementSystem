@@ -1,27 +1,9 @@
 const bcrypt = require('bcrypt');
 const Joi = require('Joi');
 const JoiPC = require('joi-password-complexity');
-const { User } = require('../models/loginuser')
+const { userModel, passwordOptions, generateAuthToken, validateLoginUser } = require('../models/user')
 const express = require('express');
 const router = express.Router();
-
-// JS Data Type To SQL Data Type Map
-// String -> sql.NVarChar
-// Number -> sql.Int
-// Boolean -> sql.Bit
-// Date -> sql.DateTime
-// Buffer -> sql.VarBinary
-// sql.Table -> sql.TVP
-
-const passwordOptions = {
-    min: 12,
-    max: 255,
-    lowerCase: 1,
-    upperCase: 1,
-    numeric: 1,
-    symbol: 0,
-    requirementCount: 4
-}
 
 // Logout User
 // Frontend needs to delete local JW token

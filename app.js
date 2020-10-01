@@ -6,6 +6,7 @@ var express = require('express'),
         bodyParser = require("body-parser"),
         cors = require('cors'),
         example = require('./routes/example');
+        register = require('./routes/register');
 
 app.use(cors());
 
@@ -19,6 +20,7 @@ app.use(function(req, res, next) {
 
 app.use('/', express.static(path.join(__dirname, 'build')));
 
+app.use('/register', register);
 app.use("/api/example", example);
 
 app.get(['/', '/*'], function(req, res) {
