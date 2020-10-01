@@ -1,12 +1,13 @@
 const jwt = require('jsonwebtoken');
 const role = require('./roleroutes');
-const {JWT_SECRET} = require('../../utils/constants');
+const constants = require('../../utils/constants');
 
 module.exports = function (req, res, next) {
-	const token = req.header('Authorization');
+	const token = req.header(constants.TOKEN_HEADER);
 	if (!token) return res.status(401).send('Access Denied: No Token Provided!');
 	try {
-		const decoded = jwt.verify(token.replace("Bearer ", ""), JWT_SECRET);
+		const decoded = jwt.verify(token.replace("Bearer ", ""), constants.JWT_SECRET);
+		// think this should be decoded.userType?
 		if(role[decoded.db].find(function(url) { return `/api/${url}` == req.baseUrl})) {
 			next();
 		} else

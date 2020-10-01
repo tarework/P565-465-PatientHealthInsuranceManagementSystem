@@ -1,19 +1,16 @@
-// const auth = require('../middleware/auth')
-const winston = require('winston');
 const bcrypt = require('bcryptjs');
 const _ = require('lodash');
 const empty = require('is-empty')
-const { generateAuthToken, validateUser } = require('../models/user')
-// const mongoose = require('mongoose');
+const { generateAuthToken, validateRegistration } = require('../models/user')
 const constants = require('../utils/constants')
-const express = require('express');
 const { doQuery } = require('../db');
+const express = require('express');
 const router = express.Router();
 
 // Register New User
 router.post('/', async (req, res) => {
     // Validate information in request
-    const { error } = validateUser(req.body);
+    const { error } = validateRegistration(req.body);
     if(error) return res.status(400).send(`Bad Request: ${error.details[0].message}`);
 
     // Make sure email isn't already 
@@ -52,7 +49,7 @@ router.post('/', async (req, res) => {
 
     // Return authenication token and created user object
     const token = generateAuthToken(user);
-    res.header('x-auth-token', token).send(_.pick(user, ['_id', 'email', 'fName', 'lName', 'phoneNumber', 'userType']));
+    res.header(constants.TOKEN_HEADER, token).send(_.pick(user, ['_id', 'email', 'fName', 'lName', 'phoneNumber', 'userType']));
 });
 
 module.exports = router;

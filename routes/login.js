@@ -1,7 +1,8 @@
 const bcrypt = require('bcrypt');
-const Joi = require('Joi');
-const JoiPC = require('joi-password-complexity');
-const { passwordOptions } = require('../models/user')
+const empty = require('is-empty');
+const { generateAuthToken, validateRegistration } = require('../models/user');
+const constants = require('../utils/cnstants');
+const { doQuery } = require('../db');
 const express = require('express');
 const router = express.Router();
 
@@ -11,7 +12,7 @@ const router = express.Router();
 // Login User
 router.post('/', async (req, res) => {
     // Validate information in request
-    const { error } = validate(req.body);
+    const { error } = validateRegistration(req.body);
     if(error) return res.status(400).send(`Bad Request: ${error.details[0].message}`);
 
     // Make sure email is already 
@@ -42,7 +43,7 @@ router.post('/', async (req, res) => {
     };
 
     // Return authenication token
-    const token = user.generateAuthToken();
+    const token = generateAuthToken(user);
     res.send(token);
 });
 

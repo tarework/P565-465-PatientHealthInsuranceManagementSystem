@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const DB_PASS = process.env.DB_PASS;
 const JWT_SECRET = 'MyLittleSecret';//process.env.JWT_SECRET;
+const TOKEN_HEADER = 'x-auth-token';
 const GMAIL_PASSWORD = process.env.GMAIL_PASSWORD;
 const USER_TYPES = {
     PATIENT: 'patient', //puser
@@ -17,5 +18,5 @@ function userTypeToTableName(userType){
 }
 
 module.exports = {
-	DB_PASS, JWT_SECRET, GMAIL_PASSWORD, USER_TYPES, userTypeToTableName
+	DB_PASS, JWT_SECRET, TOKEN_HEADER, GMAIL_PASSWORD, USER_TYPES, userTypeToTableName
 }
