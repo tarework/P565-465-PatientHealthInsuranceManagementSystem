@@ -9,7 +9,7 @@ var express = require('express'),
         cors = require('cors'),
         example = require('./routes/example'),
         register = require('./routes/register'),
-        login = require('./routers/login'),
+        login = require('./routes/login'),
         error = require('./middleware/error')
 
 // Winston Log Configuration

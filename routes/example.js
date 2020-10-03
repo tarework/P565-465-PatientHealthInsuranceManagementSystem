@@ -6,7 +6,7 @@ var express = require("express"),
     { poolPromise, doQuery, sql } = require('../db');
 
 router.get('/', function(req, res) {
-  let query = "select * from users;";
+  let query = "select * from users where id = @id;";
   let params = [
     {name: 'id', sqltype: sql.Int, value: 10}
   ];
