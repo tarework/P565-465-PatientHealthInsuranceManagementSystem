@@ -17,6 +17,12 @@ function userTypeToTableName(userType){
     else return "ERROR";
 }
 
+// Regex Functions
+// Test at regex101.com
+
+const regexLettersOnly = new RegExp('^[a-zA-Z]{2,}$');
+const regexPhoneNumber = new RegExp('^\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})[-. )]*(\\d{3})[-. ]*(\\d{4})(?: *x(\\d+))?\\s*$');
+
 module.exports = {
-	DB_PASS, JWT_SECRET, TOKEN_HEADER, GMAIL_PASSWORD, USER_TYPES, userTypeToTableName
+	DB_PASS, JWT_SECRET, TOKEN_HEADER, GMAIL_PASSWORD, USER_TYPES, userTypeToTableName, regexLettersOnly, regexPhoneNumber
 }

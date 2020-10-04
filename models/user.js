@@ -1,5 +1,4 @@
-let Joi = require('Joi');
-Joi = Joi.extend(require('joi-phone-number'));
+const Joi = require('joi');
 const JoiPC = require('joi-password-complexity');
 const constants = require('../utils/constants');
 const jwt = require('jsonwebtoken');
@@ -18,24 +17,26 @@ function generateAuthToken(user){
     return jwt.sign({ _id: user._id, userType: user.userType }, constants.JWT_SECRET);
 }
 
-function validateRegistration(user) {
+// Regex to match letters only
+// ^[a-zA-Z]{2,}$
+function validateRegistration(request) {
     const joiValidateSchema = Joi.object({
         email: Joi.string().min(5).max(255).required().email(),
-        pword: JoiPC(passwordOptions),
-        fName: Joi.string().min(1).max(255).required(),
-        lName: Joi.string().min(1).max(255).required(),
-        phoneNumber: Joi.string().phoneNumber({defaultCountry: 'US'}).required(),
-        userType: Joi.string().allow('patient', 'doctor', 'insuranceProvider')
+        pword: JoiPC(passwordOptions).required(),
+        fName: Joi.string().min(2).max(255).required().regex(constants.regexLettersOnly),
+        lName: Joi.string().min(2).max(255).required().regex(constants.regexLettersOnly),
+        phoneNumber: Joi.string().required().regex(constants.regexPhoneNumber),
+        userType: Joi.string().valid('patient', 'doctor', 'insuranceProvider').required()
     });
 
-    return joiValidateSchema.validate(user);
+    return joiValidateSchema.validate(request);
 }
 
 function validateLogin(request) {
     const schema = Joi.object({
         email: Joi.string().min(5).max(255).required().email(),
-        password: JoiPC(passwordOptions),
-        userType: Joi.string().allow('patient', 'doctor', 'insuranceProvider')
+        pword: Joi.string().required(),
+        userType: Joi.string().valid('patient', 'doctor', 'insuranceProvider').required()
     });
 
     return schema.validate(request);
