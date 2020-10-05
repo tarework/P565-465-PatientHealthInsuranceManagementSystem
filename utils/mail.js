@@ -21,8 +21,8 @@ module.exports = async (to, subject, html) => {
   };
 
   try {
-    winston.info(transporter.auth.user);
-    winston.info(transporter.auth.pass);
+    // winston.info(transporter.auth.user);
+    // winston.info(transporter.auth.pass);
     await transporter.verify();
     return new Promise(function(resolve,reject) {
       transporter.sendMail(mailOpts, (error, response) => {
@@ -35,7 +35,6 @@ module.exports = async (to, subject, html) => {
       });
     });
   } catch(e) {
-    console.log(e);
+    winston.log(e);
   }
-  
 }
