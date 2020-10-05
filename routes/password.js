@@ -41,9 +41,9 @@ router.post('/', async (req, res) => {
         query = `UPDATE ${constants.userTypeToTableName(req.body.userType)}
         SET pword = '${hashedPassword}'
         WHERE email='${req.body.email}';`;
-        winston.info(query);
+        //winston.info(query);
         doQuery(res, query, params, async function(updateData) { 
-            
+
             // Send email to registered email with a new password
             mail(user.email, "Password Recovery!!", passwordEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_PASSWORD_", newPassword))
             .then(()=> {

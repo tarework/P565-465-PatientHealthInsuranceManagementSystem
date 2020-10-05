@@ -34,7 +34,8 @@ module.exports = async (to, subject, html) => {
         }
       });
     });
-  } catch(e) {
-    winston.log(e);
+  } catch(ex) {
+    winston.error(ex);
+    return reject(ex)
   }
 }
