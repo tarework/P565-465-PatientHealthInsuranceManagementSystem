@@ -23,6 +23,7 @@
     "express-async-errors": "^3.1.1",
     "file-type": "^13.1.2",
     "flat": "^5.0.0",
+    "generate-password": "^1.5.1",
     "geo-tz": "^5.1.0",
     "is-empty": "^1.2.0",
     "joi": "^17.2.1",

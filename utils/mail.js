@@ -1,10 +1,12 @@
 const nodemailer = require('nodemailer');
-const {GMAIL_PASSWORD} = require('./constants');
+const { GMAIL_PASSWORD } = require('./constants');
+const winston = require('winston');
+
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: 'username@gmail.com',
+    user: 'apollocareg5@gmail.com',
     pass: GMAIL_PASSWORD
   }
 });
@@ -12,13 +14,15 @@ const transporter = nodemailer.createTransport({
 module.exports = async (to, subject, html) => {
 
   const mailOpts = {
-    from: 'Your sender info here', // This is ignored by Gmail
+    from: 'ApolloCare IT Team!', // This is ignored by Gmail
     to: to,
     subject: subject,
     html: html
   };
 
   try {
+    winston.info(transporter.auth.user);
+    winston.info(transporter.auth.pass);
     await transporter.verify();
     return new Promise(function(resolve,reject) {
       transporter.sendMail(mailOpts, (error, response) => {

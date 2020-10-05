@@ -28,7 +28,7 @@ router.post('/', async (req, res) => {
             return res.status(400).send({error: `Bad Request: Invalid login credentials.`});
         } else {
             // Check password is correct
-            await bcrypt.compare(req.body.pword, user.pword).then(isMatch => {
+            bcrypt.compare(req.body.pword, user.pword).then(isMatch => {
                 if (!isMatch) {
                     return res.status(400).send({error: `Bad Request: Invalid login credentials.`});
                 } else {
@@ -41,7 +41,6 @@ router.post('/', async (req, res) => {
                     res.send({token: token});
                 }
             });
-            
         }
     });
     
