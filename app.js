@@ -11,6 +11,8 @@ var express = require('express'),
         register = require('./routes/register'),
         login = require('./routes/login'),
         patients = require('./routes/patients'),
+        insurance = require('./routes/insurance'),
+        doctors = require('./routes/doctors'),
         error = require('./middleware/error');
 
 // Winston Log Configuration
@@ -47,6 +49,8 @@ app.use('/', express.static(path.join(__dirname, 'build')));
 app.use('/api/register', register);
 app.use('/api/login', login);
 app.use('/api/patients', auth, patients);
+app.use('/api/doctors', auth, doctors);
+app.use('/api/insurance', auth, insurance);
 app.use(error);
 
 app.get(['/', '/*'], function(req, res) {

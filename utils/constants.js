@@ -12,8 +12,8 @@ const USER_TYPES = {
 
 function userTypeToTableName(userType){
     if(userType === USER_TYPES.PATIENT) return "patientUsers";
-    else if(userType === USER_TYPES.PATIENT) return "doctorUsers";
-    else if(userType === USER_TYPES.PATIENT) return "insuranceProviderUsers";
+    else if(userType === USER_TYPES.DOCTOR) return "doctorUsers";
+    else if(userType === USER_TYPES.INSURANCEPROVIDER) return "insuranceUsers";
     else return "ERROR";
 }
 
