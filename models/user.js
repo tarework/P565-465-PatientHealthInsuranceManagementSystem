@@ -14,7 +14,7 @@ const passwordOptions = {
 };
 
 function generateAuthToken(user){
-    return jwt.sign({ _id: user._id, userType: user.userType }, constants.JWT_SECRET);
+    return jwt.sign({ id: user.id, userType: user.userType }, constants.JWT_SECRET);
 }
 
 // Regex to match letters only
@@ -26,7 +26,7 @@ function validateRegistration(request) {
         fName: Joi.string().min(2).max(255).required().regex(constants.regexLettersOnly),
         lName: Joi.string().min(2).max(255).required().regex(constants.regexLettersOnly),
         phoneNumber: Joi.string().required().regex(constants.regexPhoneNumber),
-        userType: Joi.string().valid('patient', 'doctor', 'insuranceProvider').required()
+        userType: Joi.string().valid('patient', 'doctor', 'insurance').required()
     });
 
     return joiValidateSchema.validate(request);
@@ -36,7 +36,7 @@ function validateLogin(request) {
     const schema = Joi.object({
         email: Joi.string().min(5).max(255).required().email(),
         pword: Joi.string().required(),
-        userType: Joi.string().valid('patient', 'doctor', 'insuranceProvider').required()
+        userType: Joi.string().valid('patient', 'doctor', 'insurance').required()
     });
 
     return schema.validate(request);

@@ -7,10 +7,11 @@ var express = require('express'),
         hostname = process.env.HOST || '127.0.0.1',
         bodyParser = require("body-parser"),
         cors = require('cors'),
-        example = require('./routes/example'),
+        auth = require('./middleware/auth/role'),
         register = require('./routes/register'),
         login = require('./routes/login'),
-        error = require('./middleware/error')
+        patients = require('./routes/patients'),
+        error = require('./middleware/error');
 
 // Winston Log Configuration
 winston.configure({
@@ -43,9 +44,9 @@ app.use(function(req, res, next) {
 
 app.use('/', express.static(path.join(__dirname, 'build')));
 
-app.use('/register', register);
-app.use('/login', login);
-app.use("/api/example", example);
+app.use('/api/register', register);
+app.use('/api/login', login);
+app.use('/api/patients', auth, patients);
 app.use(error);
 
 app.get(['/', '/*'], function(req, res) {

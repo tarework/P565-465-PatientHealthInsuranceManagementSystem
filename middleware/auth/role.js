@@ -8,7 +8,7 @@ module.exports = function (req, res, next) {
 	try {
 		const decoded = jwt.verify(token.replace("Bearer ", ""), constants.JWT_SECRET);
 		// think this should be decoded.userType?
-		if(role[decoded.db].find(function(url) { return `/api/${url}` == req.baseUrl})) {
+		if(role[decoded.userType].find(function(url) { return `/api/${url}` == req.baseUrl})) {
 			next();
 		} else
 			return res.status(401).send('Access Denied: You dont have correct privilege to perform this operation');
