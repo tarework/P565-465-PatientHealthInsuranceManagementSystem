@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const empty = require('is-empty');
 const { generateAuthToken, validateLogin } = require('../models/user');
 const constants = require('../utils/constants');
