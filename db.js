@@ -1,3 +1,13 @@
+// Reference
+// JS Data Type To SQL Data Type Map
+// String -> sql.NVarChar
+// Number -> sql.Int
+// Boolean -> sql.Bit
+// Date -> sql.DateTime
+// Buffer -> sql.VarBinary
+// sql.Table -> sql.TVP
+
+const winston = require('winston');
 const sql = require('mssql');
 const { DB_PASS } = require('./utils/constants');
 const config = {
@@ -11,10 +21,10 @@ const config = {
 const poolPromise = new sql.ConnectionPool(config)
   .connect()
   .then(pool => {
-    console.log('Connected to MSSQL')
+    winston.info('Connected to MSSQL')
     return pool
   })
-  .catch(err => console.log('Database Connection Failed! Bad Config: ', err));
+  .catch(err => winston.error('Database Connection Failed! Bad Config: ', err));
 
 async function doQuery(res, query, params, callback) {
     try {
@@ -26,8 +36,8 @@ async function doQuery(res, query, params, callback) {
         let result = await request.query(query);
         callback(result);
     } catch (err) {
-        console.log(err);
-        if(res != null) res.status(500).send(err);
+      winston.error(`doQuery failed due to error: ${err.message}`, err)
+      if(res != null) res.status(500).send(err);
     }
 }
 

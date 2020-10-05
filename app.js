@@ -1,3 +1,5 @@
+const winston = require('winston');
+require('express-async-errors');
 var express = require('express'),
         app = express(),
         path = require('path'),
@@ -5,7 +7,30 @@ var express = require('express'),
         hostname = process.env.HOST || '127.0.0.1',
         bodyParser = require("body-parser"),
         cors = require('cors'),
-        example = require('./routes/example');
+        auth = require('./middleware/auth/role'),
+        register = require('./routes/register'),
+        login = require('./routes/login'),
+        patients = require('./routes/patients'),
+        error = require('./middleware/error');
+
+// Winston Log Configuration
+winston.configure({
+  format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: "logfile.log"})
+  ]
+});
+process.on('uncaughtException', (ex) => {
+    // In the case of uncaught exceptions
+    winston.error(`UNCAUGHT EXCEPTION: ${ex.message}`, ex);
+    process.kill(-1);
+});
+process.on('unhandledRejection', (ex) => {
+  // In the case of unhandled promise rejections
+  winston.error(`UNHANDLED REJECTION: ${ex.message}`, ex);
+  process.kill(-1);
+});
 
 app.use(cors());
 
@@ -19,18 +44,21 @@ app.use(function(req, res, next) {
 
 app.use('/', express.static(path.join(__dirname, 'build')));
 
-app.use("/api/example", example);
+app.use('/api/register', register);
+app.use('/api/login', login);
+app.use('/api/patients', auth, patients);
+app.use(error);
 
 app.get(['/', '/*'], function(req, res) {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-app.use(function(req,res,next) {
+app.use(function(req, res, next) {
   let err = new Error("Not Found");
   err.status = 404;
   next(err);
 });
 
 app.listen(port, () => {
-  console.log(`Server running at ${hostname}:${port}/`);
+  winston.info(`Server running at ${hostname}:${port}/`);
 });
