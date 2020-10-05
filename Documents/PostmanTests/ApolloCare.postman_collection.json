@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "7e7c7819-7905-406e-a10e-b96574dac601",
+		"_postman_id": "fe5e85ae-1703-403c-b0b7-3cb1483def24",
 		"name": "ApolloCare",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -29,13 +29,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -63,13 +64,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -97,13 +99,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -131,13 +134,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -165,13 +169,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -199,13 +204,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -233,13 +239,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -267,13 +274,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -301,13 +309,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -335,13 +344,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -369,13 +379,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -403,13 +414,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -437,13 +449,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -471,13 +484,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -505,13 +519,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -539,13 +554,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -573,13 +589,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -607,13 +624,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -641,13 +659,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/register",
+							"raw": "http://localhost:3002/api/register",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"register"
 							]
 						}
@@ -681,13 +700,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/login",
+							"raw": "http://localhost:3002/api/login",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"login"
 							]
 						}
@@ -715,13 +735,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/login",
+							"raw": "http://localhost:3002/api/login",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"login"
 							]
 						}
@@ -749,13 +770,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/login",
+							"raw": "http://localhost:3002/api/login",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"login"
 							]
 						}
@@ -783,13 +805,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/login",
+							"raw": "http://localhost:3002/api/login",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"login"
 							]
 						}
@@ -817,13 +840,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/login",
+							"raw": "http://localhost:3002/api/login",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
+								"api",
 								"login"
 							]
 						}
@@ -843,7 +867,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userType\": \"patient\",\r\n    \"email\": \"behar.ethan@gmail.com\",\r\n    \"pword\": \"123Abc123abc123\"\r\n}",
+							"raw": "{\r\n    \"userType\": \"patient\",\r\n    \"email\": \"behar.ethan@gmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -851,14 +875,231 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/login",
+							"raw": "http://localhost:3002/api/passwordrecovery",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3002",
 							"path": [
-								"login"
+								"api",
+								"passwordrecovery"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "PasswordRecovery",
+			"item": [
+				{
+					"name": "Email Required",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userType\": \"patient\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/passwordrecovery",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"passwordrecovery"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email Not Valid",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userType\": \"patient\",\r\n    \"email\": \"NOTVALID-gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/passwordrecovery",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"passwordrecovery"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email Not In DB",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userType\": \"patient\",\r\n    \"email\": \"NOTinDB@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/passwordrecovery",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"passwordrecovery"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Usertype Invalid",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userType\": \"NOTVALID\",\r\n    \"email\": \"behar.ethan@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/passwordrecovery",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"passwordrecovery"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Usertype Required",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"behar.ethan@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/passwordrecovery",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"passwordrecovery"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Valid Pw Recovery",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userType\": \"patient\",\r\n    \"email\": \"behar.ethan@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/passwordrecovery",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"passwordrecovery"
 							]
 						}
 					},
