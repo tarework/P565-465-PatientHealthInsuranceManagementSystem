@@ -12,7 +12,7 @@ const router = express.Router();
 router.post('/', async (req, res) => {
     // Validate information in request
     const { error } = validateRegistration(req.body);
-    if(error) return res.status(400).send(`Bad Request: ${error.details[0].message}`);
+    if(error) return res.status(400).send({error: `Bad Request: ${error.details[0].message}`});
 
     // Make sure email isn't already registered in proper database table!!
     let user = {};
@@ -22,7 +22,7 @@ router.post('/', async (req, res) => {
         user = empty(selectData.recordset) ? [] : selectData.recordset[0];
 
         if (!empty(user)) {
-            return res.status(400).send(`Bad Request: E-mail already registered.`);
+            return res.status(400).send({error: `Bad Request: E-mail already registered.`});
         } else {
             // Protect the password, salt and hash it!
             const salt = await bcrypt.genSalt(11);
@@ -47,7 +47,7 @@ router.post('/', async (req, res) => {
 
                     // Return authenication token and created user object
                     const token = generateAuthToken(user);
-                    res.header(constants.TOKEN_HEADER, token).send(insertData.recordset[0]);
+                    res.send({token: token, id: user.id, userType: req.body.userType});
                 }
             });
         }
