@@ -49,7 +49,19 @@ function validateEmail(request) {
     return schema.validate(request);
 }
 
+function validateDuoCode(request) {
+    const schema = Joi.object({
+        hashedDuo: Joi.string().required(),
+        duo: Joi.string().required(),
+        email: Joi.string.min(5).max(255).required().email(),
+        userType: Joi.string().valid('patient', 'doctor', 'insurance').required()
+    });
+    
+    return schema.validate(request);
+}
+
 module.exports.generateAuthToken = generateAuthToken;
 module.exports.validateRegistration = validateRegistration;
 module.exports.validateLogin = validateLogin;
 module.exports.validateEmail = validateEmail;
+module.exports.validateDuoCode = validateDuoCode;
