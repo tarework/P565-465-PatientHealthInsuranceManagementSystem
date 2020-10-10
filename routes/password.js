@@ -14,7 +14,12 @@ const router = express.Router();
 router.post('/', async (req, res) => {
     // validate is proper email
     const { error } = validateEmail(req.body);
-    if(error) return res.status(400).send( {error: `Bad Request: ${error.details[0].message}`} );
+    if(error)
+    {
+        if (error.details[0].message.includes('userType'))
+            error.details[0].message = 'userType is invalid or empty';
+        return res.status(400).send({error: `${ error.details[0].message.replace(/\"/g, '') }`});
+    } 
 
     // validate is registered email
     let user = {};
@@ -22,7 +27,7 @@ router.post('/', async (req, res) => {
     let query = `SELECT * FROM ${constants.userTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
     doQuery(res, query, params, async function(selectData) {
         user = empty(selectData.recordset) ? {} : selectData.recordset[0];
-        if (empty(user)) return res.status(400).send( {error: `Bad Request: E-mail not found.`} );
+        if (empty(user)) return res.status(400).send( {error: `E-mail not found.`} );
 
         // Generate password
         const newPassword = pwGenerator.generate({

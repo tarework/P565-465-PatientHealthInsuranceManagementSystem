@@ -16,7 +16,12 @@ const router = express.Router();
 router.post('/', async (req, res) => {
     // Validate information in request
     const { error } = validateLogin(req.body);
-    if(error) return res.status(400).send({error: `${error.details[0].message}`});
+    if(error)
+    {
+        if (error.details[0].message.includes('userType'))
+            error.details[0].message = 'userType is invalid or empty';
+        return res.status(400).send({error: `${ error.details[0].message.replace(/\"/g, '') }`});
+    } 
 
     // Make sure email is already 
     // in proper database table!!
@@ -29,31 +34,35 @@ router.post('/', async (req, res) => {
             return res.status(400).send({error: `Invalid login credentials.`});
         } else {
             // Check password is correct
-            bcrypt.compare(req.body.pword, user.pword).then(isMatch => {
+            bcrypt.compare(req.body.pword, user.pword).then(async (isMatch) => {
                 if (!isMatch) {
                     return res.status(400).send({error: `Invalid login credentials.`});
-                } else {
-                    
-                    // Create duo code
-                    const duoCode = pwGenerator.generate({
-                        length: 6,
-                        numbers: true,
-                        uppercase: true,
-                        lowercase: false,
-                        symbols: false
-                    });
-                    
-                    // Hashed it for frontend transmission
-                    const salt = await bcrypt.genSalt(11);
-                    hashedDuoCode = await bcrypt.hash(duoCode, salt);
-                    
-                    // Send email to user with duo code
-                    mail(user.email, "2FA Login Code!", duoEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_DUO_CODE_", duoCode))
-                    .then(()=> {
-                        return res.status(200).send({ id: user['id'], hashedDuoCode: hashedDuoCode, message: `Email sent.` });
-                    }).catch( ()=> {
-                        return res.status(500).send({ error: `2FA Code Email failed to send.` });
-                    });                }
+                }
+            
+                // Create duo code
+                const duoCode = pwGenerator.generate({
+                    length: 6,
+                    numbers: true,
+                    uppercase: true,
+                    lowercase: false,
+                    symbols: false
+                });
+                                    
+                // Hashed it for frontend transmission
+                const salt = await bcrypt.genSalt(11);
+                hashedDuoCode = await bcrypt.hash(duoCode, salt);
+
+                // Uncomment if testing login/duo auth
+                // winston.info(duoCode);
+                // winston.info(hashedDuoCode);
+                
+                // Send email to user with duo code
+                mail(user.email, "2FA Login Code!", duoEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_DUO_CODE_", duoCode))
+                .then(()=> {
+                    return res.status(200).send({ id: user['id'], hashedDuoCode: hashedDuoCode, message: `Email sent.` });
+                }).catch( ()=> {
+                    return res.status(500).send({ error: `2FA Code Email failed to send.` });
+                });   
             });
         }
     });
@@ -62,10 +71,15 @@ router.post('/', async (req, res) => {
                     
 
 
-router.post('/DuoAuth', async (req, res) => {
+router.post('/duoauth', async (req, res) => {
     // Validate information in request
     const { error } = validateDuoCode(req.body);
-    if(error) return res.status(400).send({error: `${ error.details[0].message }`});
+    if(error)
+    {
+        if (error.details[0].message.includes('userType'))
+            error.details[0].message = 'userType is invalid or empty';
+        return res.status(400).send({error: `${ error.details[0].message.replace(/\"/g, '') }`});
+    } 
 
     // Make sure email is already in proper database table!!
     let query = `SELECT * FROM ${constants.userTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
