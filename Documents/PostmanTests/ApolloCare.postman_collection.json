@@ -692,7 +692,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userType\": \"patient\",\r\n    \"pword\": \"123Abc123abc123\"\r\n  }",
+							"raw": "{\r\n    \"userType\": \"patient\",\r\n    \"pword\": \"123Abc123abc123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -728,6 +728,41 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"userType\": \"patient\",\r\n    \"email\": \"behar.ethan-gmail.com\",\r\n    \"pword\": \"123Abc123abc123\"\r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email Not In DB",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json; charset=utf-8"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userType\": \"patient\",\r\n    \"email\": \"NOTinDB@gmail.com\",\r\n    \"pword\": \"123Abc123abc123\"\r\n  }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -867,7 +902,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userType\": \"patient\",\r\n    \"email\": \"behar.ethan@gmail.com\"\r\n}",
+							"raw": "{\r\n    \"userType\": \"patient\",\r\n    \"email\": \"behar.ethan@gmail.com\",\r\n    \"pword\": \"123Abc123abc123\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -875,7 +910,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3002/api/passwordrecovery",
+							"raw": "http://localhost:3002/api/login",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -883,7 +918,7 @@
 							"port": "3002",
 							"path": [
 								"api",
-								"passwordrecovery"
+								"login"
 							]
 						}
 					},
@@ -1100,6 +1135,336 @@
 							"path": [
 								"api",
 								"passwordrecovery"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "DuoAuth",
+			"item": [
+				{
+					"name": "Duo/Hashed Code Invalid",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"hashedDuo\": \"not a valid hashed duo code\",\r\n    \"duo\": \"not a valid duo code\",\r\n    \"email\": \"behar.asdada@gmail.com\",\r\n    \"userType\": \"patient\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/login/duoauth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"login",
+								"duoauth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Duo Code Required",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"duo\": \"not a valid duo code\",\r\n    \"email\": \"behar.asdada@gmail.com\",\r\n    \"userType\": \"patient\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/login/duoauth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"login",
+								"duoauth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hashed Duo Code Required",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"duo\": \"not a valid duo code\",\r\n    \"email\": \"behar.asdada@gmail.com\",\r\n    \"userType\": \"patient\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/login/duoauth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"login",
+								"duoauth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email Required",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"hashedDuo\": \"not a valid hashed duo code\",\r\n    \"duo\": \"not a valid duo code\",\r\n    \"userType\": \"patient\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/login/duoauth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"login",
+								"duoauth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email Invalid",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"hashedDuo\": \"not a valid hashed duo code\",\r\n    \"duo\": \"not a valid duo code\",\r\n    \"email\": \"behar.ethasd23mail.com\",\r\n    \"userType\": \"patient\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/login/duoauth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"login",
+								"duoauth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email Not In DB",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json; charset=utf-8"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"hashedDuo\": \"not a valid hashed duo code\",\r\n    \"duo\": \"not a valid duo code\",\r\n    \"email\": \"NotInDB@mail.com\",\r\n    \"userType\": \"patient\"\r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/login/duoauth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"login",
+								"duoauth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Usertype Required",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"hashedDuo\": \"not a valid hashed duo code\",\r\n    \"duo\": \"not a valid duo code\",\r\n    \"email\": \"behar.ethasd23@mail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/login/duoauth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"login",
+								"duoauth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Usertype Invalid",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"hashedDuo\": \"not a valid hashed duo code\",\r\n    \"duo\": \"not a valid duo code\",\r\n    \"email\": \"behar.ethasd23@mail.com\",\r\n    \"userType\": \"NOT VALID\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/login/duoauth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"login",
+								"duoauth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Valid Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json; charset=utf-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"hashedDuo\": \"USE VALID LOGIN TO GET VALID HASHED CODE\",\r\n    \"duo\": \"USE VALID LOGIN TO GET VALID CODE\",\r\n    \"email\": \"behar.ethan@gmail.com\",\r\n    \"userType\": \"patient\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/login/duoauth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"login",
+								"duoauth"
 							]
 						}
 					},
