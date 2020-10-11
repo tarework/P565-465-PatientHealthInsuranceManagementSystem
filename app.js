@@ -59,11 +59,11 @@ app.get(['/', '/*'], function(req, res) {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-app.use(function(req, res, next) {
-  let err = new Error("Not Found");
-  err.status = 404;
-  next(err);
-});
+// app.use(function(req, res, next) {
+//   let err = new Error("Not Found");
+//   err.status = 404;
+//   next(err);
+// });
 
 app.listen(port, () => {
   winston.info(`Server running at ${hostname}:${port}/`);

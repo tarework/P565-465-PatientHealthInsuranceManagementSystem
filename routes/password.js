@@ -1,5 +1,5 @@
 const { doQuery } = require('../db');
-const { validateEmail } = require('../models/user');
+const { ValidateEmail } = require('../models/user');
 const constants = require('../utils/constants');
 const mail = require('../utils/mail');
 const bcrypt = require('bcryptjs');
@@ -9,25 +9,22 @@ const winston = require('winston');
 const express = require('express');
 const router = express.Router();
 
-
 // Password Recovery
 router.post('/', async (req, res) => {
     // validate is proper email
-    const { error } = validateEmail(req.body);
+    const { error } = ValidateEmail(req.body);
     if(error)
     {
-        if (error.details[0].message.includes('userType'))
-            error.details[0].message = 'userType is invalid or empty';
-        return res.status(400).send({error: `${ error.details[0].message.replace(/\"/g, '') }`});
+        if (error.details[0].message.includes('userType')) error.details[0].message = 'userType is invalid or empty';
+        return res.status(400).send({ error: `${ error.details[0].message.replace(/\"/g, '') }` });
     } 
 
     // validate is registered email
     let user = {};
-    let params = [];
     let query = `SELECT * FROM ${constants.userTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
-    doQuery(res, query, params, async function(selectData) {
+    doQuery(res, query, [], async function(selectData) {
         user = empty(selectData.recordset) ? {} : selectData.recordset[0];
-        if (empty(user)) return res.status(400).send( {error: `E-mail not found.`} );
+        if (empty(user)) return res.status(400).send({ error: `E-mail not found.` });
 
         // Generate password
         const newPassword = pwGenerator.generate({
@@ -47,8 +44,7 @@ router.post('/', async (req, res) => {
         SET pword = '${hashedPassword}'
         WHERE email='${req.body.email}';`;
         //winston.info(query);
-        doQuery(res, query, params, async function(updateData) { 
-
+        doQuery(res, query, [], async function(updateData) { 
             // Send email to registered email with a new password
             mail(user.email, "Password Recovery!", passwordEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_PASSWORD_", newPassword))
             .then(()=> {

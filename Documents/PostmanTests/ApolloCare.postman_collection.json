@@ -902,7 +902,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userType\": \"patient\",\r\n    \"email\": \"behar.ethan@gmail.com\",\r\n    \"pword\": \"123Abc123abc123\"\r\n}\r\n",
+							"raw": "{\r\n    \"userType\": \"patient\",\r\n    \"email\": \"behar.ethan@gmail.com\",\r\n    \"pword\": \"ABC123abc123abc\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1435,14 +1435,14 @@
 					"response": []
 				},
 				{
-					"name": "Valid Request",
+					"name": "Valid DuoAuth",
 					"request": {
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json; charset=utf-8",
-								"type": "text"
+								"type": "text",
+								"value": "application/json; charset=utf-8"
 							}
 						],
 						"body": {
@@ -1469,6 +1469,1006 @@
 						}
 					},
 					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "PatientDashboard",
+			"item": [
+				{
+					"name": "Update Patient Details",
+					"item": [
+						{
+							"name": "Email Invalid",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"mastasdan--.com\",\r\n    \"fName\" : \"Victor\",\r\n    \"lName\" : \"Bobby\",\r\n    \"phoneNumber\" : \"2019690255\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updateuser/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updateuser",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Email Required",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"fName\" : \"Victor\",\r\n    \"lName\" : \"Bobby\",\r\n    \"phoneNumber\" : \"2019690255\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updateuser/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updateuser",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "First Name Invalid",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"masta0ethan@gmail.com\",\r\n    \"fName\" : \"1213\",\r\n    \"lName\" : \"Bobby\",\r\n    \"phoneNumber\" : \"2019690255\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updateuser/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updateuser",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "First Name Less Than 2 Characters",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"masta0ethan@gmail.com\",\r\n    \"fName\" : \"V\",\r\n    \"lName\" : \"Bobby\",\r\n    \"phoneNumber\" : \"2019690255\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updateuser/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updateuser",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "First Name Required",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"masta0ethan@gmail.com\",\r\n    \"lName\" : \"Bobby\",\r\n    \"phoneNumber\" : \"2019690255\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updateuser/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updateuser",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Last Name Invalid",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"masta0ethan@gmail.com\",\r\n    \"lName\" : \"1213\",\r\n    \"fName\" : \"Bobby\",\r\n    \"phoneNumber\" : \"2019690255\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updateuser/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updateuser",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Last Name Less Than 2 Characters",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"masta0ethan@gmail.com\",\r\n    \"lName\" : \"V\",\r\n    \"fName\" : \"Bobby\",\r\n    \"phoneNumber\" : \"2019690255\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updateuser/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updateuser",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Last Name Required",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"masta0ethan@gmail.com\",\r\n    \"fName\" : \"Victor\",\r\n    \"phoneNumber\" : \"2019690255\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updateuser/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updateuser",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Phone Invalid Characters",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"masta0ethan@gmail.com\",\r\n    \"fName\" : \"Victor\",\r\n    \"lName\" : \"Bobby\",\r\n    \"phoneNumber\" : \"201969asd55\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updateuser/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updateuser",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Phone Invalid Length",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"masta0ethan@gmail.com\",\r\n    \"fName\" : \"Victor\",\r\n    \"lName\" : \"Bobby\",\r\n    \"phoneNumber\" : \"2015\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updateuser/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updateuser",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Phone Required",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"masta0ethan@gmail.com\",\r\n    \"fName\" : \"Victor\",\r\n    \"lName\" : \"Bobby\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updateuser/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updateuser",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Invalid Param Id",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"behar.ethan@gmail.com\",\r\n    \"fName\" : \"Ethan\",\r\n    \"lName\" : \"Behar\",\r\n    \"phoneNumber\" : \"2019690255\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updateuser/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updateuser",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Valid Update Details",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"behar.ethan@gmail.com\",\r\n    \"fName\" : \"Ethan\",\r\n    \"lName\" : \"Behar\",\r\n    \"phoneNumber\" : \"2019690255\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updateuser/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updateuser",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Get Patient Details",
+					"item": [
+						{
+							"name": "Invalid Patient Id",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/-91",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"-91"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Invalid Or No JWT",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Valid Get Details",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Update Patient Password",
+					"item": [
+						{
+							"name": "Pw Invalid Param Id",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updatepassword/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updatepassword",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Pw Required",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updatepassword/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updatepassword",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Pw Uppercase Required",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pword\" : \"aaa123abc123abc\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updatepassword/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updatepassword",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Pw Lowercase Required",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pword\" : \"ABC123AAA123AAA\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updatepassword/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updatepassword",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Pw Numeric Required",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pword\" : \"ABasdaabcadAADabc\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updatepassword/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updatepassword",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Pw 12 Characters Required",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pword\" : \"asd13A\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updatepassword/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updatepassword",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Valid Update Pw",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlclR5cGUiOiJwYXRpZW50IiwiaWF0IjoxNjAyMzY4NTY4fQ.0rW3wr8EgHSSQ_3qo9-dMecCN2AMj_jaXecA00PrxGg"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pword\" : \"ABC123abc123abc\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/updatepassword/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"updatepassword",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				}
 			],
 			"protocolProfileBehavior": {}

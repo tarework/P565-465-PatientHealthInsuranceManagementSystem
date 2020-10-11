@@ -1,5 +1,5 @@
 const { doQuery } = require('../db');
-const { generateAuthToken, validateLogin, validateDuoCode } = require('../models/user');
+const { GenerateAuthToken, ValidateLogin, ValidateDuoCode } = require('../models/user');
 const constants = require('../utils/constants');
 const mail = require('../utils/mail');
 const bcrypt = require('bcryptjs');
@@ -9,106 +9,88 @@ const winston = require('winston');
 const express = require('express');
 const router = express.Router();
 
-// Logout User
-// Frontend needs to delete local JW token
-
 // Login User
 router.post('/', async (req, res) => {
     // Validate information in request
-    const { error } = validateLogin(req.body);
+    const { error } = ValidateLogin(req.body);
     if(error)
     {
-        if (error.details[0].message.includes('userType'))
-            error.details[0].message = 'userType is invalid or empty';
-        return res.status(400).send({error: `${ error.details[0].message.replace(/\"/g, '') }`});
+        if (error.details[0].message.includes('userType')) error.details[0].message = 'userType is invalid or empty';
+        return res.status(400).send({ error: `${ error.details[0].message.replace(/\"/g, '') }` });
     } 
 
     // Make sure email is already 
     // in proper database table!!
     let query = `SELECT * FROM ${constants.userTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
-    let params = [];
-    doQuery(res, query, params, async function(data) {
-        const user = empty(data.recordset) ? {} : data.recordset[0];
-
-        if (empty(user)) {
-            return res.status(400).send({error: `Invalid login credentials.`});
-        } else {
-            // Check password is correct
-            bcrypt.compare(req.body.pword, user.pword).then(async (isMatch) => {
-                if (!isMatch) {
-                    return res.status(400).send({error: `Invalid login credentials.`});
-                }
-            
-                // Create duo code
-                const duoCode = pwGenerator.generate({
-                    length: 6,
-                    numbers: true,
-                    uppercase: true,
-                    lowercase: false,
-                    symbols: false
-                });
-                                    
-                // Hashed it for frontend transmission
-                const salt = await bcrypt.genSalt(11);
-                hashedDuoCode = await bcrypt.hash(duoCode, salt);
-
-                // Uncomment if testing login/duo auth
-                // winston.info(duoCode);
-                // winston.info(hashedDuoCode);
-                
-                // Send email to user with duo code
-                mail(user.email, "2FA Login Code!", duoEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_DUO_CODE_", duoCode))
-                .then(()=> {
-                    return res.status(200).send({ id: user['id'], hashedDuoCode: hashedDuoCode, message: `Email sent.` });
-                }).catch( ()=> {
-                    return res.status(500).send({ error: `2FA Code Email failed to send.` });
-                });   
+    doQuery(res, query, [], async function(selectData) {
+        const user = empty(selectData.recordset) ? {} : selectData.recordset[0];
+        if (empty(user)) return res.status(400).send({ error: `Invalid login credentials.` });
+        
+        // Check password is correct
+        bcrypt.compare(req.body.pword, user.pword)
+        .then(async (isMatch) => {
+            if (!isMatch) return res.status(400).send({ error: `Invalid login credentials.` });
+        
+            // Create duo code
+            const duoCode = pwGenerator.generate({
+                length: 6,
+                numbers: true,
+                uppercase: true,
+                lowercase: false,
+                symbols: false
             });
-        }
+                                
+            // Hashed it for frontend transmission
+            const salt = await bcrypt.genSalt(11);
+            hashedDuoCode = await bcrypt.hash(duoCode, salt);
+
+            // Uncomment if testing login/duo auth
+            winston.info(duoCode);
+            winston.info(hashedDuoCode);
+            
+            // Send email to user with duo code
+            mail(user.email, "2FA Login Code!", duoEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_DUO_CODE_", duoCode))
+            .then(()=> {
+                return res.status(200).send({ id: user['id'], hashedDuoCode: hashedDuoCode, message: `Email sent.` });
+            }).catch( ()=> {
+                return res.status(500).send({ error: `2FA Code Email failed to send.` });
+            });   
+        });
     });
 });
 
-                    
-
-
+// Duo Auth for User
 router.post('/duoauth', async (req, res) => {
     // Validate information in request
-    const { error } = validateDuoCode(req.body);
+    const { error } = ValidateDuoCode(req.body);
     if(error)
     {
-        if (error.details[0].message.includes('userType'))
-            error.details[0].message = 'userType is invalid or empty';
-        return res.status(400).send({error: `${ error.details[0].message.replace(/\"/g, '') }`});
+        if (error.details[0].message.includes('userType')) error.details[0].message = 'userType is invalid or empty';
+        return res.status(400).send({ error: `${ error.details[0].message.replace(/\"/g, '') }` });
     } 
 
     // Make sure email is already in proper database table!!
     let query = `SELECT * FROM ${constants.userTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
-    let params = [];
-    doQuery(res, query, params, async function(data) {
+    doQuery(res, query, [], async function(data) {
         const user = empty(data.recordset) ? {} : data.recordset[0];
 
         if (empty(user)) {
-            return res.status(400).send({error: `Email was invalid.`});
-        } else {
-            // Check duo code is correct
-            bcrypt.compare(req.body.duo, req.body.hashedDuo)
-            .then(isMatch => {
-                if (!isMatch) {
-                    return res.status(400).send({error: `Invalid 2FA code.`});
-                } else {
-                    
-                    // Return authenication token
-                     const token = generateAuthToken({
-                         "id": user['id'],
-                         "userType": req.body.userType,
-                    });
-                    res.status(200).send( { token: token} );
-                }
-            });
+            return res.status(400).send({ error: `Email was invalid.` });
         }
+        // Check duo code is correct
+        bcrypt.compare(req.body.duo, req.body.hashedDuo)
+        .then(isMatch => {
+            if (!isMatch) return res.status(400).send({ error: `Invalid 2FA code.` });
+            
+            // Return authenication token
+            const token = GenerateAuthToken({
+                "id": user['id'],
+                "userType": req.body.userType,
+            });
+            res.status(200).send( { token: token} );
+        });
     });
 });
-
 
 module.exports = router;
 
