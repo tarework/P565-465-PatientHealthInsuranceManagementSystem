@@ -17,10 +17,8 @@ function generateAuthToken(user){
     return jwt.sign({ id: user.id, userType: user.userType }, constants.JWT_SECRET);
 }
 
-// Regex to match letters only
-// ^[a-zA-Z]{2,}$
 function validateRegistration(request) {
-    const joiValidateSchema = Joi.object({
+    const schema = Joi.object({
         email: Joi.string().min(5).max(255).required().email(),
         pword: JoiPC(passwordOptions).required(),
         fName: Joi.string().min(2).max(255).required().regex(constants.regexLettersOnly),
@@ -29,7 +27,7 @@ function validateRegistration(request) {
         userType: Joi.string().valid('patient', 'doctor', 'insurance').required()
     });
 
-    return joiValidateSchema.validate(request);
+    return schema.validate(request);
 }
 
 function validateLogin(request) {
@@ -42,6 +40,28 @@ function validateLogin(request) {
     return schema.validate(request);
 }
 
+function validateEmail(request) {
+    const schema = Joi.object({
+        email: Joi.string().min(5).max(255).required().email(),
+        userType: Joi.string().valid('patient', 'doctor', 'insurance').required()
+    });
+
+    return schema.validate(request);
+}
+
+function validateDuoCode(request) {
+    const schema = Joi.object({
+        hashedDuo: Joi.string().required(),
+        duo: Joi.string().required(),
+        email: Joi.string().min(5).max(255).required().email(),
+        userType: Joi.string().valid('patient', 'doctor', 'insurance').required()
+    });
+    
+    return schema.validate(request);
+}
+
 module.exports.generateAuthToken = generateAuthToken;
 module.exports.validateRegistration = validateRegistration;
 module.exports.validateLogin = validateLogin;
+module.exports.validateEmail = validateEmail;
+module.exports.validateDuoCode = validateDuoCode;
