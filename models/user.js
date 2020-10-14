@@ -55,7 +55,7 @@ function ValidateEmail(request) {
 
 function ValidateDuoCode(request) {
     const schema = Joi.object({
-        hashedDuo: Joi.string().required(),
+        hashedDuoCode: Joi.string().required(),
         duo: Joi.string().required(),
         email: Joi.string().min(5).max(255).required().email(),
         userType: Joi.string().valid('patient', 'doctor', 'insurance').required()

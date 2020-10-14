@@ -51,7 +51,7 @@ router.post('/', async (req, res) => {
             // Send email to user with duo code
             mail(user.email, "2FA Login Code!", duoEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_DUO_CODE_", duoCode))
             .then(()=> {
-                return res.status(200).send({ id: user['id'], hashedDuoCode: hashedDuoCode, message: `Email sent.` });
+                    return res.status(200).send({ email: user.email, userType: req.body.userType, hashedDuoCode: hashedDuoCode });
             }).catch( ()=> {
                 return res.status(500).send({ error: `2FA Code Email failed to send.` });
             });   
@@ -76,19 +76,24 @@ router.post('/duoauth', async (req, res) => {
 
         if (empty(user)) {
             return res.status(400).send({ error: `Email was invalid.` });
-        }
-        // Check duo code is correct
-        bcrypt.compare(req.body.duo, req.body.hashedDuo)
-        .then(isMatch => {
-            if (!isMatch) return res.status(400).send({ error: `Invalid 2FA code.` });
-            
-            // Return authenication token
-            const token = GenerateAuthToken({
-                "id": user['id'],
-                "userType": req.body.userType,
+        } else {
+            // Check duo code is correct
+            bcrypt.compare(req.body.duo, req.body.hashedDuoCode)
+            .then(isMatch => {
+                if (!isMatch) {
+                    return res.status(400).send({error: `Invalid 2FA code.`});
+                } else {
+                    
+                    // Return authenication token
+                     const token = generateAuthToken({
+                         id: user['id'],
+                         userType: req.body.userType,
+                         exp: 3600
+                    });
+                    res.status(200).send( { token: token} );
+                }
             });
-            res.status(200).send( { token: token} );
-        });
+        }
     });
 });
 

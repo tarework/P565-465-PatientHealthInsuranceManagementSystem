@@ -37,16 +37,15 @@ router.post('/', async (req, res) => {
             // With INSERT statement output populates insertData.recordset[0] with data that was used in query
             // Can do INSERTED.* for all info or INSERTED.*columnName* for retrieving specific data
             // Can chain these like: OUTPUT INSERTED.id, INSERTED.email, INSERTED.phonenumber
-            query = `INSERT INTO ${constants.userTypeToTableName(req.body.userType)} (email, pword, fname, lname, phonenumber, profilePicId, medicalDataId)
+            query = `INSERT INTO ${constants.userTypeToTableName(req.body.userType)} (email, pword, fname, lname, phonenumber)
             OUTPUT INSERTED.*
-            VALUES ('${req.body.email}', '${user.pword}', '${req.body.fName}', '${req.body.lName}', '${req.body.phoneNumber}', '-1', '${userData.id}');`
+            VALUES ('${req.body.email}', '${user.pword}', '${req.body.fname}', '${req.body.lname}', '${req.body.phonenumber}');`
 
             doQuery(res, query, [], function(insertData) { 
                 user = empty(insertData.recordset) ? [] : insertData.recordset[0];
                 if(empty(user)) res.status(500).send("Failed to register user.")
 
-                // Build user for auth token
-                user = { "id": user['id'], "userType": req.body.userType };
+                user = { "id": user['id'], "userType": req.body.userType, exp: 3600 };
 
                 // Return authenication token and created user object
                 const token = GenerateAuthToken(user);

@@ -1,114 +1,83 @@
-const constants = require('../utils/constants');
-const { doQuery } = require('../db');
-const { DecodeAuthToken, ValidatePassword, ValidateUpdateDetails, BuildUpdateUserSetString } = require('../models/user');
-const bcrypt = require('bcryptjs');
-const empty = require('is-empty');
-const winston = require('winston');
-const express = require('express');
-const router = express.Router();
+var express = require("express"),
+    router = express.Router(),
+    empty = require('is-empty'),
+    moment = require('moment'),
+    mail = require('../utils/mail'),
+    { poolPromise, doQuery, sql } = require('../db');
 
-// Get User By ID
-router.get('/:id', async function(req, res) {
-  let query = `SELECT * FROM patientUsers WHERE id = ${ req.params.id };`;
-  doQuery(res, query, [], function(selectData) {
-    if(empty(selectData.recordset)) return res.status(400).send({ error: "Patient record does not exist." });
-
-    user = selectData.recordset[0];
-    delete user.pword;
-
-    res.status(200).send( {...user, userType: 'patient'} );
+router.get('/:id', function(req, res) {
+  let query = `select *, (select * from patientMedicalData where patientUsers.id = patientMedicalData.id FOR JSON PATH) as detail from patientUsers where id = ${req.params.id};`;
+  let params = [];
+  doQuery(res, query, params, function(data) {
+    if(empty(data.recordset)) {
+      res.status(400).send({error: "Patient record does not exist."})
+    } else {
+      res.send({...data.recordset.map(item => ({...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0]}))[0], userType: 'patient'});
+    }
   });
 });
 
-// Update User Details (THIS IS NOT UPDATING MEDICAL DATA/PROFILE PIC/ OR PASSWORD)
-router.put('/updateuser/:id', async function(req, res) {
-  const { error } = ValidateUpdateDetails(req.body);
-  if(error) return res.status(400).send({ error: `${ error.details[0].message.replace(/\"/g, '') }` });
- 
+router.post('/onboard', function(req, res) {
+  let query = `insert into patientMedicalData (id, address1, address2, state1, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq) 
+               OUTPUT INSERTED.* 
+               VALUES (@id, @address1, @address2, @state1, @zipcode, @birthdate, @sex, @height, @weight1, @bloodtype, @smoke, @smokefreq, @drink, @drinkfreq, @caffeine, @caffeinefreq);`;
 
-  user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
-  if (user.id != req.params.id) return res.status(400).send({ error: "Token invalid."});
-
-  setString = BuildUpdateUserSetString(req);
-  
-  let query = `UPDATE patientUsers
-  ${setString}
-  OUTPUT INSERTED.*
-  WHERE id = ${user.id}`;
-
-  // winston.info(query);
-
-  doQuery(res, query, [], function(updateData) {
-    const user = empty(updateData.recordset) ? {} : updateData.recordset[0];
-    if (empty(user)) return res.status(500).send({ error: `Updating user details failed. Please try again later.` });
-
-    delete user.pword
-
-    return res.status(200).send({ user: user });
+  let params = [
+    {name: 'id', sqltype: sql.Int, value: req.body.id},
+    {name: 'address1', sqltype: sql.VarChar(255), value: req.body.address1},
+    {name: 'address2', sqltype: sql.VarChar(255), value: req.body.address2},
+    {name: 'state1', sqltype: sql.VarChar(15), value: req.body.state1},
+    {name: 'zipcode', sqltype: sql.VarChar(15), value: req.body.zipcode},
+    {name: 'birthdate', sqltype: sql.VarChar(15), value: req.body.birthdate},
+    {name: 'sex', sqltype: sql.VarChar(10), value: req.body.sex},
+    {name: 'height', sqltype: sql.VarChar(10), value: req.body.height},
+    {name: 'weight1', sqltype: sql.VarChar(10), value: req.body.weight1},
+    {name: 'bloodtype', sqltype: sql.VarChar(7), value: req.body.bloodtype},
+    {name: 'smoke', sqltype: sql.Bit, value: req.body.smoke},
+    {name: 'smokefreq', sqltype: sql.VarChar(100), value: req.body.smokefreq},
+    {name: 'drink', sqltype: sql.Bit, value: req.body.drink},
+    {name: 'drinkfreq', sqltype: sql.VarChar(100), value: req.body.drinkfreq},
+    {name: 'caffeine', sqltype: sql.Bit, value: req.body.caffeine},
+    {name: 'caffeinefreq', sqltype: sql.VarChar(100), value: req.body.caffeinefreq}
+  ];
+  doQuery(res, query, params, function(data) {
+    if(empty(data.recordset)) {
+      res.status(400).send({error: "Data not saved."})
+    } else {
+      res.send({detail: data.recordset[0]});
+    }
   });
 });
 
-// Update User Password
-router.put('/updatepassword/:id', async function(req, res) {
-  // Validate new password or error out
-  const { error } = ValidatePassword(req.body);
-  if(error)
-  {
-    if (error.details[0].message.includes('userType')) error.details[0].message = 'userType is invalid or empty';
-    return res.status(400).send({ error: `${ error.details[0].message.replace(/\"/g, '') }` });
-  } 
-
-  // decode jwtoken and check id params
-  user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
-  if(user.id != req.params.id) return res.status(400).send({ error: "Token invalid."});
-
-  // salt and hash new pword
-  const salt = await bcrypt.genSalt(11);
-  hashedPassword = await bcrypt.hash(req.body.pword, salt);
-
-  // set new pword for user.id in dbs
-  query = `UPDATE patientUsers
-  SET pword = '${hashedPassword}'
-  WHERE id='${user.id}';`;
-  //winston.info(query);
-
-  // run query
-  doQuery(res, query, [], async function(updateData) { 
-    // return 200
-    res.status(200).send({ message: `Password Updated.` });
+router.put('/detail', function(req, res) {
+  let query = `update patientMedicalData set address1 = @address1, address2 = @address2, state1 = @state1, zipcode = @zipcode, birthdate = @birthdate, 
+               sex = @sex, height = @height, weight1 = @weight1, bloodtype = @bloodtype, smoke = @smoke, smokefreq = @smokefreq, drink = @drink, 
+               drinkfreq = @drinkfreq, caffeine = @caffeine, caffeinefreq = @caffeinefreq output inserted.* where id = @id;`;
+  let params = [
+    {name: 'id', sqltype: sql.Int, value: req.body.id},
+    {name: 'address1', sqltype: sql.VarChar(255), value: req.body.address1},
+    {name: 'address2', sqltype: sql.VarChar(255), value: req.body.address2},
+    {name: 'state1', sqltype: sql.VarChar(15), value: req.body.state1},
+    {name: 'zipcode', sqltype: sql.VarChar(15), value: req.body.zipcode},
+    {name: 'birthdate', sqltype: sql.VarChar(15), value: req.body.birthdate},
+    {name: 'sex', sqltype: sql.VarChar(10), value: req.body.sex},
+    {name: 'height', sqltype: sql.VarChar(10), value: req.body.height},
+    {name: 'weight1', sqltype: sql.VarChar(10), value: req.body.weight1},
+    {name: 'bloodtype', sqltype: sql.VarChar(5), value: req.body.bloodtype},
+    {name: 'smoke', sqltype: sql.Bit, value: req.body.smoke},
+    {name: 'smokefreq', sqltype: sql.VarChar(100), value: req.body.smokefreq},
+    {name: 'drink', sqltype: sql.Bit, value: req.body.drink},
+    {name: 'drinkfreq', sqltype: sql.VarChar(100), value: req.body.drinkfreq},
+    {name: 'caffeine', sqltype: sql.Bit, value: req.body.caffeine},
+    {name: 'caffeinefreq', sqltype: sql.VarChar(100), value: req.body.caffeinefreq}
+  ];
+  doQuery(res, query, params, function(data) {
+    if(empty(data.recordset)) {
+      res.status(400).send({error: "Record update failed."})
+    } else {
+      res.send({detail: data.recordset[0]});
+    }
   });
-});
-
-// Not Done!
-router.put('/updateprofilepic/:id', async function(req, res) {
-  // TODO Need to verify body input
-  // const { error } = Validate Anything ?(req.body);
-  // if(error)
-  // {
-  //   if (error.details[0].message.includes('userType')) error.details[0].message = 'userType is invalid or empty';
-  //   return res.status(400).send({ error: `${ error.details[0].message.replace(/\"/g, '') }` });
-  // } 
-
-  // decode jwtoken and check id params
-  user = DecodeAuthToken(req.body.jwtoken);
-  if(user.id !== req.params.id) return res.status(400).send({ error: "Token invalid."});
-
-  // set new pword for user.id in dbs
-  query = `UPDATE patientUsers
-  SET profilePicId = '${req.body.profilePicId}'
-  WHERE id='${user.id}';`;
-  //winston.info(query);
-
-  // run query
-  doQuery(res, query, [], async function(updateData) { 
-    // return 200
-    res.status(200).send({ message: `Profile Picture Update.` });
-  });
-});
-
-// Not Done!
-router.put('/updatemedical/:id', async function(req, res) {
-
 });
 
 module.exports = router;
