@@ -40,7 +40,7 @@ router.post('/', async (req, res) => {
             // Can chain these like: OUTPUT INSERTED.id, INSERTED.email, INSERTED.phonenumber
             query = `INSERT INTO ${constants.userTypeToTableName(req.body.userType)} (email, pword, fname, lname, phonenumber)
             OUTPUT INSERTED.*
-            VALUES ('${req.body.email}', '${user.pword}', '${req.body.fName}', '${req.body.lName}', '${req.body.phoneNumber}');`
+            VALUES ('${req.body.email}', '${user.pword}', '${req.body.fname}', '${req.body.lname}', '${req.body.phonenumber}');`
 
             doQuery(res, query, params, function(insertData) { 
                 user = empty(insertData.recordset) ? [] : insertData.recordset[0];
@@ -49,7 +49,7 @@ router.post('/', async (req, res) => {
                     res.status(500).send("Failed to register user.")
                 } else {
                     // Build user for auth token
-                    user = { "id": user['id'], "userType": req.body.userType };
+                    user = { "id": user['id'], "userType": req.body.userType, exp: 3600 };
 
                     // Return authenication token and created user object
                     const token = generateAuthToken(user);
