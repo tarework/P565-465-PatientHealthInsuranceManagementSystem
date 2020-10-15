@@ -66,7 +66,8 @@ function ValidateDuoCode(request) {
 
 function ValidatePassword(request) {
     const schema = Joi.object({
-        pword: JoiPC(passwordOptions).required()
+        pword: JoiPC(passwordOptions).required(),
+        pwordConfirmation: Joi.any().valid(Joi.ref('pword')).required().options({ language: { any: { allowOnly: 'must match password' } } })
     });
 
     return CleanErrorMessage(schema.validate(request));

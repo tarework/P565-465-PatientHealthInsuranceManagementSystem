@@ -32,7 +32,7 @@ router.get('/:id', function(req, res) {
 router.put('/user', function(req, res) {
   const { error } = ValidateUpdateUser(req.body);
   if(error) return res.status(400).send({ error: `${ error.details[0].message.replace(/\"/g, '') }` });
- 
+
   let query = `UPDATE patientUsers 
   SET email = @email, fname = @fname, lname = @lname, phonenumber = @phonenumber
   OUTPUT INSERTED.* WHERE id = @id;`;
@@ -56,9 +56,34 @@ router.put('/user', function(req, res) {
   });
 });
 
-router.put('password', function(req, res) {
+router.put('/password', function(req, res) {
+  const { error } = ValidatePassword(req.body);
+  if(error) return res.status(400).send({ error: error.details[0].message });
 
+  // salt and hash new pword
+  const salt = await bcrypt.genSalt(11);
+  hashedPassword = await bcrypt.hash(req.body.pword, salt);
+
+  // set new pword for user.id in dbs
+  query = `UPDATE patientUsers 
+  SET pword = @pword' 
+  OUTPUT INSERTED.* WHERE id = @id;`;
+
+  let params = [
+    { name: 'id', sqltype: sql.Int, value: req.body.id },
+    { name: 'pword', sqltype: sql.VarChar(255), value: hashedPassword }
+  ];
+
+  doQuery(res, query, params, async function(updateData) { 
+    if (empty(data.recordset)) res.status(400).send({ error: "Password update failed." })
+
+    delete selectData.recordset[0].pword
+
+    return res.status(200).send({ user: user });
+  });
 });
+
+//#endregion
 
 //#region creating/updating patient medical data
 
@@ -102,9 +127,11 @@ router.put('/detail', function(req, res) {
   // TODO
   // VALIDATION GOES HERE
   
-  let query = `UPDATE patientMedicalData SET address1 = @address1, address2 = @address2, state1 = @state1, city = @city, zipcode = @zipcode, birthdate = @birthdate, 
-               sex = @sex, height = @height, weight1 = @weight1, bloodtype = @bloodtype, smoke = @smoke, smokefreq = @smokefreq, drink = @drink, 
-               drinkfreq = @drinkfreq, caffeine = @caffeine, caffeinefreq = @caffeinefreq OUTPUT INSERTED.* WHERE id = @id;`;
+  let query = `UPDATE patientMedicalData 
+              SET address1 = @address1, address2 = @address2, state1 = @state1, city = @city, zipcode = @zipcode, birthdate = @birthdate, 
+              sex = @sex, height = @height, weight1 = @weight1, bloodtype = @bloodtype, smoke = @smoke, smokefreq = @smokefreq, drink = @drink, 
+              drinkfreq = @drinkfreq, caffeine = @caffeine, caffeinefreq = @caffeinefreq 
+              OUTPUT INSERTED.* WHERE id = @id;`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
     { name: 'address1', sqltype: sql.VarChar(255), value: req.body.address1 },
