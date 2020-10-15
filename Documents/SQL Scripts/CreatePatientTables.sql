@@ -10,7 +10,7 @@ CREATE TABLE patientMedicalData (
 	sex varchar(10) NULL,
 	height varchar(10) NULL,
 	weight1 varchar(10) NULL,
-	bloodtype varchar(5) NULL,
+	bloodtype varchar(7) NULL,
 	smoke BIT NULL,
 	smokefreq int NULL,
 	drink BIT NULL,
