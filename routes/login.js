@@ -14,7 +14,7 @@ const router = express.Router();
 router.post('/', async (req, res) => {
     // Validate information in request
     const { error } = ValidateLogin(req.body);
-    if(error) return res.status(400).send({ error: error.details[0].message });
+    if(error) return res.status(400).send({ error: error.message });
 
     // Make sure email is already registered
     let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)} WHERE email = @email;`;
@@ -63,7 +63,7 @@ router.post('/', async (req, res) => {
 router.post('/duoauth', async (req, res) => {
     // Validate information in request
     const { error } = ValidateDuoCode(req.body);
-    if(error) return res.status(400).send({ error: error.details[0].message });
+    if(error) return res.status(400).send({ error: error.message });
 
     // Make sure email is already in proper database table!!
     let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)}  WHERE email = @email;`;

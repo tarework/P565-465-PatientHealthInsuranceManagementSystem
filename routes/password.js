@@ -1,4 +1,4 @@
-const { doQuery } = require('../db');
+const { doQuery, sql } = require('../db');
 const { ValidateEmail } = require('../models/user');
 const constants = require('../utils/constants');
 const mail = require('../utils/mail');
@@ -13,7 +13,7 @@ const router = express.Router();
 router.post('/', async (req, res) => {
     // validate is proper email
     const { error } = ValidateEmail(req.body);
-    if(error) return res.status(400).send({ error: error.details[0].message });
+    if(error) return res.status(400).send({ error: error.message });
 
     // validate is registered email
     let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)} WHERE email = @email;`;

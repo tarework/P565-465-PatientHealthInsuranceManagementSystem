@@ -15,9 +15,10 @@ const router = express.Router();
 
 // Get's patientUser and patientMedicalData
 router.get('/:id', async function(req, res) {
-  // VALIDATION GOES HERE
-  // since this gives back valid medical data we need a valid JWT 
-  // HIPAA SHIT
+  // Token Validation
+  let user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
+  if(user.id != req.params.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
+
   let query = `SELECT *, (SELECT * FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH) AS detail FROM patientUsers WHERE id = ${req.params.id};`;
   let params = [];
   doQuery(res, query, params, function(selectData) {
@@ -32,35 +33,44 @@ router.get('/:id', async function(req, res) {
 //#region updating patientUser 
 
 router.put('/user', async function(req, res) {
+  // Token Validation
+  let user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
+  if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
+
+  // Data Validation
   const { error } = ValidateUpdateUser(req.body);
-  if(error) return res.status(400).send({ error: error.details[0].message });
+  if(error) return res.status(400).send({ error: error.message });
 
   let query = `UPDATE patientUsers 
   SET email = @email, fname = @fname, lname = @lname, phonenumber = @phonenumber
-  OUTPUT INSERTED.* WHERE id = @id;`;
+  OUTPUT INSERTED.* 
+  WHERE id = @id;`;
 
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
     { name: 'email', sqltype: sql.VarChar(255), value: req.body.email },
     { name: 'fname', sqltype: sql.VarChar(255), value: req.body.fName },
-    { name: 'lname', sqltype: sql.VarChar(15), value: req.body.lName },
-    { name: 'phonenumber', sqltype: sql.VarChar(15), value: req.body.phonenumber }
+    { name: 'lname', sqltype: sql.VarChar(255), value: req.body.lName },
+    { name: 'phonenumber', sqltype: sql.VarChar(50), value: req.body.phoneNumber }
   ];
 
-  //winston.info(query);
-
   doQuery(res, query, params, function(updateData) {
-    if (empty(data.recordset)) res.status(400).send({ error: "Record update failed." })
+    if (empty(updateData.recordset)) res.status(400).send({ error: "Record update failed." })
 
-    delete selectData.recordset[0].pword
+    delete updateData.recordset[0].id
+    delete updateData.recordset[0].pword
 
-    return res.status(200).send({ user: user });
+    return res.status(200).send({ user: updateData.recordset[0] });
   });
 });
 
 router.put('/password', async function(req, res) {
+  // Token Validation
+  let user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
+  if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
+  
   const { error } = ValidatePassword(req.body);
-  if(error) return res.status(400).send({ error: error.details[0].message });
+  if(error) return res.status(400).send({ error: error.message });
 
   // salt and hash new pword
   const salt = await bcrypt.genSalt(11);
@@ -68,8 +78,9 @@ router.put('/password', async function(req, res) {
 
   // set new pword for user.id in dbs
   query = `UPDATE patientUsers 
-  SET pword = @pword' 
-  OUTPUT INSERTED.* WHERE id = @id;`;
+  SET pword = @pword
+  OUTPUT INSERTED.* 
+  WHERE id = @id;`;
 
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
@@ -77,21 +88,25 @@ router.put('/password', async function(req, res) {
   ];
 
   doQuery(res, query, params, async function(updateData) { 
-    if (empty(data.recordset)) res.status(400).send({ error: "Password update failed." })
+    if (empty(updateData.recordset)) res.status(400).send({ error: "Password update failed." })
 
-    delete selectData.recordset[0].pword
+    delete updateData.recordset[0].pword
 
-    return res.status(200).send({ user: user });
+    return res.status(200).send({ user: updateData.recordset[0] });
   });
 });
 
 router.put('/profilepic', async function(req, res) {
-  // This method is in constants b/c
+  // Token Validation
+  let user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
+  if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
+
+  // This method is in storage b/c
   // patients, doctors, and insurance users
   // can all do this.
   // Don't write it 3 times,
   // Extract it to a single location.
-  return constants.UpdateProfilePic(req);
+  return storage.UpdateProfilePic(req, res);
 });
 
 //#endregion
@@ -100,8 +115,13 @@ router.put('/profilepic', async function(req, res) {
 
 // Creates patientMedicalData record for patientUser
 router.post('/onboard', async function(req, res) {
+  // Token Validation
+  let user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
+  if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
+
+  // Data Validation
   const { error } = ValidatePatientMedicalData(req.body);
-  if(error) return res.status(400).send({ error: error.details[0].message });
+  if(error) return res.status(400).send({ error: error.message });
 
   let query = `INSERT INTO patientMedicalData (id, address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq) 
                OUTPUT INSERTED.* 
@@ -135,8 +155,13 @@ router.post('/onboard', async function(req, res) {
 
 // Updates patientMedicalData record for patientUser
 router.put('/detail', async function(req, res) {
+  // Token Validation
+  let user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
+  if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
+  
+  // Data Validation
   const { error } = ValidatePatientMedicalData(req.body);
-  if(error) return res.status(400).send({ error: error.details[0].message });
+  if(error) return res.status(400).send({ error: error.message });
   
   let query = `UPDATE patientMedicalData 
               SET address1 = @address1, address2 = @address2, state1 = @state1, city = @city, zipcode = @zipcode, birthdate = @birthdate, 

@@ -30,14 +30,17 @@ async function doQuery(res, query, params, callback) {
     try {
         const pool = await poolPromise;
         let request = pool.request();
+
         params.forEach(function(p) {
+          winston.info(p.value);
             request.input(p.name, p.sqltype, p.value);
         });
+        
         let result = await request.query(query);
         callback(result);
     } catch (err) {
-      winston.error(`doQuery failed due to error: ${err.message}`, err)
-      if(res != null) res.status(500).send(err);
+      winston.error(`doQuery failed due to error: ${err}`, err);
+      res.status(500).send({ error: err });
     }
 }
 

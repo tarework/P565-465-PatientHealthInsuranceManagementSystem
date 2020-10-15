@@ -1,5 +1,4 @@
 require('dotenv').config();
-const { DecodeAuthToken } = require('../models/user');
 
 const DB_PASS = process.env.DB_PASS;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -10,7 +9,14 @@ const USER_TYPES = {
     PATIENT: 'patient', //puser
     DOCTOR: 'doctor', //duser
     INSURANCEPROVIDER: 'insurance', //ipuser
-}
+};
+
+// Regex Functions
+// Test at regex101.com
+const regexLettersOnly = new RegExp('^[a-zA-Z]{2,}$');
+const regexPhoneNumber = new RegExp('^\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})[-. )]*(\\d{3})[-. ]*(\\d{4})(?: *x(\\d+))?\\s*$');
+const yyyymmddRegex = new RegExp('^\d{4}\/(0?[1-9]|1[012])\/(0?[1-9]|[12][0-9]|3[01])$'); // Example 1990/7/23" limits months to 1-12 and days 1-31
+const heightRegex = new RegExp(`^[3-7] (?:\s*(?:1[01]|[0-9])(''|"))?$`); // Example 5 8"
 
 function UserTypeToTableName(userType){
     if(userType === USER_TYPES.PATIENT) return "patientUsers";
@@ -20,37 +26,12 @@ function UserTypeToTableName(userType){
 }
 
 function CleanErrorMessage(result) {
-    if (result['error'])
-        result['error'].details[0].message = result['error'].details[0].message.replace(/\"/g, '')
-    return result
+    if (result.error)
+        result.error.message = result.error.message.replace(/\"/g, '');
+    return result;
 }
-
-// This method is in here b/c
-// patients, doctors, and insurance users
-// can all do this.
-// Don't write it 3 times,
-// Extract it to a single location.
-async function UpdateProfilePic(req) {
-    token = DecodeAuthToken(req.header(TOKEN_HEADER));
-    container = token.userType + token.id;
-  
-    storage(container, 'profile', req.body.img)
-    .then((message)=> {
-      return res.status(200).send({ result: message.result, response: message.response });
-    }).catch((error)=> {
-      return res.status(500).send({ error: error });
-    });  
-}
-
-// Regex Functions
-// Test at regex101.com
-const regexLettersOnly = new RegExp('^[a-zA-Z]{2,}$');
-const regexPhoneNumber = new RegExp('^\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})[-. )]*(\\d{3})[-. ]*(\\d{4})(?: *x(\\d+))?\\s*$');
-const yyyymmddRegex = new RegExp('^\d{4}\/(0?[1-9]|1[012])\/(0?[1-9]|[12][0-9]|3[01])$'); // Example 1990/7/23" limits months to 1-12 and days 1-31
-const heightRegex = new RegExp(`^[3-7] (?:\s*(?:1[01]|[0-9])(''|"))?$`); // Example 5 8"
 
 module.exports = {
-    DB_PASS, JWT_SECRET, TOKEN_HEADER, GMAIL_PASSWORD, AZURE_STORAGE_KEY, USER_TYPES, 
-    UserTypeToTableName, CleanErrorMessage, UpdateProfilePic, 
-    regexLettersOnly, regexPhoneNumber, yyyymmddRegex, heightRegex
-}
+    DB_PASS, JWT_SECRET, TOKEN_HEADER, GMAIL_PASSWORD, AZURE_STORAGE_KEY, USER_TYPES, regexLettersOnly, regexPhoneNumber, yyyymmddRegex, heightRegex,
+    UserTypeToTableName, CleanErrorMessage
+};

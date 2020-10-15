@@ -1,4 +1,4 @@
-const { doQuery } = require('../db');
+const { doQuery, sql } = require('../db');
 const { GenerateAuthToken, ValidateRegistration } = require('../models/user')
 const constants = require('../utils/constants')
 const bcrypt = require('bcryptjs');
@@ -11,7 +11,7 @@ const router = express.Router();
 router.post('/', async (req, res) => {
     // Validate information in request
     const { error } = ValidateRegistration(req.body);
-    if(error) return res.status(400).send({ error: error.details[0].message });
+    if(error) return res.status(400).send({ error: error.message });
 
     // Make sure email isn't already registered in proper database table!!
     let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)} WHERE email = @email;`;
@@ -33,10 +33,10 @@ router.post('/', async (req, res) => {
         VALUES (@email, @pword, @fname, @lname, @phonenumber);`
         params = [
             { name: 'email', sqltype: sql.VarChar(255), value: req.body.email },
-            { name: 'pword', sqltype: sql.VarChar(1024), value: req.body.pword },
-            { name: 'fname', sqltype: sql.VarChar(255), value: req.body.fname },
-            { name: 'lname', sqltype: sql.VarChar(255), value: req.body.lname },
-            { name: 'phonenumber', sqltype: sql.VarChar(50), value: req.body.phonenumber }
+            { name: 'pword', sqltype: sql.VarChar(1024), value: user.pword },
+            { name: 'fname', sqltype: sql.VarChar(255), value: req.body.fName },
+            { name: 'lname', sqltype: sql.VarChar(255), value: req.body.lName },
+            { name: 'phonenumber', sqltype: sql.VarChar(50), value: req.body.phoneNumber }
         ];
 
         doQuery(res, query, params, function(insertData) { 
