@@ -2,28 +2,27 @@ const { doQuery, sql } = require('../db');
 const { GenerateAuthToken, ValidateLogin, ValidateDuoCode } = require('../models/user');
 const constants = require('../utils/constants');
 const mail = require('../utils/mail');
+const verifyGoogleToken = require('../utils/verifyGoogleToken');
 const bcrypt = require('bcryptjs');
 const pwGenerator = require('generate-password');
 const empty = require('is-empty');
 const winston = require('winston');
 const express = require('express');
 const router = express.Router();
-const verifyGoogleToken = require('../utils/verifyGoogleToken');
 
 // Login User
 router.post('/', async (req, res) => {
     // Validate information in request
     const { error } = ValidateLogin(req.body);
-    if(error)
-    {
-        if (error.details[0].message.includes('userType')) error.details[0].message = 'userType is invalid or empty';
-        return res.status(400).send({ error: `${ error.details[0].message.replace(/\"/g, '') }` });
-    } 
+    if(error) return res.status(400).send({ error: error.details[0].message });
 
-    // Make sure email is already 
-    // in proper database table!!
-    let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
-    doQuery(res, query, [], async function(selectData) {
+    // Make sure email is already registered
+    let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)} WHERE email = @email;`;
+    let params = [
+        { name: 'email', sqltype: sql.VarChar(255), value: req.body.email }
+    ];
+
+    doQuery(res, query, params, async function(selectData) {
         const user = empty(selectData.recordset) ? {} : selectData.recordset[0];
         if (empty(user)) return res.status(400).send({ error: `Invalid login credentials.` });
         
@@ -47,7 +46,7 @@ router.post('/', async (req, res) => {
 
             // Uncomment if testing login/duo auth
             winston.info(duoCode);
-            winston.info(hashedDuoCode);
+            // winston.info(hashedDuoCode);
             
             // Send email to user with duo code
             mail(user.email, "2FA Login Code!", duoEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_DUO_CODE_", duoCode))
@@ -64,84 +63,76 @@ router.post('/', async (req, res) => {
 router.post('/duoauth', async (req, res) => {
     // Validate information in request
     const { error } = ValidateDuoCode(req.body);
-    if(error)
-    {
-        if (error.details[0].message.includes('userType')) error.details[0].message = 'userType is invalid or empty';
-        return res.status(400).send({ error: `${ error.details[0].message.replace(/\"/g, '') }` });
-    } 
+    if(error) return res.status(400).send({ error: error.details[0].message });
 
     // Make sure email is already in proper database table!!
-    let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
-    doQuery(res, query, [], async function(data) {
-        const user = empty(data.recordset) ? {} : data.recordset[0];
+    let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)}  WHERE email = @email;`;
+    let params = [
+        { name: 'email', sqltype: sql.VarChar(255), value: req.body.email }
+    ];
 
-        if (empty(user)) {
-            return res.status(400).send({ error: `Email was invalid.` });
-        } else {
-            // Check duo code is correct
-            bcrypt.compare(req.body.duo, req.body.hashedDuoCode)
-            .then(isMatch => {
-                if (!isMatch) {
-                    return res.status(400).send({error: `Invalid 2FA code.`});
-                } else {
-                    
-                    // Return authenication token
-                     const token = GenerateAuthToken({
-                         id: user['id'],
-                         userType: req.body.userType,
-                         exp: 3600
-                    });
-                    res.status(200).send( { token: token} );
-                }
+    doQuery(res, query, params, async function(data) {
+        const user = empty(data.recordset) ? {} : data.recordset[0];
+        if (empty(user)) return res.status(400).send({ error: `Email was invalid.` });
+
+        // Check duo code is correct
+        bcrypt.compare(req.body.duo, req.body.hashedDuoCode)
+        .then(isMatch => {
+            if (!isMatch) return res.status(400).send({error: `Invalid 2FA code.`});
+            
+            // Return authenication token
+                const token = GenerateAuthToken({
+                    id: user['id'],
+                    userType: req.body.userType,
+                    exp: 3600
             });
-        }
+            res.status(200).send( { token: token} );
+        });
     });
 });
 
+// OAuth for User
 router.post('/google', async (req, res) => {
-
     verifyGoogleToken(req.body.tokenId)
     .then(function(result) {
         let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)} WHERE goauth='${result.sub}';`;
         let params = [];
-        doQuery(res, query, params, async function(data) {
-            if(empty(data.recordset)) {
+        doQuery(res, query, params, async function(selectData) {
+            if(empty(selectData.recordset)) {
                 //add new user with sub id
                 let query2 = `INSERT INTO ${constants.UserTypeToTableName(req.body.userType)} (email, fname, lname, goauth)
                              OUTPUT INSERTED.*
                              VALUES ('${result.email}', '${result.given_name}', '${result.family_name}', ${result.sub});`
                 let params2 = [
-                    {name: 'id', sqltype: sql.Int, value: req.body.id},
+                    { name: 'id', sqltype: sql.Int, value: req.body.id },
                 ];
                 doQuery(res, query2, params2, async function(insertData) {
-                    console.log(insertData.recordset)
-                    if(empty(insertData.recordset)) {
-                        res.status(401).send({error: "User not registered."});
-                    } else {
-                        const user = insertData.recordset[0]; 
-                        const duoCode = pwGenerator.generate({
-                            length: 6,
-                            numbers: true,
-                            uppercase: true,
-                            lowercase: false,
-                            symbols: false
-                        });
-                                            
-                        // Hashed it for frontend transmission
-                        const salt = await bcrypt.genSalt(11);
-                        hashedDuoCode = await bcrypt.hash(duoCode, salt);
-                        
-                        // Send email to user with duo code
-                        mail(user.email, "2FA Login Code!", duoEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_DUO_CODE_", duoCode))
-                        .then(()=> {
-                            return res.status(200).send({ email: user.email, userType: req.body.userType, hashedDuoCode: hashedDuoCode });
-                        }).catch( ()=> {
-                            return res.status(500).send({ error: `2FA Code Email failed to send.` });
-                        });   
-                    }
+                    //winston.info(insertData.recordset)
+                    if (empty(insertData.recordset)) res.status(401).send({ error: "User not registered." });
+
+                    const user = insertData.recordset[0]; 
+                    const duoCode = pwGenerator.generate({
+                        length: 6,
+                        numbers: true,
+                        uppercase: true,
+                        lowercase: false,
+                        symbols: false
+                    });
+                                        
+                    // Hashed it for frontend transmission
+                    const salt = await bcrypt.genSalt(11);
+                    hashedDuoCode = await bcrypt.hash(duoCode, salt);
+                    
+                    // Send email to user with duo code
+                    mail(user.email, "2FA Login Code!", duoEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_DUO_CODE_", duoCode))
+                    .then(()=> {
+                        return res.status(200).send({ email: user.email, userType: req.body.userType, hashedDuoCode: hashedDuoCode });
+                    }).catch(()=> {
+                        return res.status(500).send({ error: `2FA Code Email failed to send.` });
+                    });   
                 });
             } else {
-                const user = data.recordset[0]; 
+                const user = selectData.recordset[0]; 
                 const duoCode = pwGenerator.generate({
                     length: 6,
                     numbers: true,
@@ -155,25 +146,26 @@ router.post('/google', async (req, res) => {
                 hashedDuoCode = await bcrypt.hash(duoCode, salt);
 
                 // Uncomment if testing login/duo auth
-                // winston.info(duoCode);
+                winston.info(duoCode);
                 // winston.info(hashedDuoCode);
                 
                 // Send email to user with duo code
                 mail(user.email, "2FA Login Code!", duoEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_DUO_CODE_", duoCode))
                 .then(()=> {
                     return res.status(200).send({ email: user.email, userType: req.body.userType, hashedDuoCode: hashedDuoCode });
-                }).catch( ()=> {
+                }).catch(()=> {
                     return res.status(500).send({ error: `2FA Code Email failed to send.` });
                 });   
             }
         });
     })
     .catch(function(error){
-        console.log(error)
+        winston.error(error)
         res.status(401).send( {error: "Token not valid." })
     });
 
 });
+
 module.exports = router;
 
 const duoEmail = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" style="width:100%;font-family:arial, 'helvetica neue', helvetica, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0"><head><meta charset="UTF-8"><meta content="width=device-width, initial-scale=1" name="viewport"><meta name="x-apple-disable-message-reformatting"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta content="telephone=no" name="format-detection"><title>New email</title> <!--[if (mso 16)]><style type="text/css">     a {text-decoration: none;}     </style><![endif]--> <!--[if gte mso 9]><style>sup { font-size: 100% !important; }</style><![endif]--> <!--[if gte mso 9]><xml> <o:OfficeDocumentSettings> <o:AllowPNG></o:AllowPNG> <o:PixelsPerInch>96</o:PixelsPerInch>

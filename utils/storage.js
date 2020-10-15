@@ -1,25 +1,28 @@
-let azure = require('azure-storage');
-let {AZURE_STORAGE_KEY} = require('./constants');
-let blobService = azure.createBlobService("apollocare", AZURE_STORAGE_KEY);
-let dataUriToBuffer = require('data-uri-to-buffer');
-let FileType = require('file-type');
+const azure = require('azure-storage');
+const { AZURE_STORAGE_KEY } = require('./constants');
+const dataUriToBuffer = require('data-uri-to-buffer');
+const FileType = require('file-type');
+const winston = require('winston/lib/winston/config');
+const blobService = azure.createBlobService("apollocare", AZURE_STORAGE_KEY);
 
 module.exports = async (container, name, stream) => {
-
-	let buffer = dataUriToBuffer(stream);
-	let filetype = await FileType.fromBuffer(buffer);
-
+	const buffer = dataUriToBuffer(stream);
+	const filetype = await FileType.fromBuffer(buffer);
 	const options = { contentSettings: { contentType: filetype.mime } }
 
-	blobService.createContainerIfNotExists(container, {
-	  
-	}, function(error, result, response) {
-	  if (!error) {
-	    blobService.createBlockBlobFromText(container, name, buffer, options, function(error, result, response) {
-			  if (!error) {
-			    // file uploaded
-			  } else console.log(error);
+	return new Promise((resolve, reject) => {
+		blobService.createContainerIfNotExists(container, {}, function(error, result, response) {
+			if (error) {
+				winston.error(error);
+				reject(error);
+			}
+			blobService.createBlockBlobFromText(container, name, buffer, options, function(error, result, response){
+				if (error) {
+					winston.error(error);
+					reject(error);
+				}
+				resolve({ result: result, response: response });
 			});
-	  } else console.log(error);
+		});
 	});
 }

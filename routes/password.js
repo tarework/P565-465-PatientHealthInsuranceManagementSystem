@@ -16,10 +16,13 @@ router.post('/', async (req, res) => {
     if(error) return res.status(400).send({ error: error.details[0].message });
 
     // validate is registered email
-    let user = {};
-    let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
-    doQuery(res, query, [], async function(selectData) {
-        user = empty(selectData.recordset) ? {} : selectData.recordset[0];
+    let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)} WHERE email = @email;`;
+    let params = [
+        { name: 'email', sqltype: sql.VarChar(255), value: req.body.email }
+    ];
+
+    doQuery(res, query, params, async function(selectData) {
+        let user = empty(selectData.recordset) ? {} : selectData.recordset[0];
         if (empty(user)) return res.status(400).send({ error: `E-mail not found.` });
 
         // Generate password
@@ -37,10 +40,14 @@ router.post('/', async (req, res) => {
         
         // Set generated password as password for the user
         query = `UPDATE ${constants.UserTypeToTableName(req.body.userType)}
-        SET pword = '${hashedPassword}'
-        WHERE email='${req.body.email}';`;
-        //winston.info(query);
-        doQuery(res, query, [], async function(updateData) { 
+        SET pword = @pword
+        WHERE email = @email;`;
+        params = [
+            { name: 'email', sqltype: sql.VarChar(255), value: req.body.email },
+            { name: 'pword', sqltype: sql.VarChar(1024), value: hashedPassword }
+        ];
+        
+        doQuery(res, query, params, async function(updateData) { 
             // Send email to registered email with a new password
             mail(user.email, "Password Recovery!", passwordEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_PASSWORD_", newPassword))
             .then(()=> {

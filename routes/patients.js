@@ -1,5 +1,5 @@
 const { doQuery, sql } = require('../db');
-const { ValidatePassword, ValidateUpdateUser } = require('../models/user');
+const { DecodeAuthToken, ValidatePassword, ValidateUpdateUser } = require('../models/user');
 const { ValidatePatientMedicalData } = require('../models/puser');
 const constants = require('../utils/constants');
 //const mail = require('../utils/mail');
@@ -9,6 +9,7 @@ const empty = require('is-empty');
 //const moment = require('moment'),
 const winston = require('winston');
 const express = require('express');
+const { route } = require('./password');
 const router = express.Router();
     
 
@@ -28,7 +29,7 @@ router.get('/:id', async function(req, res) {
   });
 });
 
-//#region updating patientUser
+//#region updating patientUser 
 
 router.put('/user', async function(req, res) {
   const { error } = ValidateUpdateUser(req.body);
@@ -84,14 +85,26 @@ router.put('/password', async function(req, res) {
   });
 });
 
+router.put('/profilepic', async function(req, res) {
+  token = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
+  container = token.userType+token.id;
+
+  storage(container, 'profile', req.body.img)
+  .then((message)=> {
+    return res.status(200).send({ result: message.result, response: message.response });
+  }).catch((error)=> {
+    return res.status(500).send({ error: error });
+  });  
+});
+
 //#endregion
 
 //#region creating/updating patient medical data
 
 // Creates patientMedicalData record for patientUser
 router.post('/onboard', async function(req, res) {
-  // const { error } = ValidatePatientMedicalData(req.body);
-  // if(error) return res.status(400).send({ error: error.details[0].message });
+  const { error } = ValidatePatientMedicalData(req.body);
+  if(error) return res.status(400).send({ error: error.details[0].message });
 
   let query = `INSERT INTO patientMedicalData (id, address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq) 
                OUTPUT INSERTED.* 
