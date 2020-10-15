@@ -24,6 +24,23 @@ function CleanErrorMessage(result) {
     return result
 }
 
+// This method is in here b/c
+// patients, doctors, and insurance users
+// can all do this.
+// Don't write it 3 times,
+// Extract it to a single location.
+async function UpdateProfilePic(req) {
+    token = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
+    container = token.userType+token.id;
+  
+    storage(container, 'profile', req.body.img)
+    .then((message)=> {
+      return res.status(200).send({ result: message.result, response: message.response });
+    }).catch((error)=> {
+      return res.status(500).send({ error: error });
+    });  
+}
+
 // Regex Functions
 // Test at regex101.com
 
@@ -34,6 +51,6 @@ const heightRegex = new RegExp(`^[3-7] (?:\s*(?:1[01]|[0-9])(''|"))?$`); // Exam
 
 module.exports = {
     DB_PASS, JWT_SECRET, TOKEN_HEADER, GMAIL_PASSWORD, AZURE_STORAGE_KEY, USER_TYPES, 
-    UserTypeToTableName, CleanErrorMessage, 
+    UserTypeToTableName, CleanErrorMessage, UpdateProfilePic, 
     regexLettersOnly, regexPhoneNumber, yyyymmddRegex, heightRegex
 }

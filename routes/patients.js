@@ -86,15 +86,12 @@ router.put('/password', async function(req, res) {
 });
 
 router.put('/profilepic', async function(req, res) {
-  token = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
-  container = token.userType+token.id;
-
-  storage(container, 'profile', req.body.img)
-  .then((message)=> {
-    return res.status(200).send({ result: message.result, response: message.response });
-  }).catch((error)=> {
-    return res.status(500).send({ error: error });
-  });  
+  // This method is in constants b/c
+  // patients, doctors, and insurance users
+  // can all do this.
+  // Don't write it 3 times,
+  // Extract it to a single location.
+  return constants.UpdateProfilePic(req);
 });
 
 //#endregion
