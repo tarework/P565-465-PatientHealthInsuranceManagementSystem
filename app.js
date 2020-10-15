@@ -10,7 +10,7 @@ var express = require('express'),
         auth = require('./middleware/auth/role'),
         register = require('./routes/register'),
         login = require('./routes/login'),
-        passwordRecovery = require('./routes/password'),
+        password = require('./routes/password'),
         patients = require('./routes/patients'),
         insurance = require('./routes/insurance'),
         doctors = require('./routes/doctors'),
@@ -49,7 +49,7 @@ app.use('/', express.static(path.join(__dirname, 'build')));
 
 app.use('/api/register', register);
 app.use('/api/login', login);
-app.use('/api/passwordRecovery', passwordRecovery);
+app.use('/api/password', password);
 app.use('/api/patients', auth, patients);
 app.use('/api/doctors', auth, doctors);
 app.use('/api/insurance', auth, insurance);
