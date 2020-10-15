@@ -11,11 +11,17 @@ const USER_TYPES = {
     INSURANCEPROVIDER: 'insurance', //ipuser
 }
 
-function userTypeToTableName(userType){
+function UserTypeToTableName(userType){
     if(userType === USER_TYPES.PATIENT) return "patientUsers";
     else if(userType === USER_TYPES.DOCTOR) return "doctorUsers";
     else if(userType === USER_TYPES.INSURANCEPROVIDER) return "insuranceUsers";
     else return "ERROR";
+}
+
+function CleanErrorMessage(result) {
+    if (result['error'])
+        result['error'].details[0].message = result['error'].details[0].message.replace(/\"/g, '')
+    return result
 }
 
 // Regex Functions
@@ -23,7 +29,12 @@ function userTypeToTableName(userType){
 
 const regexLettersOnly = new RegExp('^[a-zA-Z]{2,}$');
 const regexPhoneNumber = new RegExp('^\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})[-. )]*(\\d{3})[-. ]*(\\d{4})(?: *x(\\d+))?\\s*$');
+const yyyymmddRegex = new RegExp('^\d{4}\/(0?[1-9]|1[012])\/(0?[1-9]|[12][0-9]|3[01])$'); // Example 1990/7/23" limits months to 1-12 and days 1-31
+const heightRegex = new RegExp(`^[3-7] (?:\s*(?:1[01]|[0-9])(''|"))?$`); // Example 5 8"
+const zeroOrOneRegex = RegExp('^[0-1]$');
 
 module.exports = {
-	DB_PASS, JWT_SECRET, TOKEN_HEADER, GMAIL_PASSWORD, AZURE_STORAGE_KEY, USER_TYPES, userTypeToTableName, regexLettersOnly, regexPhoneNumber
+    DB_PASS, JWT_SECRET, TOKEN_HEADER, GMAIL_PASSWORD, AZURE_STORAGE_KEY, USER_TYPES, 
+    UserTypeToTableName, CleanErrorMessage, 
+    regexLettersOnly, regexPhoneNumber, yyyymmddRegex, heightRegex, zeroOrOneRegex
 }

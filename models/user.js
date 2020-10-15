@@ -31,7 +31,7 @@ function ValidateRegistration(request) {
         userType: Joi.string().valid('patient', 'doctor', 'insurance').required()
     });
 
-    return CleanErrorMessage(PruneUserTypeLingo(schema.validate(request)))
+    return constants.CleanErrorMessage(PruneUserTypeLingo(schema.validate(request)))
 }
 
 function ValidateLogin(request) {
@@ -41,7 +41,7 @@ function ValidateLogin(request) {
         userType: Joi.string().valid('patient', 'doctor', 'insurance').required()
     });
 
-    return CleanErrorMessage(PruneUserTypeLingo(schema.validate(request)))
+    return constants.CleanErrorMessage(PruneUserTypeLingo(schema.validate(request)))
 }
 
 function ValidateEmail(request) {
@@ -50,7 +50,7 @@ function ValidateEmail(request) {
         userType: Joi.string().valid('patient', 'doctor', 'insurance').required()
     });
 
-    return CleanErrorMessage(PruneUserTypeLingo(schema.validate(request)))
+    return constants.CleanErrorMessage(PruneUserTypeLingo(schema.validate(request)))
 }
 
 function ValidateDuoCode(request) {
@@ -61,7 +61,7 @@ function ValidateDuoCode(request) {
         userType: Joi.string().valid('patient', 'doctor', 'insurance').required()
     });
     
-    return CleanErrorMessage(PruneUserTypeLingo(schema.validate(request)))
+    return constants.CleanErrorMessage(PruneUserTypeLingo(schema.validate(request)))
 }
 
 function ValidatePassword(request) {
@@ -70,7 +70,7 @@ function ValidatePassword(request) {
         pwordConfirmation: Joi.any().valid(Joi.ref('pword')).required().options({ language: { any: { allowOnly: 'must match password' } } })
     });
 
-    return CleanErrorMessage(schema.validate(request));
+    return constants.CleanErrorMessage(schema.validate(request));
 }
 
 function ValidateUpdateUser(request) {
@@ -81,7 +81,7 @@ function ValidateUpdateUser(request) {
         phoneNumber: Joi.string().required().regex(constants.regexPhoneNumber),
     });
 
-    return CleanErrorMessage(schema.validate(request));
+    return constants.CleanErrorMessage(schema.validate(request));
 }
 
 function PruneUserTypeLingo(result) {
@@ -89,12 +89,6 @@ function PruneUserTypeLingo(result) {
         if (result['error'].details[0].message.includes('userType'))
             result['error'].details[0].message = 'userType is invalid or empty';
     return result;
-}
-
-function CleanErrorMessage(result) {
-    if (result['error'])
-        result['error'].details[0].message = result['error'].details[0].message.replace(/\"/g, '')
-    return result
 }
 
 module.exports.GenerateAuthToken = GenerateAuthToken;
@@ -105,4 +99,3 @@ module.exports.ValidateEmail = ValidateEmail;
 module.exports.ValidateDuoCode = ValidateDuoCode;
 module.exports.ValidatePassword = ValidatePassword;
 module.exports.ValidateUpdateUser = ValidateUpdateUser;
-module.exports.BuildUpdateUserSetString = BuildUpdateUserSetString;

@@ -19,7 +19,7 @@ router.post('/', async (req, res) => {
 
     // Make sure email is already 
     // in proper database table!!
-    let query = `SELECT * FROM ${constants.userTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
+    let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
     doQuery(res, query, [], async function(selectData) {
         const user = empty(selectData.recordset) ? {} : selectData.recordset[0];
         if (empty(user)) return res.status(400).send({ error: `Invalid login credentials.` });
@@ -65,7 +65,7 @@ router.post('/duoauth', async (req, res) => {
 
 
     // Make sure email is already in proper database table!!
-    let query = `SELECT * FROM ${constants.userTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
+    let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
     doQuery(res, query, [], async function(data) {
         const user = empty(data.recordset) ? {} : data.recordset[0];
 
@@ -97,12 +97,12 @@ router.post('/duoauth', async (req, res) => {
 router.get('/google/:id', async (req, res) => {
     verifyGoogleToken(req.body.tokenId)
     .then(function(result) {
-        let query = `SELECT * FROM ${constants.userTypeToTableName(req.body.userType)} WHERE goauth='${result.sub}';`;
+        let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)} WHERE goauth='${result.sub}';`;
         let params = [];
         doQuery(res, query, params, async function(data) {
             if(empty(data.recordset)) {
                 //add new user with sub id
-                let query2 = `INSERT INTO ${constants.userTypeToTableName(req.body.userType)} (email, fname, lname, goauth)
+                let query2 = `INSERT INTO ${constants.UserTypeToTableName(req.body.userType)} (email, fname, lname, goauth)
                              OUTPUT INSERTED.*
                              VALUES ('${result.email}', '${result.given_name}', '${result.family_name}', ${result.sub});`
                 let params2 = [

@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
 
     // validate is registered email
     let user = {};
-    let query = `SELECT * FROM ${constants.userTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
+    let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
     doQuery(res, query, [], async function(selectData) {
         user = empty(selectData.recordset) ? {} : selectData.recordset[0];
         if (empty(user)) return res.status(400).send({ error: `E-mail not found.` });
@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
         let hashedPassword = await bcrypt.hash(newPassword, salt);
         
         // Set generated password as password for the user
-        query = `UPDATE ${constants.userTypeToTableName(req.body.userType)}
+        query = `UPDATE ${constants.UserTypeToTableName(req.body.userType)}
         SET pword = '${hashedPassword}'
         WHERE email='${req.body.email}';`;
         //winston.info(query);

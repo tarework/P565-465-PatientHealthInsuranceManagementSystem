@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
     
     // Make sure email isn't already registered in proper database table!!
     let user = {};
-    let query = `SELECT * FROM ${constants.userTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
+    let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
     doQuery(res, query, [], async function(selectData) {
         user = empty(selectData.recordset) ? [] : selectData.recordset[0];
         if (!empty(user)) return res.status(400).send({ error: `E-mail already registered.` });
@@ -34,7 +34,7 @@ router.post('/', async (req, res) => {
             // With INSERT statement output populates insertData.recordset[0] with data that was used in query
             // Can do INSERTED.* for all info or INSERTED.*columnName* for retrieving specific data
             // Can chain these like: OUTPUT INSERTED.id, INSERTED.email, INSERTED.phonenumber
-            query = `INSERT INTO ${constants.userTypeToTableName(req.body.userType)} (email, pword, fname, lname, phonenumber)
+            query = `INSERT INTO ${constants.UserTypeToTableName(req.body.userType)} (email, pword, fname, lname, phonenumber)
             OUTPUT INSERTED.*
             VALUES ('${req.body.email}', '${user.pword}', '${req.body.fname}', '${req.body.lname}', '${req.body.phonenumber}');`
 

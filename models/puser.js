@@ -1,16 +1,49 @@
-const Joi = require('Joi');
+const Joi = require('joi');
+const constants = require('../utils/constants');
 
-// Helper Functions
+// id int NOT NULL,
+// PRIMARY KEY (id),
+// address1 varchar(255) NULL,
+// address2 varchar(255) NULL,
+// city varchar(50) NULL,
+// state1 varchar(15) NULL,
+// zipcode varchar(15) NULL,
+// birthdate varchar(15) NULL,
+// sex varchar(10) NULL,
+// height varchar(10) NULL,
+// weight1 varchar(10) NULL,
+// bloodtype varchar(5) NULL,
+// smoke BIT NULL,
+// smokefreq int NULL,
+// drink BIT NULL,
+// drinkfreq int NULL,
+// caffeine BIT NULL,
+// caffeinefreq int NULL
 
-/*  User Fields in DB
-    "email": "String, Email Address",
-    "pword": "String, salted and hashed",
-    "fName": "String, First Name",
-    "lName": "String, Last Name",
-    "phoneNumber": "String, Phone Number",
-    "profilePicId": "Int, Primary Key Id of Record in Patient Profile Picture Table",
-    "medicalData": "Int, Primary Key Id of Record in Patient Medical Data Table"
-*/
 
 
-//module.exports.BuildUpdateUserSetString = BuildUpdateUserSetString;
+function ValidatePatientMedicalData(request) {
+    const schema = Joi.object({
+        address1: Joi.string().required(),
+        address2: Joi.string().required(),
+        city: Joi.string().required(),
+        state1: Joi.string().valid('AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA', 'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY').required(),
+        zipcode: Joi.string.min(5).max(5).required(),
+        birthdate: Joi.string().regex(constants.yyyymmddRegex).required(),
+        sex: Joi.string().valid('Male', 'Female').required(),
+        height: Joi.string().regex(constants.heightRegex).required(),
+        weight1: Joi.required(),
+        bloodtype: Joi.string().valid('O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+', 'Unknown').required(),
+        smoke: Joi.string.regex(constants.zeroOrOneRegex).required(),
+        smokefreq: Joi.number().required(),
+        smoke: Joi.string.regex(constants.zeroOrOneRegex).required(),
+        drinkfreq: Joi.number().required(),
+        smoke: Joi.string.regex(constants.zeroOrOneRegex).required(),
+        caffeinefreq: Joi.number().required()
+
+    });
+
+    return constants.CleanErrorMessage(schema.validate(request));
+}
+
+module.exports.ValidatePatientMedicalData = ValidatePatientMedicalData;

@@ -1,8 +1,9 @@
-const constants = require('../utils/constants');
 const { doQuery, sql } = require('../db');
-const { DecodeAuthToken, ValidatePassword, ValidateUpdateUser } = require('../models/user');
-//const mail = require('../utils/mail'),
-const storage = require('../utils/storage'),
+const { ValidatePassword, ValidateUpdateUser } = require('../models/user');
+const { ValidatePatientMedicalData } = require('../models/puser');
+const constants = require('../utils/constants');
+//const mail = require('../utils/mail');
+const storage = require('../utils/storage');
 const bcrypt = require('bcryptjs');
 const empty = require('is-empty');
 //const moment = require('moment'),
@@ -12,7 +13,7 @@ const router = express.Router();
     
 
 // Get's patientUser and patientMedicalData
-router.get('/:id', function(req, res) {
+router.get('/:id', async function(req, res) {
   // VALIDATION GOES HERE
   // since this gives back valid medical data we need a valid JWT 
   // HIPAA SHIT
@@ -29,9 +30,9 @@ router.get('/:id', function(req, res) {
 
 //#region updating patientUser
 
-router.put('/user', function(req, res) {
+router.put('/user', async function(req, res) {
   const { error } = ValidateUpdateUser(req.body);
-  if(error) return res.status(400).send({ error: `${ error.details[0].message.replace(/\"/g, '') }` });
+  if(error) return res.status(400).send({ error: error.details[0].message });
 
   let query = `UPDATE patientUsers 
   SET email = @email, fname = @fname, lname = @lname, phonenumber = @phonenumber
@@ -56,7 +57,7 @@ router.put('/user', function(req, res) {
   });
 });
 
-router.put('/password', function(req, res) {
+router.put('/password', async function(req, res) {
   const { error } = ValidatePassword(req.body);
   if(error) return res.status(400).send({ error: error.details[0].message });
 
@@ -88,9 +89,9 @@ router.put('/password', function(req, res) {
 //#region creating/updating patient medical data
 
 // Creates patientMedicalData record for patientUser
-router.post('/onboard', function(req, res) {
-  // TODO
-  // VALIDATION GOES HERE
+router.post('/onboard', async function(req, res) {
+  const { error } = ValidatePatientMedicalData(req.body);
+  if(error) return res.status(400).send({ error: error.details[0].message });
 
   let query = `INSERT INTO patientMedicalData (id, address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq) 
                OUTPUT INSERTED.* 
@@ -106,7 +107,7 @@ router.post('/onboard', function(req, res) {
     { name: 'sex', sqltype: sql.VarChar(10), value: req.body.sex },
     { name: 'height', sqltype: sql.VarChar(10), value: req.body.height },
     { name: 'weight1', sqltype: sql.VarChar(10), value: req.body.weight1 },
-    { name: 'bloodtype', sqltype: sql.VarChar(5), value: req.body.bloodtype },
+    { name: 'bloodtype', sqltype: sql.VarChar(7), value: req.body.bloodtype },
     { name: 'smoke', sqltype: sql.Bit, value: req.body.smoke },
     { name: 'smokefreq', sqltype: sql.Int, value: req.body.smokefreq },
     { name: 'drink', sqltype: sql.Bit, value: req.body.drink },
@@ -123,9 +124,9 @@ router.post('/onboard', function(req, res) {
 });
 
 // Updates patientMedicalData record for patientUser
-router.put('/detail', function(req, res) {
-  // TODO
-  // VALIDATION GOES HERE
+router.put('/detail', async function(req, res) {
+  const { error } = ValidatePatientMedicalData(req.body);
+  if(error) return res.status(400).send({ error: error.details[0].message });
   
   let query = `UPDATE patientMedicalData 
               SET address1 = @address1, address2 = @address2, state1 = @state1, city = @city, zipcode = @zipcode, birthdate = @birthdate, 
@@ -143,7 +144,7 @@ router.put('/detail', function(req, res) {
     { name: 'sex', sqltype: sql.VarChar(10), value: req.body.sex },
     { name: 'height', sqltype: sql.VarChar(10), value: req.body.height },
     { name: 'weight1', sqltype: sql.VarChar(10), value: req.body.weight1 },
-    { name: 'bloodtype', sqltype: sql.VarChar(5), value: req.body.bloodtype },
+    { name: 'bloodtype', sqltype: sql.VarChar(7), value: req.body.bloodtype },
     { name: 'smoke', sqltype: sql.Bit, value: req.body.smoke },
     { name: 'smokefreq', sqltype: sql.Int, value: req.body.smokefreq },
     { name: 'drink', sqltype: sql.Bit, value: req.body.drink },
