@@ -27,12 +27,10 @@ winston.configure({
 process.on('uncaughtException', (ex) => {
     // In the case of uncaught exceptions
     winston.error(`UNCAUGHT EXCEPTION: ${ex.message}`, ex);
-    process.kill(-1);
 });
 process.on('unhandledRejection', (ex) => {
   // In the case of unhandled promise rejections
   winston.error(`UNHANDLED REJECTION: ${ex.message}`, ex);
-  process.kill(-1);
 });
 
 app.use(cors());

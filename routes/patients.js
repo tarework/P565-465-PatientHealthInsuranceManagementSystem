@@ -90,8 +90,8 @@ router.put('/password', async function(req, res) {
 
 // Creates patientMedicalData record for patientUser
 router.post('/onboard', async function(req, res) {
-  const { error } = ValidatePatientMedicalData(req.body);
-  if(error) return res.status(400).send({ error: error.details[0].message });
+  // const { error } = ValidatePatientMedicalData(req.body);
+  // if(error) return res.status(400).send({ error: error.details[0].message });
 
   let query = `INSERT INTO patientMedicalData (id, address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq) 
                OUTPUT INSERTED.* 
@@ -109,11 +109,11 @@ router.post('/onboard', async function(req, res) {
     { name: 'weight1', sqltype: sql.VarChar(10), value: req.body.weight1 },
     { name: 'bloodtype', sqltype: sql.VarChar(7), value: req.body.bloodtype },
     { name: 'smoke', sqltype: sql.Bit, value: req.body.smoke },
-    { name: 'smokefreq', sqltype: sql.Int, value: req.body.smokefreq },
+    { name: 'smokefreq', sqltype: sql.Int, value: req.body.smokefreq || 0 },
     { name: 'drink', sqltype: sql.Bit, value: req.body.drink },
-    { name: 'drinkfreq', sqltype: sql.Int, value: req.body.drinkfreq },
+    { name: 'drinkfreq', sqltype: sql.Int, value: req.body.drinkfreq || 0 },
     { name: 'caffeine', sqltype: sql.Bit, value: req.body.caffeine },
-    { name: 'caffeinefreq', sqltype: sql.Int, value: req.body.caffeinefreq }
+    { name: 'caffeinefreq', sqltype: sql.Int, value: req.body.caffeinefreq || 0 }
   ];
 
   doQuery(res, query, params, function(insertData) {
@@ -146,11 +146,11 @@ router.put('/detail', async function(req, res) {
     { name: 'weight1', sqltype: sql.VarChar(10), value: req.body.weight1 },
     { name: 'bloodtype', sqltype: sql.VarChar(7), value: req.body.bloodtype },
     { name: 'smoke', sqltype: sql.Bit, value: req.body.smoke },
-    { name: 'smokefreq', sqltype: sql.Int, value: req.body.smokefreq },
+    { name: 'smokefreq', sqltype: sql.Int, value: req.body.smokefreq || 0 },
     { name: 'drink', sqltype: sql.Bit, value: req.body.drink },
-    { name: 'drinkfreq', sqltype: sql.Int, value: req.body.drinkfreq },
+    { name: 'drinkfreq', sqltype: sql.Int, value: req.body.drinkfreq || 0 },
     { name: 'caffeine', sqltype: sql.Bit, value: req.body.caffeine },
-    { name: 'caffeinefreq', sqltype: sql.Int, value: req.body.caffeinefreq }
+    { name: 'caffeinefreq', sqltype: sql.Int, value: req.body.caffeinefreq || 0 }
   ];
 
   doQuery(res, query, params, function(updateData) {
