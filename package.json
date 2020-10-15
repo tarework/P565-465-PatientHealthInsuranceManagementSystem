@@ -25,6 +25,7 @@
     "flat": "^5.0.0",
     "generate-password": "^1.5.1",
     "geo-tz": "^5.1.0",
+    "google-auth-library": "^6.1.1",
     "is-empty": "^1.2.0",
     "joi": "^17.2.1",
     "joi-password-complexity": "^4.2.1",
