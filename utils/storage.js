@@ -1,8 +1,10 @@
-const azure = require('azure-storage');
 const { TOKEN_HEADER, AZURE_STORAGE_KEY } = require('./constants');
+const { DecodeAuthToken } = require('../models/user');
+const azure = require('azure-storage');
 const dataUriToBuffer = require('data-uri-to-buffer');
 const FileType = require('file-type');
-const winston = require('winston/lib/winston/config');
+const empty = require('is-empty');
+const winston = require('winston');
 const blobService = azure.createBlobService("apollocare", AZURE_STORAGE_KEY);
 
 // This method is in here b/c
@@ -11,34 +13,41 @@ const blobService = azure.createBlobService("apollocare", AZURE_STORAGE_KEY);
 // Don't write it 3 times,
 // Extract it to a single location.
 async function UpdateProfilePic(req, res) {
-    token = user.DecodeAuthToken(req.header(TOKEN_HEADER));
+  	// Token Validation
+	let token = DecodeAuthToken(req.header(TOKEN_HEADER));
+	if(token.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
+
+	if (empty(req.body.img)) return res.status(400).send ({ error: "Image data is required." });
+
     container = token.userType + token.id;
   
-    UpdateFile(container, 'profile', req.body.img)
+    UploadFile(container, 'profile', req.body.img)
     .then((message)=> {
+		winston.info("The Then")
       return res.status(200).send({ result: message.result, response: message.response });
     }).catch((error)=> {
-      return res.status(500).send({ error: error });
+		winston.info("The Catch")
+      return res.status(500).send({ error: error.message });
     });  
 }
 
-async function UpdateFile(container, name, stream) {
+async function UploadFile(container, name, stream) {
 	const buffer = dataUriToBuffer(stream);
 	const filetype = await FileType.fromBuffer(buffer);
 	const options = { contentSettings: { contentType: filetype.mime } }
 
-	return new Promise((resolve, reject) => {
-		blobService.createContainerIfNotExists(container, {}, function(error, result, response) {
+	return new Promise(async function(resolve, reject) {
+		blobService.createContainerIfNotExists(container, {}, function(error, existResult, existResponse) {
 			if (error) {
 				winston.error(error);
-				reject(error);
+				return reject(error);
 			}
-			blobService.createBlockBlobFromText(container, name, buffer, options, function(error, result, response){
+			blobService.createBlockBlobFromText(container, name, buffer, options, function(error, textResult, textResponse){
 				if (error) {
 					winston.error(error);
 					reject(error);
 				}
-				resolve({ result: result, response: response });
+				return resolve({ result: textResult, response: textResponse });
 			});
 		});
 	});

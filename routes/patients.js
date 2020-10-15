@@ -97,10 +97,6 @@ router.put('/password', async function(req, res) {
 });
 
 router.put('/profilepic', async function(req, res) {
-  // Token Validation
-  let user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
-  if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
-
   // This method is in storage b/c
   // patients, doctors, and insurance users
   // can all do this.
