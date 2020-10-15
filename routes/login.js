@@ -14,11 +14,8 @@ const verifyGoogleToken = require('../utils/verifyGoogleToken');
 router.post('/', async (req, res) => {
     // Validate information in request
     const { error } = ValidateLogin(req.body);
-    if(error)
-    {
-        if (error.details[0].message.includes('userType')) error.details[0].message = 'userType is invalid or empty';
-        return res.status(400).send({ error: `${ error.details[0].message.replace(/\"/g, '') }` });
-    } 
+    if(error) return res.status(400).send({ error: error.details[0].message });
+
 
     // Make sure email is already 
     // in proper database table!!
@@ -64,11 +61,8 @@ router.post('/', async (req, res) => {
 router.post('/duoauth', async (req, res) => {
     // Validate information in request
     const { error } = ValidateDuoCode(req.body);
-    if(error)
-    {
-        if (error.details[0].message.includes('userType')) error.details[0].message = 'userType is invalid or empty';
-        return res.status(400).send({ error: `${ error.details[0].message.replace(/\"/g, '') }` });
-    } 
+    if(error) return res.status(400).send({ error: error.details[0].message });
+
 
     // Make sure email is already in proper database table!!
     let query = `SELECT * FROM ${constants.userTypeToTableName(req.body.userType)} WHERE email='${req.body.email}';`;
@@ -101,7 +95,6 @@ router.post('/duoauth', async (req, res) => {
 });
 
 router.get('/google/:id', async (req, res) => {
-
     verifyGoogleToken(req.body.tokenId)
     .then(function(result) {
         let query = `SELECT * FROM ${constants.userTypeToTableName(req.body.userType)} WHERE goauth='${result.sub}';`;
@@ -174,6 +167,7 @@ router.get('/google/:id', async (req, res) => {
     });
 
 });
+
 module.exports = router;
 
 const duoEmail = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" style="width:100%;font-family:arial, 'helvetica neue', helvetica, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0"><head><meta charset="UTF-8"><meta content="width=device-width, initial-scale=1" name="viewport"><meta name="x-apple-disable-message-reformatting"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta content="telephone=no" name="format-detection"><title>New email</title> <!--[if (mso 16)]><style type="text/css">     a {text-decoration: none;}     </style><![endif]--> <!--[if gte mso 9]><style>sup { font-size: 100% !important; }</style><![endif]--> <!--[if gte mso 9]><xml> <o:OfficeDocumentSettings> <o:AllowPNG></o:AllowPNG> <o:PixelsPerInch>96</o:PixelsPerInch>

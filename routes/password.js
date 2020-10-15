@@ -13,11 +13,7 @@ const router = express.Router();
 router.post('/', async (req, res) => {
     // validate is proper email
     const { error } = ValidateEmail(req.body);
-    if(error)
-    {
-        if (error.details[0].message.includes('userType')) error.details[0].message = 'userType is invalid or empty';
-        return res.status(400).send({ error: `${ error.details[0].message.replace(/\"/g, '') }` });
-    } 
+    if(error) return res.status(400).send({ error: error.details[0].message });
 
     // validate is registered email
     let user = {};

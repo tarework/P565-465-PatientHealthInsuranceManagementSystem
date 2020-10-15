@@ -1,9 +1,15 @@
-var express = require("express"),
-    router = express.Router(),
-    empty = require('is-empty'),
-    moment = require('moment'),
-    mail = require('../utils/mail'),
-    { doQuery, sql } = require('../db');
+const constants = require('../utils/constants');
+const { doQuery, sql } = require('../db');
+const { DecodeAuthToken, ValidatePassword, ValidateUpdateUser } = require('../models/user');
+//const mail = require('../utils/mail'),
+const storage = require('../utils/storage'),
+const bcrypt = require('bcryptjs');
+const empty = require('is-empty');
+//const moment = require('moment'),
+const winston = require('winston');
+const express = require('express');
+const router = express.Router();
+    
 
 // Get's patientUser and patientMedicalData
 router.get('/:id', function(req, res) {
@@ -21,11 +27,44 @@ router.get('/:id', function(req, res) {
   });
 });
 
+//#region updating patientUser
+
+router.put('/user', function(req, res) {
+  const { error } = ValidateUpdateUser(req.body);
+  if(error) return res.status(400).send({ error: `${ error.details[0].message.replace(/\"/g, '') }` });
+ 
+  let query = `UPDATE patientUsers 
+  SET email = @email, fname = @fname, lname = @lname, phonenumber = @phonenumber
+  OUTPUT INSERTED.* WHERE id = @id;`;
+
+  let params = [
+    { name: 'id', sqltype: sql.Int, value: req.body.id },
+    { name: 'email', sqltype: sql.VarChar(255), value: req.body.email },
+    { name: 'fname', sqltype: sql.VarChar(255), value: req.body.fName },
+    { name: 'lname', sqltype: sql.VarChar(15), value: req.body.lName },
+    { name: 'phonenumber', sqltype: sql.VarChar(15), value: req.body.phonenumber }
+  ];
+
+  //winston.info(query);
+
+  doQuery(res, query, params, function(updateData) {
+    if (empty(data.recordset)) res.status(400).send({ error: "Record update failed." })
+
+    delete selectData.recordset[0].pword
+
+    return res.status(200).send({ user: user });
+  });
+});
+
+router.put('password', function(req, res) {
+
+});
 
 //#region creating/updating patient medical data
 
 // Creates patientMedicalData record for patientUser
 router.post('/onboard', function(req, res) {
+  // TODO
   // VALIDATION GOES HERE
 
   let query = `INSERT INTO patientMedicalData (id, address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq) 
@@ -60,6 +99,7 @@ router.post('/onboard', function(req, res) {
 
 // Updates patientMedicalData record for patientUser
 router.put('/detail', function(req, res) {
+  // TODO
   // VALIDATION GOES HERE
   
   let query = `UPDATE patientMedicalData SET address1 = @address1, address2 = @address2, state1 = @state1, city = @city, zipcode = @zipcode, birthdate = @birthdate, 
@@ -85,10 +125,10 @@ router.put('/detail', function(req, res) {
     { name: 'caffeinefreq', sqltype: sql.Int, value: req.body.caffeinefreq }
   ];
 
-  doQuery(res, query, params, function(data) {
-    if(empty(data.recordset)) res.status(400).send({ error: "Record update failed." })
+  doQuery(res, query, params, function(updateData) {
+    if (empty(updateData.recordset)) res.status(400).send({ error: "Record update failed." })
     
-    res.send({ detail: data.recordset[0] });
+    res.send({ detail: updateData.recordset[0] });
   });
 });
 

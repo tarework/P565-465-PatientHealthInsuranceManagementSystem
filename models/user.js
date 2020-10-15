@@ -31,7 +31,7 @@ function ValidateRegistration(request) {
         userType: Joi.string().valid('patient', 'doctor', 'insurance').required()
     });
 
-    return schema.validate(request);
+    return CleanErrorMessage(PruneUserTypeLingo(schema.validate(request)))
 }
 
 function ValidateLogin(request) {
@@ -41,7 +41,7 @@ function ValidateLogin(request) {
         userType: Joi.string().valid('patient', 'doctor', 'insurance').required()
     });
 
-    return schema.validate(request);
+    return CleanErrorMessage(PruneUserTypeLingo(schema.validate(request)))
 }
 
 function ValidateEmail(request) {
@@ -50,7 +50,7 @@ function ValidateEmail(request) {
         userType: Joi.string().valid('patient', 'doctor', 'insurance').required()
     });
 
-    return schema.validate(request);
+    return CleanErrorMessage(PruneUserTypeLingo(schema.validate(request)))
 }
 
 function ValidateDuoCode(request) {
@@ -61,7 +61,7 @@ function ValidateDuoCode(request) {
         userType: Joi.string().valid('patient', 'doctor', 'insurance').required()
     });
     
-    return schema.validate(request);
+    return CleanErrorMessage(PruneUserTypeLingo(schema.validate(request)))
 }
 
 function ValidatePassword(request) {
@@ -69,10 +69,10 @@ function ValidatePassword(request) {
         pword: JoiPC(passwordOptions).required()
     });
 
-    return schema.validate(request);
+    return CleanErrorMessage(schema.validate(request));
 }
 
-function ValidateUpdateDetails(request) {
+function ValidateUpdateUser(request) {
     const schema = Joi.object({
         email: Joi.string().min(5).max(255).required().email(),
         fName: Joi.string().min(2).max(255).required().regex(constants.regexLettersOnly),
@@ -80,26 +80,21 @@ function ValidateUpdateDetails(request) {
         phoneNumber: Joi.string().required().regex(constants.regexPhoneNumber),
     });
 
-    return schema.validate(request);
+    return CleanErrorMessage(schema.validate(request));
 }
 
-function BuildUpdateUserSetString(req) {
-    email = req.body.email ? `email = '${req.body.email}',` : '';
-    fNameSet = req.body.fName ? `fname = '${req.body.fName}',` : '';
-    lNameSet = req.body.lName ? `lname = '${req.body.lName}',` : '';
-    phoneNumberSet = req.body.phoneNumber ? `phonenumber = '${req.body.phoneNumber}'` : '';
-    
-    setString = 'SET ' + email + fNameSet + lNameSet + phoneNumberSet;
-    
-    endingCommaIndex = setString.lastIndexOf(',');
-    if (endingCommaIndex === setString.length-1)
-      setString = setString.slice(0, endingCommaIndex);
-
-    return setString
+function PruneUserTypeLingo(result) {
+    if (result['error']) 
+        if (result['error'].details[0].message.includes('userType'))
+            result['error'].details[0].message = 'userType is invalid or empty';
+    return result;
 }
 
-
-
+function CleanErrorMessage(result) {
+    if (result['error'])
+        result['error'].details[0].message = result['error'].details[0].message.replace(/\"/g, '')
+    return result
+}
 
 module.exports.GenerateAuthToken = GenerateAuthToken;
 module.exports.DecodeAuthToken = DecodeAuthToken;
@@ -108,5 +103,5 @@ module.exports.ValidateLogin = ValidateLogin;
 module.exports.ValidateEmail = ValidateEmail;
 module.exports.ValidateDuoCode = ValidateDuoCode;
 module.exports.ValidatePassword = ValidatePassword;
-module.exports.ValidateUpdateDetails = ValidateUpdateDetails;
+module.exports.ValidateUpdateUser = ValidateUpdateUser;
 module.exports.BuildUpdateUserSetString = BuildUpdateUserSetString;

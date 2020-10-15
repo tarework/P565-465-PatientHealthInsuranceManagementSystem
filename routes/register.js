@@ -11,11 +11,8 @@ const router = express.Router();
 router.post('/', async (req, res) => {
     // Validate information in request
     const { error } = ValidateRegistration(req.body);
-    if(error)
-    {
-        if (error.details[0].message.includes('userType')) error.details[0].message = 'userType is invalid or empty';
-        return res.status(400).send({ error: `${ error.details[0].message.replace(/\"/g, '') }` });
-    } 
+    if(error) return res.status(400).send({ error: error.details[0].message });
+
     
     // Make sure email isn't already registered in proper database table!!
     let user = {};
