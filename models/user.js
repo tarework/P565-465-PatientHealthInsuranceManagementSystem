@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const JoiPC = require('joi-password-complexity');
-const constants = require('../utils/constants');
+const {regexLettersOnly, regexPhoneNumber, CleanErrorMessage}  = require('../utils/constants');
 const jwt = require('jsonwebtoken');
 const winston = require('winston');
 
@@ -26,13 +26,13 @@ function ValidateRegistration(request) {
     const schema = Joi.object({
         email: Joi.string().min(5).max(255).required().email(),
         pword: JoiPC(passwordOptions).required(),
-        fName: Joi.string().min(2).max(255).required().regex(constants.regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
-        lName: Joi.string().min(2).max(255).required().regex(constants.regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
-        phoneNumber: Joi.string().required().regex(constants.regexPhoneNumber).error(()=>new Error('Phone number is required, must be 10 digits, and should only contain numbers.')),
+        fName: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
+        lName: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
+        phoneNumber: Joi.string().required().regex(regexPhoneNumber).error(()=>new Error('Phone number is required, must be 10 digits, and should only contain numbers.')),
         userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(()=>new Error('UserType is invalid or empty.')),
     });
 
-    return constants.CleanErrorMessage(schema.validate(request))
+    return CleanErrorMessage(schema.validate(request))
 }
 
 function ValidateLogin(request) {
@@ -42,7 +42,7 @@ function ValidateLogin(request) {
         userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(()=>new Error('UserType is invalid or empty.'))
     });
 
-    return constants.CleanErrorMessage(schema.validate(request))
+    return CleanErrorMessage(schema.validate(request))
 }
 
 function ValidateEmail(request) {
@@ -51,7 +51,7 @@ function ValidateEmail(request) {
         userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(()=>new Error('UserType is invalid or empty.'))
     });
 
-    return constants.CleanErrorMessage(schema.validate(request))
+    return CleanErrorMessage(schema.validate(request))
 }
 
 function ValidateDuoCode(request) {
@@ -62,30 +62,28 @@ function ValidateDuoCode(request) {
         userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(()=>new Error('UserType is invalid or empty.'))
     });
     
-    return constants.CleanErrorMessage(schema.validate(request))
+    return CleanErrorMessage(schema.validate(request))
 }
 
 function ValidatePassword(request) {
     const schema = Joi.object({
-        id: Joi.number().required(),
         pword: JoiPC(passwordOptions).required(),
         pwordConfirmation: Joi.string().valid(Joi.ref('pword')).required().error(()=>new Error('Passwords do not match.'))
-    });
+    }).options({ stripUnknown: true });
 
-    return constants.CleanErrorMessage(schema.validate(request));
+    return CleanErrorMessage(schema.validate(request));
 }
 
 function ValidateUpdateUser(request) {
     const schema = Joi.object({
-        id: Joi.number().required(),
         email: Joi.string().min(5).max(255).required().email(),
-        fname: Joi.string().min(2).max(255).required().regex(constants.regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
-        lname: Joi.string().min(2).max(255).required().regex(constants.regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
-        phonenumber: Joi.string().required().regex(constants.regexPhoneNumber).error(()=>new Error('Phone number is required, must be 10 digits, and should only contain numbers.')),
+        fname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
+        lname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
+        phonenumber: Joi.string().required().regex(regexPhoneNumber).error(()=>new Error('Phone number is required, must be 10 digits, and should only contain numbers.')),
 
     }).options({ stripUnknown: true });
     
-    return constants.CleanErrorMessage(schema.validate(request));
+    return CleanErrorMessage(schema.validate(request));
 }
 
 module.exports.GenerateAuthToken = GenerateAuthToken;

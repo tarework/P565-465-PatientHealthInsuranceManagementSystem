@@ -38,11 +38,11 @@ router.put('/user', async function(req, res) {
   const user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
   if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
 
-  winston.info(req.body.id);
-  winston.info(req.body.email);
-  winston.info(req.body.fname);
-  winston.info(req.body.lname);
-  winston.info(req.body.phonenumber);
+  // winston.info(req.body.id);
+  // winston.info(req.body.email);
+  // winston.info(req.body.fname);
+  // winston.info(req.body.lname);
+  // winston.info(req.body.phonenumber);
 
 
   // Data Validation

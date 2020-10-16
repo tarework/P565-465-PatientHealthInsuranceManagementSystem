@@ -3003,6 +3003,1266 @@
 					],
 					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Onboard/Update Patient Medical Data",
+					"item": [
+						{
+							"name": "Address1 Required - 82",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "City Required - 83",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "City Letters Only - 84",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Blooming123@#ton\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "State Required - 85",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "State Invalid - 86",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IadsN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Zip Required - 87",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Zip 5 Limit - 110",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"111121\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Zip Numbers Only - 88",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47a41asd\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Birthdate Required - 89",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47011\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Birthdate Max Now - 90",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"2022-10-17\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Birthdate Min 1-1-1900 - 91",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"12-31-1899\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Birthdate Invalid - 92",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"23-37-1232\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Sex Required - 93",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Sex Invalid - 94",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Malasde\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Height Required - 95",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Height Invalid - 96",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"15 27\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Weight Required - 97",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Weight Invalid - 98",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.0000123\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "BloodType Required - 99",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "BloodType Invalid - 100",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"NOTREAL\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Smoke Required - 101",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Smoke Invalid - 102",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : 1,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Smoke Freq Must Be Number - 103",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : \"a\",\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Drink Required - 104",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Drink Invalid - 105",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : 1,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Drink Freq Must Be Number - 106",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : \"\",\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Caffeine Required - 107",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Caffeine Invalid - 108",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : 123,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Caffeine Freq Must Be a Number - 109",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/onboard",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"onboard"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Valid Onboard/Update Medical Data",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkFreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeineFreq\" : 7\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/details",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"details"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Use POST and http://localhost:3002/api/patients/onboard to test onboard endpoint.\r\nUse PUT and http://localhost:3002/api/patients/details to test onboard endpoint.",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "417d6052-a1c1-49ac-862f-9a7cbcd24880",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "5957f531-8e66-44c8-a59c-9e44cd96feb3",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				}
 			],
 			"protocolProfileBehavior": {}
