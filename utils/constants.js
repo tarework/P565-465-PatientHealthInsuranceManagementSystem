@@ -13,9 +13,8 @@ const USER_TYPES = {
 
 // Regex Functions
 // Test at regex101.com
-const regexLettersOnly = new RegExp('^[a-zA-Z]{2,}$');
-const regexPhoneNumber = new RegExp('^\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})[-. )]*(\\d{3})[-. ]*(\\d{4})(?: *x(\\d+))?\\s*$');
-const yyyymmddRegex = new RegExp('^\d{4}\/(0?[1-9]|1[012])\/(0?[1-9]|[12][0-9]|3[01])$'); // Example 1990/7/23" limits months to 1-12 and days 1-31
+const regexLettersOnly = new RegExp(`^[a-zA-Z]{2,}$`);
+const regexPhoneNumber = new RegExp(`^\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})[-. )]*(\\d{3})[-. ]*(\\d{4})(?: *x(\\d+))?\\s*$`);
 const heightRegex = new RegExp(`^[3-7] (?:\s*(?:1[01]|[0-9])(''|"))?$`); // Example 5 8"
 
 function UserTypeToTableName(userType){
@@ -32,6 +31,6 @@ function CleanErrorMessage(result) {
 }
 
 module.exports = {
-    DB_PASS, JWT_SECRET, TOKEN_HEADER, GMAIL_PASSWORD, AZURE_STORAGE_KEY, USER_TYPES, regexLettersOnly, regexPhoneNumber, yyyymmddRegex, heightRegex,
+    DB_PASS, JWT_SECRET, TOKEN_HEADER, GMAIL_PASSWORD, AZURE_STORAGE_KEY, USER_TYPES, regexLettersOnly, regexPhoneNumber, heightRegex,
     UserTypeToTableName, CleanErrorMessage
 };

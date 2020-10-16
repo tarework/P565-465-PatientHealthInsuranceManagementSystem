@@ -79,10 +79,11 @@ function ValidateUpdateUser(request) {
     const schema = Joi.object({
         id: Joi.number().required(),
         email: Joi.string().min(5).max(255).required().email(),
-        fName: Joi.string().min(2).max(255).required().regex(constants.regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
-        lName: Joi.string().min(2).max(255).required().regex(constants.regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
-        phoneNumber: Joi.string().required().regex(constants.regexPhoneNumber).error(()=>new Error('Phone number is required, must be 10 digits, and should only contain numbers.'))
-    });
+        fname: Joi.string().min(2).max(255).required().regex(constants.regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
+        lname: Joi.string().min(2).max(255).required().regex(constants.regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
+        phonenumber: Joi.string().required().regex(constants.regexPhoneNumber).error(()=>new Error('Phone number is required, must be 10 digits, and should only contain numbers.')),
+
+    }).options({ stripUnknown: true });
     
     return constants.CleanErrorMessage(schema.validate(request));
 }

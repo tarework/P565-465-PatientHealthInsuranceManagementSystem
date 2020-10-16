@@ -38,6 +38,13 @@ router.put('/user', async function(req, res) {
   const user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
   if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
 
+  winston.info(req.body.id);
+  winston.info(req.body.email);
+  winston.info(req.body.fname);
+  winston.info(req.body.lname);
+  winston.info(req.body.phonenumber);
+
+
   // Data Validation
   const { error } = ValidateUpdateUser(req.body);
   if(error) return res.status(400).send({ error: error.message });
@@ -148,7 +155,7 @@ router.post('/onboard', async function(req, res) {
 });
 
 // Updates patientMedicalData record for patientUser
-router.put('/detail', async function(req, res) {
+router.put('/details', async function(req, res) {
   // Token Validation
   const user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
   if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
