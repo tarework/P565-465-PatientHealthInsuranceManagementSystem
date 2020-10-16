@@ -32,7 +32,6 @@ async function doQuery(res, query, params, callback) {
         let request = pool.request();
 
         params.forEach(function(p) {
-          winston.info(p.value);
             request.input(p.name, p.sqltype, p.value);
         });
         
@@ -40,7 +39,7 @@ async function doQuery(res, query, params, callback) {
         callback(result);
     } catch (err) {
       winston.error(`doQuery failed due to error: ${err}`, err);
-      res.status(500).send({ error: err });
+      return res.status(500).send({ error: err });
     }
 }
 

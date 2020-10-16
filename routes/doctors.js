@@ -14,7 +14,7 @@ router.get('/:id', function(req, res) {
   let query = `SELECT *, (SELECT * FROM doctorDetails WHERE doctorUser.id = doctorDetails.id FOR JSON PATH) AS detail FROM doctorUser WHERE id = ${req.params.id};`;
   let params = [];
   doQuery(res, query, params, function(selectData) {
-    if (empty(selectData.recordset)) res.status(400).send({ error: "Doctor record does not exist." })
+    if (empty(selectData.recordset)) return res.status(400).send({ error: "Doctor record does not exist." })
     
     delete selectData.recordset[0].pword
 
@@ -42,7 +42,7 @@ router.post('/onboard', function(req, res) {
   ];
 
   doQuery(res, query, params, function(insertData) {
-    if (empty(insertData.recordset)) res.status(400).send({ error: "Data not saved." })
+    if (empty(insertData.recordset)) return res.status(400).send({ error: "Data not saved." })
     
     res.send({ detail: insertData.recordset[0] });
   });
@@ -68,7 +68,7 @@ router.put('/detail', function(req, res) {
   ];
 
   doQuery(res, query, params, function(data) {
-    if(empty(data.recordset)) res.status(400).send( { error: "Record update failed." } )
+    if(empty(data.recordset)) return res.status(400).send( { error: "Record update failed." } )
     
     res.send( {detail: data.recordset[0]} );
   });

@@ -51,7 +51,7 @@ router.post('/', async (req, res) => {
             // Send email to user with duo code
             mail(user.email, "2FA Login Code!", duoEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_DUO_CODE_", duoCode))
             .then(()=> {
-                    return res.status(200).send({ email: user.email, userType: req.body.userType, hashedDuoCode: hashedDuoCode });
+                return res.status(200).send({ email: user.email, userType: req.body.userType, hashedDuoCode: hashedDuoCode });
             }).catch( ()=> {
                 return res.status(500).send({ error: `2FA Code Email failed to send.` });
             });   
@@ -86,7 +86,7 @@ router.post('/duoauth', async (req, res) => {
                     userType: req.body.userType,
                     exp: 3600
             });
-            res.status(200).send( { token: token} );
+            return res.status(200).send( { token: token} );
         });
     });
 });
@@ -108,7 +108,7 @@ router.post('/google', async (req, res) => {
                 ];
                 doQuery(res, query2, params2, async function(insertData) {
                     //winston.info(insertData.recordset)
-                    if (empty(insertData.recordset)) res.status(401).send({ error: "User not registered." });
+                    if (empty(insertData.recordset)) return res.status(401).send({ error: "User not registered." });
 
                     const user = insertData.recordset[0]; 
                     const duoCode = pwGenerator.generate({
@@ -161,7 +161,7 @@ router.post('/google', async (req, res) => {
     })
     .catch(function(error){
         winston.error(error)
-        res.status(401).send( {error: "Token not valid." })
+        return res.status(401).send( {error: "Token not valid." })
     });
 
 });

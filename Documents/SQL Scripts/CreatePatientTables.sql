@@ -1,3 +1,13 @@
+CREATE TABLE patientBills (
+    billid int NOT NULL IDENTITY,
+	PRIMARY KEY (billid),
+	id int NULL,
+	statementdate DATE NULL,
+	totalcharges DECIMAL(38, 2) NULL,
+	settled BIT DEFAULT 0 NULL,
+	description1 varchar(255) NULL,
+);
+
 CREATE TABLE patientMedicalData (
     id int NOT NULL,
 	PRIMARY KEY (id),

@@ -13,7 +13,7 @@ const { route } = require('./password');
 const router = express.Router();
     
 
-// Get's patientUser and patientMedicalData
+// GET patientUser and patientMedicalData
 router.get('/:id', async function(req, res) {
   // Token Validation
   let user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
@@ -21,20 +21,21 @@ router.get('/:id', async function(req, res) {
 
   let query = `SELECT *, (SELECT * FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH) AS detail FROM patientUsers WHERE id = ${req.params.id};`;
   let params = [];
+
   doQuery(res, query, params, function(selectData) {
-    if (empty(selectData.recordset)) res.status(400).send({ error: "Patient record does not exist." })
+    if (empty(selectData.recordset)) return res.status(400).send({ error: "Patient record does not exist." })
     
     delete selectData.recordset[0].pword
 
-    res.send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0]}))[0], userType: 'patient' });
+    return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0]}))[0], userType: 'patient' });
   });
 });
 
-//#region updating patientUser 
+//#region PUT patientUser/password/profilepic 
 
 router.put('/user', async function(req, res) {
   // Token Validation
-  let user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
+  const user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
   if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
 
   // Data Validation
@@ -45,7 +46,6 @@ router.put('/user', async function(req, res) {
   SET email = @email, fname = @fname, lname = @lname, phonenumber = @phonenumber
   OUTPUT INSERTED.* 
   WHERE id = @id;`;
-
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
     { name: 'email', sqltype: sql.VarChar(255), value: req.body.email },
@@ -55,9 +55,8 @@ router.put('/user', async function(req, res) {
   ];
 
   doQuery(res, query, params, function(updateData) {
-    if (empty(updateData.recordset)) res.status(400).send({ error: "Record update failed." })
+    if (empty(updateData.recordset)) return res.status(400).send({ error: "Data not saved." })
 
-    delete updateData.recordset[0].id
     delete updateData.recordset[0].pword
 
     return res.status(200).send({ user: updateData.recordset[0] });
@@ -66,7 +65,7 @@ router.put('/user', async function(req, res) {
 
 router.put('/password', async function(req, res) {
   // Token Validation
-  let user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
+  const user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
   if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
   
   const { error } = ValidatePassword(req.body);
@@ -81,14 +80,13 @@ router.put('/password', async function(req, res) {
   SET pword = @pword
   OUTPUT INSERTED.* 
   WHERE id = @id;`;
-
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
     { name: 'pword', sqltype: sql.VarChar(255), value: hashedPassword }
   ];
 
   doQuery(res, query, params, async function(updateData) { 
-    if (empty(updateData.recordset)) res.status(400).send({ error: "Password update failed." })
+    if (empty(updateData.recordset)) return res.status(400).send({ error: "Data not saved." })
 
     delete updateData.recordset[0].pword
 
@@ -107,12 +105,12 @@ router.put('/profilepic', async function(req, res) {
 
 //#endregion
 
-//#region creating/updating patient medical data
+//#region POST/PUT patientMedicalData
 
 // Creates patientMedicalData record for patientUser
 router.post('/onboard', async function(req, res) {
   // Token Validation
-  let user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
+  const user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
   if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
 
   // Data Validation
@@ -143,16 +141,16 @@ router.post('/onboard', async function(req, res) {
   ];
 
   doQuery(res, query, params, function(insertData) {
-    if (empty(insertData.recordset)) res.status(400).send({ error: "Data not saved." })
+    if (empty(insertData.recordset)) return res.status(500).send({ error: "Data not saved." })
     
-    res.send({ detail: insertData.recordset[0] });
+    return res.status(200).send({ detail: insertData.recordset[0] });
   });
 });
 
 // Updates patientMedicalData record for patientUser
 router.put('/detail', async function(req, res) {
   // Token Validation
-  let user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
+  const user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
   if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
   
   // Data Validation
@@ -185,9 +183,36 @@ router.put('/detail', async function(req, res) {
   ];
 
   doQuery(res, query, params, function(updateData) {
-    if (empty(updateData.recordset)) res.status(400).send({ error: "Record update failed." })
+    if (empty(updateData.recordset)) return res.status(500).send({ error: "Data not saved." })
     
-    res.send({ detail: updateData.recordset[0] });
+    return res.status(200).send({ detail: updateData.recordset[0] });
+  });
+});
+
+//#endregion
+
+//#region GET Billing Details
+
+// Gets patientUser bills sorted by paid/not paid then by date
+router.get('/:id/mybills', async function(req, res) {
+  // Token Validation
+  const user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
+  if(user.id != req.params.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
+
+  let query = `SELECT * FROM patientBills WHERE id = @id;`;
+  let params = [
+    { name: 'id', sqltype: sql.Int, value: req.params.id }
+  ];
+
+  doQuery(res, query, params, function(selectData) {
+    // No Bills? - This an acceptable scenario?
+    if (empty(selectData.recordset)) return res.status(200).send({ bills: [] })
+    
+    const bills = selectData.recordset;
+    // sorts if paid/not paid then by date
+    const billsSortedByDate = bills.sort((a, b) => b.settled - a.settled || b.statementdate - a.statementdate);
+
+    return res.status(200).send({ bills: billsSortedByDate });
   });
 });
 

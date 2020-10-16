@@ -41,13 +41,13 @@ router.post('/', async (req, res) => {
 
         doQuery(res, query, params, function(insertData) { 
             user = empty(insertData.recordset) ? [] : insertData.recordset[0];
-            if(empty(user)) res.status(500).send("Failed to register user.")
+            if(empty(user)) return res.status(500).send("Failed to register user.")
 
             user = { "id": user['id'], "userType": req.body.userType, exp: 3600 };
 
             // Return authenication token and created user object
             const token = GenerateAuthToken(user);
-            res.status(200).send({ token: token, id: user.id, userType: req.body.userType });
+            return res.status(200).send({ token: token, id: user.id, userType: req.body.userType });
         });
     });
 });

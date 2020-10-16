@@ -14,6 +14,6 @@ module.exports = function (req, res, next) {
 			return res.status(401).send('Access Denied: You dont have correct privilege to perform this operation');
 	}
 	catch (ex) {
-		res.status(401).send('Invalid Token');
+		return res.status(401).send('Access Denied: Invalid Token');
 	}
 }
