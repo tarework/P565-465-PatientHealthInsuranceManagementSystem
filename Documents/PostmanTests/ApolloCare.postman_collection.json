@@ -2920,13 +2920,13 @@
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjgxMDMwOH0.Yv1Vz511-lnMgpRmSlCVfrQY8pWOQyj0gVFb7dvGnWw",
-										"type": "text"
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjgxMDMwOH0.Yv1Vz511-lnMgpRmSlCVfrQY8pWOQyj0gVFb7dvGnWw"
 									},
 									{
 										"key": "Content-Type",
-										"value": "application/json",
-										"type": "text"
+										"type": "text",
+										"value": "application/json"
 									}
 								],
 								"body": {
@@ -2939,7 +2939,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3002/api/patients/10/mybills",
+									"raw": "http://localhost:3002/api/patients/-11/mybills",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -2948,7 +2948,7 @@
 									"path": [
 										"api",
 										"patients",
-										"10",
+										"-11",
 										"mybills"
 									]
 								}
@@ -2976,7 +2976,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10\r\n}",
+									"raw": "{\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
