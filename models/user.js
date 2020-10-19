@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const JoiPC = require('joi-password-complexity');
-const {regexLettersOnly, regexPhoneNumber, CleanErrorMessage}  = require('../utils/constants');
+const {JWT_SECRET, regexLettersOnly, regexPhoneNumber, CleanErrorMessage}  = require('../utils/constants');
 const jwt = require('jsonwebtoken');
 const winston = require('winston');
 
@@ -15,7 +15,7 @@ const passwordOptions = {
 };
 
 function GenerateAuthToken(user) {
-    return jwt.sign({ id: user.id, userType: user.userType }, constants.JWT_SECRET);
+    return jwt.sign({ id: user.id, userType: user.userType }, JWT_SECRET);
 }
 
 function DecodeAuthToken(token) {
