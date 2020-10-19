@@ -68,12 +68,12 @@ router.put('/password', async function(req, res) {
   const { error } = ValidatePassword(req.body);
   if(error) return res.status(400).send({ error: error.message });
 
-
   let query = `SELECT * FROM patientUsers WHERE id = ${req.body.id};`;
   let params = [];
-  doQuery(res, query, params, function(selectData) {
+  doQuery(res, query, params, function(selectData) {    
     if (empty(selectData.recordset)) return res.status(400).send({ error: "Patient record does not exist." })
-    
+    const user = selectData.recordset[0];
+
     // Check password is correct
     bcrypt.compare(req.body.pwordold, user.pword)
     .then(async (isMatch) => {
@@ -100,7 +100,7 @@ router.put('/password', async function(req, res) {
 
           return res.status(200).send({ user: updateData.recordset[0] });
         });
-  });
+    });
 });
 
 router.put('/profilepic', async function(req, res) {
