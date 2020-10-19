@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const JoiPC = require('joi-password-complexity');
-const {JWT_SECRET, regexLettersOnly, regexPhoneNumber, CleanErrorMessage}  = require('../utils/constants');
+const { JWT_SECRET, regexLettersOnly, regexPhoneNumber, CleanErrorMessage }  = require('../utils/constants');
 const jwt = require('jsonwebtoken');
 const winston = require('winston');
 
@@ -26,9 +26,9 @@ function ValidateRegistration(request) {
     const schema = Joi.object({
         email: Joi.string().min(5).max(255).required().email(),
         pword: JoiPC(passwordOptions).required(),
-        fName: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
-        lName: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
-        phoneNumber: Joi.string().required().regex(regexPhoneNumber).error(()=>new Error('Phone number is required, must be 10 digits, and should only contain numbers.')),
+        fname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
+        lname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
+        phonenumber: Joi.string().required().regex(regexPhoneNumber).error(()=>new Error('Phone number is required, must be 10 digits, and should only contain numbers.')),
         userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(()=>new Error('UserType is invalid or empty.')),
     });
 

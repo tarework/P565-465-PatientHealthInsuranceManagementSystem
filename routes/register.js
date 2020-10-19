@@ -34,9 +34,9 @@ router.post('/', async (req, res) => {
         params = [
             { name: 'email', sqltype: sql.VarChar(255), value: req.body.email },
             { name: 'pword', sqltype: sql.VarChar(1024), value: user.pword },
-            { name: 'fname', sqltype: sql.VarChar(255), value: req.body.fName },
-            { name: 'lname', sqltype: sql.VarChar(255), value: req.body.lName },
-            { name: 'phonenumber', sqltype: sql.VarChar(50), value: req.body.phoneNumber }
+            { name: 'fname', sqltype: sql.VarChar(255), value: req.body.fname },
+            { name: 'lname', sqltype: sql.VarChar(255), value: req.body.lname },
+            { name: 'phonenumber', sqltype: sql.VarChar(50), value: req.body.phonenumber }
         ];
 
         doQuery(res, query, params, function(insertData) { 

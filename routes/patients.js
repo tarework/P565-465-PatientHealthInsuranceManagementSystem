@@ -44,7 +44,6 @@ router.put('/user', async function(req, res) {
   // winston.info(req.body.lname);
   // winston.info(req.body.phonenumber);
 
-
   // Data Validation
   const { error } = ValidateUpdateUser(req.body);
   if(error) return res.status(400).send({ error: error.message });
@@ -56,9 +55,9 @@ router.put('/user', async function(req, res) {
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
     { name: 'email', sqltype: sql.VarChar(255), value: req.body.email },
-    { name: 'fname', sqltype: sql.VarChar(255), value: req.body.fName },
-    { name: 'lname', sqltype: sql.VarChar(255), value: req.body.lName },
-    { name: 'phonenumber', sqltype: sql.VarChar(50), value: req.body.phoneNumber }
+    { name: 'fname', sqltype: sql.VarChar(255), value: req.body.fname },
+    { name: 'lname', sqltype: sql.VarChar(255), value: req.body.lname },
+    { name: 'phonenumber', sqltype: sql.VarChar(50), value: req.body.phonenumber }
   ];
 
   doQuery(res, query, params, function(updateData) {
