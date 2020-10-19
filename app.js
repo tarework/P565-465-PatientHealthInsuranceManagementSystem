@@ -25,8 +25,8 @@ winston.configure({
   ]
 });
 process.on('uncaughtException', (ex) => {
-    // In the case of uncaught exceptions
-    winston.error(`UNCAUGHT EXCEPTION: ${ex.message}`, ex);
+  // In the case of uncaught exceptions
+  winston.error(`UNCAUGHT EXCEPTION: ${ex.message}`, ex);
 });
 process.on('unhandledRejection', (ex) => {
   // In the case of unhandled promise rejections

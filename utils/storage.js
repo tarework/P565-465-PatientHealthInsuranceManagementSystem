@@ -54,4 +54,4 @@ async function UploadFile(container, name, stream) {
 }
 
 
-module.exports = { UpdateProfilePic };
+module.exports = { UpdateProfilePic, UploadFile };
