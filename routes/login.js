@@ -81,10 +81,9 @@ router.post('/duoauth', async (req, res) => {
             if (!isMatch) return res.status(400).send({error: `Invalid 2FA code.`});
             
             // Return authenication token
-                const token = GenerateAuthToken({
-                    id: user['id'],
-                    userType: req.body.userType,
-                    exp: 3600
+            const token = GenerateAuthToken({
+                id: user['id'],
+                userType: req.body.userType
             });
             return res.status(200).send( { token: token} );
         });

@@ -15,7 +15,7 @@ const passwordOptions = {
 };
 
 function GenerateAuthToken(user) {
-    return jwt.sign({ id: user.id, userType: user.userType }, JWT_SECRET);
+    return jwt.sign({ id: user.id, userType: user.userType }, JWT_SECRET, { expiresIn: 3600 });
 }
 
 function DecodeAuthToken(token) {

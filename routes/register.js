@@ -6,6 +6,7 @@ const empty = require('is-empty')
 const winston = require('winston');
 const express = require('express');
 const router = express.Router();
+const storage = require('../utils/storage');
 
 // Register New User
 router.post('/', async (req, res) => {
@@ -41,7 +42,9 @@ router.post('/', async (req, res) => {
 
         doQuery(res, query, params, function(insertData) { 
             user = empty(insertData.recordset) ? [] : insertData.recordset[0];
-            if(empty(user)) return res.status(500).send("Failed to register user.")
+            if(empty(user)) return res.status(500).send("Failed to register user.");
+
+            storage.UploadFile(`${req.body.userType}${insertData.recordset[0].id}`, "profile", constants.DEFAULT_PROFILE);
 
             user = { "id": user['id'], "userType": req.body.userType, exp: 3600 };
 

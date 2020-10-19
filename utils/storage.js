@@ -15,7 +15,7 @@ const blobService = azure.createBlobService("apollocare", AZURE_STORAGE_KEY);
 async function UpdateProfilePic(req, res) {
   	// Token Validation
 	let token = DecodeAuthToken(req.header(TOKEN_HEADER));
-	if(token.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
+	if(token.id != req.body.id) return res.status(401).send({ error: "Token Invalid"});
 
 	if (empty(req.body.img)) return res.status(400).send ({ error: "Image data is required." });
 
@@ -37,7 +37,7 @@ async function UploadFile(container, name, stream) {
 	const options = { contentSettings: { contentType: filetype.mime } }
 
 	return new Promise(async function(resolve, reject) {
-		blobService.createContainerIfNotExists(container, {}, function(error, existResult, existResponse) {
+		blobService.createContainerIfNotExists(container, {publicAccessLevel: 'blob'}, function(error, existResult, existResponse) {
 			if (error) {
 				winston.error(error);
 				return reject(error);

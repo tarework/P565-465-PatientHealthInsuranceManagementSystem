@@ -15,9 +15,6 @@ const router = express.Router();
 
 // GET patientUser and patientMedicalData
 router.get('/:id', async function(req, res) {
-  // Token Validation
-  let user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
-  if(user.id != req.params.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
 
   let query = `SELECT *, (SELECT * FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH) AS detail FROM patientUsers WHERE id = ${req.params.id};`;
   let params = [];
@@ -34,9 +31,6 @@ router.get('/:id', async function(req, res) {
 //#region PUT patientUser/password/profilepic 
 
 router.put('/user', async function(req, res) {
-  // Token Validation
-  const user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
-  if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
 
   // winston.info(req.body.id);
   // winston.info(req.body.email);
@@ -65,14 +59,11 @@ router.put('/user', async function(req, res) {
 
     delete updateData.recordset[0].pword
 
-    return res.status(200).send({ user: updateData.recordset[0] });
+    return res.status(200).send(updateData.recordset[0]);
   });
 });
 
 router.put('/password', async function(req, res) {
-  // Token Validation
-  const user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
-  if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
   
   const { error } = ValidatePassword(req.body);
   if(error) return res.status(400).send({ error: error.message });
@@ -115,9 +106,6 @@ router.put('/profilepic', async function(req, res) {
 
 // Creates patientMedicalData record for patientUser
 router.post('/onboard', async function(req, res) {
-  // Token Validation
-  const user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
-  if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
 
   // Data Validation
   const { error } = ValidatePatientMedicalData(req.body);
@@ -155,9 +143,6 @@ router.post('/onboard', async function(req, res) {
 
 // Updates patientMedicalData record for patientUser
 router.put('/details', async function(req, res) {
-  // Token Validation
-  const user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
-  if(user.id != req.body.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
   
   // Data Validation
   const { error } = ValidatePatientMedicalData(req.body);
@@ -201,9 +186,6 @@ router.put('/details', async function(req, res) {
 
 // Gets patientUser bills sorted by paid/not paid then by date
 router.get('/:id/mybills', async function(req, res) {
-  // Token Validation
-  const user = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
-  if(user.id != req.params.id) return res.status(401).send({ "Access Denied": "Token Invalid"});
 
   let query = `SELECT * FROM patientBills WHERE id = @id;`;
   let params = [
