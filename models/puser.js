@@ -3,6 +3,8 @@ const winston = require('winston');
 const constants = require('../utils/constants');
 
 function ValidatePatientMedicalData(request) {
+
+    winston.info(constants.regexWeight);
     const schema = Joi.object({
         address1: Joi.string().required(),
         address2: Joi.string().allow('', null),
@@ -14,7 +16,7 @@ function ValidatePatientMedicalData(request) {
         birthdate: Joi.date().max('now').min('1-1-1900').required(),
         sex: Joi.string().valid('Male', 'Female').required().error(()=>new Error('Gender is empty or invalid.')),
         height: Joi.string().regex(constants.regexHeight).required().error(()=>new Error('Height is empty or invalid.')),
-        weight: Joi.string().regex(constants.regexWeight).required().error(()=>new Error('Weight is empty or invalid.')),
+        weight1: Joi.string().regex(constants.regexWeight).required().error(()=>new Error('Weight is empty or invalid.')),
         bloodtype: Joi.string().valid('O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+', 'Unknown').required().error(()=>new Error('Blood type is empty or invalid.')),
         smoke: Joi.boolean().required(),
         smokefreq: Joi.number().allow(null),
