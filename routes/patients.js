@@ -43,9 +43,10 @@ router.put('/user', async function(req, res) {
   if(error) return res.status(400).send({ error: error.message });
 
   // Make sure email isn't already registered in proper database table!!
-  let query = `SELECT * FROM patientUsers WHERE email = @email;`;
+  let query = `SELECT * FROM patientUsers WHERE email = @email and id <> @id;`;
   let params = [
-      { name: 'email', sqltype: sql.VarChar(255), value: req.body.email }
+      { name: 'email', sqltype: sql.VarChar(255), value: req.body.email },
+      { name: 'id', sqltype: sql.Int, value: req.body.id }
   ];
     
   doQuery(res, query, params, async function(selectData) {
