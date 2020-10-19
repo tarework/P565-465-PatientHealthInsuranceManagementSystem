@@ -3,7 +3,7 @@ var express = require("express"),
     empty = require('is-empty'),
     moment = require('moment'),
     mail = require('../utils/mail'),
-    { poolPromise, doQuery, sql } = require('../db');
+    { doQuery, sql } = require('../db');
 
 router.get('/:id', function(req, res) {
   let query = `select * from insuranceUsers where id = ${req.params.id};`;

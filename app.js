@@ -10,6 +10,7 @@ var express = require('express'),
         auth = require('./middleware/auth/role'),
         register = require('./routes/register'),
         login = require('./routes/login'),
+        password = require('./routes/password'),
         patients = require('./routes/patients'),
         insurance = require('./routes/insurance'),
         doctors = require('./routes/doctors'),
@@ -26,12 +27,10 @@ winston.configure({
 process.on('uncaughtException', (ex) => {
     // In the case of uncaught exceptions
     winston.error(`UNCAUGHT EXCEPTION: ${ex.message}`, ex);
-    process.kill(-1);
 });
 process.on('unhandledRejection', (ex) => {
   // In the case of unhandled promise rejections
   winston.error(`UNHANDLED REJECTION: ${ex.message}`, ex);
-  process.kill(-1);
 });
 
 app.use(cors());
@@ -48,6 +47,7 @@ app.use('/', express.static(path.join(__dirname, 'build')));
 
 app.use('/api/register', register);
 app.use('/api/login', login);
+app.use('/api/password', password);
 app.use('/api/patients', auth, patients);
 app.use('/api/doctors', auth, doctors);
 app.use('/api/insurance', auth, insurance);
@@ -57,11 +57,11 @@ app.get(['/', '/*'], function(req, res) {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-app.use(function(req, res, next) {
-  let err = new Error("Not Found");
-  err.status = 404;
-  next(err);
-});
+// app.use(function(req, res, next) {
+//   let err = new Error("Not Found");
+//   err.status = 404;
+//   next(err);
+// });
 
 app.listen(port, () => {
   winston.info(`Server running at ${hostname}:${port}/`);

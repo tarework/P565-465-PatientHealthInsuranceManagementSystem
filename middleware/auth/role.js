@@ -4,16 +4,16 @@ const constants = require('../../utils/constants');
 
 module.exports = function (req, res, next) {
 	const token = req.header(constants.TOKEN_HEADER);
-	if (!token) return res.status(401).send('Access Denied: No Token Provided!');
+	if (!token) return res.status(401).send({error: 'Access Denied: No Token Provided!'});
 	try {
 		const decoded = jwt.verify(token.replace("Bearer ", ""), constants.JWT_SECRET);
 		// think this should be decoded.userType?
 		if(role[decoded.userType].find(function(url) { return `/api/${url}` == req.baseUrl})) {
 			next();
 		} else
-			return res.status(401).send('Access Denied: You dont have correct privilege to perform this operation');
+			return res.status(401).send({error: 'Access Denied: You dont have correct privilege to perform this operation'});
 	}
 	catch (ex) {
-		res.status(401).send('Invalid Token');
+		return res.status(401).send({error: 'Access Denied: Invalid Token'});
 	}
 }
