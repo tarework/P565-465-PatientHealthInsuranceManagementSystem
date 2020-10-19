@@ -68,27 +68,39 @@ router.put('/password', async function(req, res) {
   const { error } = ValidatePassword(req.body);
   if(error) return res.status(400).send({ error: error.message });
 
-  // salt and hash new pword
-  const salt = await bcrypt.genSalt(11);
-  hashedPassword = await bcrypt.hash(req.body.pword, salt);
+  let query = `SELECT * FROM patientUsers WHERE id = ${req.body.id};`;
+  let params = [];
+  doQuery(res, query, params, function(selectData) {    
+    if (empty(selectData.recordset)) return res.status(400).send({ error: "Patient record does not exist." })
+    const user = selectData.recordset[0];
 
-  // set new pword for user.id in dbs
-  query = `UPDATE patientUsers 
-  SET pword = @pword
-  OUTPUT INSERTED.* 
-  WHERE id = @id;`;
-  let params = [
-    { name: 'id', sqltype: sql.Int, value: req.body.id },
-    { name: 'pword', sqltype: sql.VarChar(255), value: hashedPassword }
-  ];
+    // Check password is correct
+    bcrypt.compare(req.body.pwordold, user.pword)
+    .then(async (isMatch) => {
+        if (!isMatch) return res.status(400).send({ error: `Invalid password.` });
 
-  doQuery(res, query, params, async function(updateData) { 
-    if (empty(updateData.recordset)) return res.status(400).send({ error: "Data not saved." })
+        // salt and hash new pword
+        const salt = await bcrypt.genSalt(11);
+        hashedPassword = await bcrypt.hash(req.body.pword, salt);
 
-    delete updateData.recordset[0].pword
+        // set new pword for user.id in dbs
+        query = `UPDATE patientUsers 
+        SET pword = @pword
+        OUTPUT INSERTED.* 
+        WHERE id = @id;`;
+        let params = [
+          { name: 'id', sqltype: sql.Int, value: req.body.id },
+          { name: 'pword', sqltype: sql.VarChar(255), value: hashedPassword }
+        ];
 
-    return res.status(200).send({ user: updateData.recordset[0] });
-  });
+        doQuery(res, query, params, async function(updateData) { 
+          if (empty(updateData.recordset)) return res.status(400).send({ error: "Data not saved." })
+
+          delete updateData.recordset[0].pword
+
+          return res.status(200).send({ user: updateData.recordset[0] });
+        });
+    });
 });
 
 router.put('/profilepic', async function(req, res) {
