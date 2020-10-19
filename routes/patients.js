@@ -42,24 +42,35 @@ router.put('/user', async function(req, res) {
   const { error } = ValidateUpdateUser(req.body);
   if(error) return res.status(400).send({ error: error.message });
 
-  let query = `UPDATE patientUsers 
-  SET email = @email, fname = @fname, lname = @lname, phonenumber = @phonenumber
-  OUTPUT INSERTED.* 
-  WHERE id = @id;`;
+  // Make sure email isn't already registered in proper database table!!
+  let query = `SELECT * FROM patientUsers WHERE email = @email;`;
   let params = [
-    { name: 'id', sqltype: sql.Int, value: req.body.id },
-    { name: 'email', sqltype: sql.VarChar(255), value: req.body.email },
-    { name: 'fname', sqltype: sql.VarChar(255), value: req.body.fname },
-    { name: 'lname', sqltype: sql.VarChar(255), value: req.body.lname },
-    { name: 'phonenumber', sqltype: sql.VarChar(50), value: req.body.phonenumber }
+      { name: 'email', sqltype: sql.VarChar(255), value: req.body.email }
   ];
+    
+  doQuery(res, query, params, async function(selectData) {
+      let user = empty(selectData.recordset) ? [] : selectData.recordset[0];
+      if (!empty(user)) return res.status(400).send({ error: `E-mail already registered.` });
 
-  doQuery(res, query, params, function(updateData) {
-    if (empty(updateData.recordset)) return res.status(400).send({ error: "Data not saved." })
+    let query = `UPDATE patientUsers 
+    SET email = @email, fname = @fname, lname = @lname, phonenumber = @phonenumber
+    OUTPUT INSERTED.* 
+    WHERE id = @id;`;
+    let params = [
+      { name: 'id', sqltype: sql.Int, value: req.body.id },
+      { name: 'email', sqltype: sql.VarChar(255), value: req.body.email },
+      { name: 'fname', sqltype: sql.VarChar(255), value: req.body.fname },
+      { name: 'lname', sqltype: sql.VarChar(255), value: req.body.lname },
+      { name: 'phonenumber', sqltype: sql.VarChar(50), value: req.body.phonenumber }
+    ];
 
-    delete updateData.recordset[0].pword
+    doQuery(res, query, params, function(updateData) {
+      if (empty(updateData.recordset)) return res.status(400).send({ error: "Data not saved." })
 
-    return res.status(200).send(updateData.recordset[0]);
+      delete updateData.recordset[0].pword
+
+      return res.status(200).send(updateData.recordset[0]);
+    });
   });
 });
 
@@ -77,10 +88,11 @@ router.put('/password', async function(req, res) {
     // Check password is correct
     bcrypt.compare(req.body.pwordOld, user.pword)
     .then(async (isMatch) => {
-        if (!isMatch) return res.status(400).send({ error: `Invalid password.` });
+        if (!isMatch) return res.status(400).send({ error: `Incorrect old password.` });
     })
     .catch( (error) => {
-      return res.status(400).send({ error: `Invalid password.` });
+      winston.error("Password compare failure: " + error);
+      return res.status(400).send({ error: `ncorrect old password.` });
     });
 
     // salt and hash new pword
