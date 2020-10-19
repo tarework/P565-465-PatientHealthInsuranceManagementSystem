@@ -73,34 +73,35 @@ router.put('/password', async function(req, res) {
   doQuery(res, query, params, function(selectData) {    
     if (empty(selectData.recordset)) return res.status(400).send({ error: "Patient record does not exist." })
     const user = selectData.recordset[0];
+  });
 
-    // Check password is correct
-    bcrypt.compare(req.body.pwordold, user.pword)
-    .then(async (isMatch) => {
-        if (!isMatch) return res.status(400).send({ error: `Invalid password.` });
+  // Check password is correct
+  bcrypt.compare(req.body.pwordold, user.pword)
+  .then(async (isMatch) => {
+      if (!isMatch) return res.status(400).send({ error: `Invalid password.` });
+  });
 
-        // salt and hash new pword
-        const salt = await bcrypt.genSalt(11);
-        hashedPassword = await bcrypt.hash(req.body.pword, salt);
+  // salt and hash new pword
+  const salt = await bcrypt.genSalt(11);
+  hashedPassword = await bcrypt.hash(req.body.pword, salt);
 
-        // set new pword for user.id in dbs
-        query = `UPDATE patientUsers 
-        SET pword = @pword
-        OUTPUT INSERTED.* 
-        WHERE id = @id;`;
-        let params = [
-          { name: 'id', sqltype: sql.Int, value: req.body.id },
-          { name: 'pword', sqltype: sql.VarChar(255), value: hashedPassword }
-        ];
+  // set new pword for user.id in dbs
+  query = `UPDATE patientUsers 
+  SET pword = @pword
+  OUTPUT INSERTED.* 
+  WHERE id = @id;`;
+  params = [
+    { name: 'id', sqltype: sql.Int, value: req.body.id },
+    { name: 'pword', sqltype: sql.VarChar(255), value: hashedPassword }
+  ];
 
-        doQuery(res, query, params, async function(updateData) { 
-          if (empty(updateData.recordset)) return res.status(400).send({ error: "Data not saved." })
+  doQuery(res, query, params, async function(updateData) { 
+    if (empty(updateData.recordset)) return res.status(400).send({ error: "Data not saved." })
 
-          delete updateData.recordset[0].pword
+    delete updateData.recordset[0].pword
 
-          return res.status(200).send({ user: updateData.recordset[0] });
-        });
-    });
+    return res.status(200).send({ user: updateData.recordset[0] });
+  });
 });
 
 router.put('/profilepic', async function(req, res) {
