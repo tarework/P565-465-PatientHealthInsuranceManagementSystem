@@ -2,7 +2,7 @@ const Joi = require('joi');
 const winston = require('winston');
 const constants = require('../utils/constants');
 
-function ValidanteInsuranceDetails(request) {
+function ValidateInsuranceDetails(request) {
     const schema = Joi.object({
         companyname: Joi.string().required(),
         address1: Joi.string().required(),
@@ -17,4 +17,4 @@ function ValidanteInsuranceDetails(request) {
     return constants.CleanErrorMessage(schema.validate(request));
 }
 
-module.exports.ValidanteInsuranceDetails = ValidanteInsuranceDetails;
+module.exports.ValidateInsuranceDetails = ValidateInsuranceDetails;
