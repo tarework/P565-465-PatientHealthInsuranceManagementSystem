@@ -15,7 +15,6 @@ const router = express.Router();
 
 // GET patientUser and patientMedicalData
 router.get('/:id', async function (req, res) {
-
   let query = `SELECT *, (SELECT * FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH) AS detail FROM patientUsers WHERE id = ${req.params.id};`;
   let params = [];
 
@@ -69,7 +68,7 @@ router.put('/user', async function (req, res) {
 });
 
 router.put('/password', async function (req, res) {
-
+  // Data Validation
   const { error } = ValidatePassword(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
@@ -86,7 +85,7 @@ router.put('/password', async function (req, res) {
       })
       .catch((error) => {
         winston.error("Password compare failure: " + error);
-        return res.status(400).send({ error: `ncorrect old password.` });
+        return res.status(400).send({ error: `Incorrect old password.` });
       });
 
     // salt and hash new pword
@@ -128,7 +127,6 @@ router.put('/profilepic', async function (req, res) {
 
 // Creates patientMedicalData record for patientUser
 router.post('/onboard', async function (req, res) {
-
   // Data Validation
   const { error } = ValidatePatientMedicalData(req.body);
   if (error) return res.status(400).send({ error: error.message });
@@ -165,7 +163,6 @@ router.post('/onboard', async function (req, res) {
 
 // Updates patientMedicalData record for patientUser
 router.put('/details', async function (req, res) {
-
   // Data Validation
   const { error } = ValidatePatientMedicalData(req.body);
   if (error) return res.status(400).send({ error: error.message });
@@ -208,7 +205,6 @@ router.put('/details', async function (req, res) {
 
 // Gets patientUser bills sorted by paid/not paid then by date
 router.get('/:id/mybills', async function (req, res) {
-
   let query = `SELECT * FROM patientBills WHERE id = @id;`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.params.id }

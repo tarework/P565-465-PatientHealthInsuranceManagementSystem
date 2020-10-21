@@ -1,20 +1,182 @@
-var express = require("express"),
-    router = express.Router(),
-    empty = require('is-empty'),
-    moment = require('moment'),
-    mail = require('../utils/mail'),
-    { doQuery, sql } = require('../db');
+const { doQuery, sql } = require('../db');
+const { ValidatePassword, ValidateUpdateUser } = require('../models/user');
+const { ValidateInsuranceDetails } = require('../models/iuser');
+const constants = require('../utils/constants');
+//const mail = require('../utils/mail');
+const storage = require('../utils/storage');
+const bcrypt = require('bcryptjs');
+const empty = require('is-empty');
+//const moment = require('moment'),
+const winston = require('winston');
+const express = require('express');
+const { route } = require('./password');
+const router = express.Router();
 
-router.get('/:id', function(req, res) {
-  let query = `select * from insuranceUsers where id = ${req.params.id};`;
+
+// GET insuranceUsers and insuranceDetails
+router.get('/:id', async function (req, res) {
+  let query = `SELECT *, (SELECT * FROM insuranceDetails WHERE insuranceUsers.id = insuranceDetails.id FOR JSON PATH) AS detail FROM insuranceUsers WHERE id = ${req.params.id};`;
   let params = [];
-  doQuery(res, query, params, function(data) {
-    if(empty(data.recordset)) {
-      res.status(400).send({error: "Insurance provider record does not exist."})
-    } else {
-      res.send({...data.recordset[0], userType: 'insurance'});
-    }
+
+  doQuery(res, query, params, function (selectData) {
+    if (empty(selectData.recordset)) return res.status(400).send({ error: "Insurance record does not exist." })
+
+    delete selectData.recordset[0].pword
+
+    return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0] }))[0], userType: 'insurance' });
   });
 });
+
+//#region PUT insuranceUsers/password/profilepic 
+
+router.put('/user', async function (req, res) {
+  // Data Validation
+  const { error } = ValidateUpdateUser(req.body);
+  if (error) return res.status(400).send({ error: error.message });
+
+  // Make sure email isn't already registered in proper database table!!
+  let query = `SELECT * FROM insuranceUsers WHERE email = @email and id <> @id;`;
+  let params = [
+    { name: 'email', sqltype: sql.VarChar(255), value: req.body.email },
+    { name: 'id', sqltype: sql.Int, value: req.body.id }
+  ];
+
+  doQuery(res, query, params, async function (selectData) {
+    let user = empty(selectData.recordset) ? [] : selectData.recordset[0];
+    if (!empty(user)) return res.status(400).send({ error: `E-mail already registered.` });
+
+    let query = `UPDATE insuranceUsers 
+    SET email = @email, fname = @fname, lname = @lname, phonenumber = @phonenumber
+    OUTPUT INSERTED.* 
+    WHERE id = @id;`;
+    let params = [
+      { name: 'id', sqltype: sql.Int, value: req.body.id },
+      { name: 'email', sqltype: sql.VarChar(255), value: req.body.email },
+      { name: 'fname', sqltype: sql.VarChar(255), value: req.body.fname },
+      { name: 'lname', sqltype: sql.VarChar(255), value: req.body.lname },
+      { name: 'phonenumber', sqltype: sql.VarChar(50), value: req.body.phonenumber }
+    ];
+
+    doQuery(res, query, params, function (updateData) {
+      if (empty(updateData.recordset)) return res.status(400).send({ error: "Data not saved." })
+
+      delete updateData.recordset[0].pword
+
+      return res.status(200).send(updateData.recordset[0]);
+    });
+  });
+});
+
+router.put('/password', async function (req, res) {
+  // Data Validation
+  const { error } = ValidatePassword(req.body);
+  if (error) return res.status(400).send({ error: error.message });
+
+  let query = `SELECT * FROM insuranceUsers WHERE id = ${req.body.id};`;
+  let params = [];
+  doQuery(res, query, params, async function (selectData) {
+    if (empty(selectData.recordset)) return res.status(400).send({ error: "Insurance record does not exist." })
+    const user = selectData.recordset[0];
+
+    // Check password is correct
+    bcrypt.compare(req.body.pwordold, user.pword)
+      .then(async (isMatch) => {
+        if (!isMatch) return res.status(400).send({ error: `Incorrect old password.` });
+      })
+      .catch((error) => {
+        winston.error("Password compare failure: " + error);
+        return res.status(400).send({ error: `Incorrect old password.` });
+      });
+
+    // salt and hash new pword
+    const salt = await bcrypt.genSalt(11);
+    hashedPassword = await bcrypt.hash(req.body.pword, salt);
+
+    // set new pword for user.id in dbs
+    query = `UPDATE insuranceUsers 
+    SET pword = @pword
+    OUTPUT INSERTED.* 
+    WHERE id = @id;`;
+    params = [
+      { name: 'id', sqltype: sql.Int, value: req.body.id },
+      { name: 'pword', sqltype: sql.VarChar(255), value: hashedPassword }
+    ];
+
+    doQuery(res, query, params, async function (updateData) {
+      if (empty(updateData.recordset)) return res.status(400).send({ error: "Data not saved." })
+
+      delete updateData.recordset[0].pword
+
+      return res.status(200).send({ user: updateData.recordset[0] });
+    });
+  });
+});
+
+router.put('/profilepic', async function (req, res) {
+  // This method is in storage b/c
+  // patients, doctors, and insurance users
+  // can all do this.
+  // Don't write it 3 times,
+  // Extract it to a single location.
+  return storage.UpdateProfilePic(req, res);
+});
+
+//#endregion
+
+//#region POST/PUT insuranceDetails
+
+// Creates insuranceDetails record for insuranceUser
+router.post('/onboard', async function (req, res) {
+  // Data Validation
+  const { error } = ValidateInsuranceDetails(req.body);
+  if (error) return res.status(400).send({ error: error.message });
+
+  let query = `INSERT INTO insuranceDetails (id, companyname, address1, address2, state1, city, zipcode) 
+               OUTPUT INSERTED.* 
+               VALUES (@id, @companyname, @address1, @address2, @state1, @city, @zipcode);`;
+  let params = [
+    { name: 'id', sqltype: sql.Int, value: req.body.id },
+    { name: 'companyname', sqltype: sql.VarChar(255), value: req.body.companyname },
+    { name: 'address1', sqltype: sql.VarChar(255), value: req.body.address1 },
+    { name: 'address2', sqltype: sql.VarChar(255), value: req.body.address2 },
+    { name: 'state1', sqltype: sql.VarChar(15), value: req.body.state1 },
+    { name: 'city', sqltype: sql.VarChar(50), value: req.body.city },
+    { name: 'zipcode', sqltype: sql.VarChar(15), value: req.body.zipcode }
+  ];
+
+  doQuery(res, query, params, function (insertData) {
+    if (empty(insertData.recordset)) return res.status(500).send({ error: "Data not saved." })
+
+    return res.status(200).send({ detail: insertData.recordset[0] });
+  });
+});
+
+// Updates insuranceDetails record for insuranceUser
+router.put('/details', async function (req, res) {
+  // Data Validation
+  const { error } = ValidateInsuranceDetails(req.body);
+  if (error) return res.status(400).send({ error: error.message });
+
+  let query = `INSERT INTO insuranceDetails (id, companyname, address1, address2, state1, city, zipcode) 
+               OUTPUT INSERTED.* 
+               VALUES (@id, @companyname, @address1, @address2, @state1, @city, @zipcode);`;
+  let params = [
+    { name: 'id', sqltype: sql.Int, value: req.body.id },
+    { name: 'companyname', sqltype: sql.VarChar(255), value: req.body.companyname },
+    { name: 'address1', sqltype: sql.VarChar(255), value: req.body.address1 },
+    { name: 'address2', sqltype: sql.VarChar(255), value: req.body.address2 },
+    { name: 'state1', sqltype: sql.VarChar(15), value: req.body.state1 },
+    { name: 'city', sqltype: sql.VarChar(50), value: req.body.city },
+    { name: 'zipcode', sqltype: sql.VarChar(15), value: req.body.zipcode }
+  ];
+
+  doQuery(res, query, params, function (updateData) {
+    if (empty(updateData.recordset)) return res.status(500).send({ error: "Data not saved." })
+
+    return res.status(200).send({ detail: updateData.recordset[0] });
+  });
+});
+
+//#endregion
 
 module.exports = router;

@@ -29,7 +29,7 @@ function ValidateRegistration(request) {
         fname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(() => new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
         lname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(() => new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
         phonenumber: Joi.string().required().regex(regexPhoneNumber).error(() => new Error('Phone number is required, must be 10 digits, and should only contain numbers.')),
-        usertype: Joi.string().valid('patient', 'doctor', 'insurance').required().error(() => new Error('UserType is invalid or empty.')),
+        usertype: Joi.string().valid('patient', 'doctor', 'insurance').required().error(() => new Error('UserType is invalid or empty.'))
     });
 
     return CleanErrorMessage(schema.validate(request))
@@ -79,8 +79,7 @@ function ValidateUpdateUser(request) {
         email: Joi.string().min(5).max(255).required().email(),
         fname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(() => new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
         lname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(() => new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
-        phonenumber: Joi.string().required().regex(regexPhoneNumber).error(() => new Error('Phone number is required, must be 10 digits, and should only contain numbers.')),
-
+        phonenumber: Joi.string().required().regex(regexPhoneNumber).error(() => new Error('Phone number is required, must be 10 digits, and should only contain numbers.'))
     }).options({ stripUnknown: true });
 
     return CleanErrorMessage(schema.validate(request));

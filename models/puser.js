@@ -22,7 +22,7 @@ function ValidatePatientMedicalData(request) {
         //smokefreq: Joi.string().allow('', null),
         drink: Joi.boolean().required(),
         //drinkfreq: Joi.string().allow('', null),
-        caffeine: Joi.boolean().required(),
+        caffeine: Joi.boolean().required()
         //caffeinefreq: Joi.string().allow('', null),
     }).options({ stripUnknown: true });
 

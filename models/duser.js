@@ -16,7 +16,7 @@ function ValidateDoctorDetails(request) {
         specializations: Joi.string().required(),
         treatscovid: Joi.boolean().required(),
         bedsavailable: Joi.number().required().min(0).max(Joi.ref(bedsmax)),
-        bedsmax: Joi.number().required().min(Joi.ref(bedsavailable)),
+        bedsmax: Joi.number().required().min(Joi.ref(bedsavailable))
     }).options({ stripUnknown: true });
 
     return constants.CleanErrorMessage(schema.validate(request));

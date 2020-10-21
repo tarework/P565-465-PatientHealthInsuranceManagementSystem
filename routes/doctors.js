@@ -15,7 +15,6 @@ const router = express.Router();
 
 // GET doctorUser and doctorDetails
 router.get('/:id', async function (req, res) {
-
   let query = `SELECT *, (SELECT * FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail FROM doctorUsers WHERE id = ${req.params.id};`;
   let params = [];
 
@@ -87,7 +86,7 @@ router.put('/password', async function (req, res) {
       })
       .catch((error) => {
         winston.error("Password compare failure: " + error);
-        return res.status(400).send({ error: `ncorrect old password.` });
+        return res.status(400).send({ error: `Incorrect old password.` });
       });
 
     // salt and hash new pword
@@ -163,7 +162,7 @@ router.post('/onboard', async function (req, res) {
 // Updates doctorDetails record for doctorUser
 router.put('/details', async function (req, res) {
   // Data Validation
-  const { error } = ValidatePatientMedicalData(req.body);
+  const { error } = ValidateDoctorDetails(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
   let query = `INSERT INTO doctorDetails (id, practicename, address1, address2, city, state1, zipcode,
