@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const JoiPC = require('joi-password-complexity');
-const { JWT_SECRET, regexLettersOnly, regexPhoneNumber, CleanErrorMessage }  = require('../utils/constants');
+const { JWT_SECRET, regexLettersOnly, regexPhoneNumber, CleanErrorMessage } = require('../utils/constants');
 const jwt = require('jsonwebtoken');
 const winston = require('winston');
 
@@ -26,10 +26,10 @@ function ValidateRegistration(request) {
     const schema = Joi.object({
         email: Joi.string().min(5).max(255).required().email(),
         pword: JoiPC(passwordOptions).required(),
-        fname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
-        lname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
-        phonenumber: Joi.string().required().regex(regexPhoneNumber).error(()=>new Error('Phone number is required, must be 10 digits, and should only contain numbers.')),
-        userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(()=>new Error('UserType is invalid or empty.')),
+        fname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(() => new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
+        lname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(() => new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
+        phonenumber: Joi.string().required().regex(regexPhoneNumber).error(() => new Error('Phone number is required, must be 10 digits, and should only contain numbers.')),
+        userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(() => new Error('UserType is invalid or empty.')),
     });
 
     return CleanErrorMessage(schema.validate(request))
@@ -39,7 +39,7 @@ function ValidateLogin(request) {
     const schema = Joi.object({
         email: Joi.string().min(5).max(255).required().email(),
         pword: Joi.string().required(),
-        userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(()=>new Error('UserType is invalid or empty.'))
+        userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(() => new Error('UserType is invalid or empty.'))
     });
 
     return CleanErrorMessage(schema.validate(request))
@@ -48,7 +48,7 @@ function ValidateLogin(request) {
 function ValidateEmail(request) {
     const schema = Joi.object({
         email: Joi.string().min(5).max(255).required().email(),
-        userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(()=>new Error('UserType is invalid or empty.'))
+        userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(() => new Error('UserType is invalid or empty.'))
     });
 
     return CleanErrorMessage(schema.validate(request))
@@ -59,16 +59,16 @@ function ValidateDuoCode(request) {
         hashedDuoCode: Joi.string().required(),
         duo: Joi.string().required(),
         email: Joi.string().min(5).max(255).required().email(),
-        userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(()=>new Error('UserType is invalid or empty.'))
+        userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(() => new Error('UserType is invalid or empty.'))
     });
-    
+
     return CleanErrorMessage(schema.validate(request))
 }
 
 function ValidatePassword(request) {
     const schema = Joi.object({
         pword: JoiPC(passwordOptions).required(),
-        pwordConfirmation: Joi.string().valid(Joi.ref('pword')).required().error(()=>new Error('Passwords do not match.'))
+        pwordConfirmation: Joi.string().valid(Joi.ref('pword')).required().error(() => new Error('Passwords do not match.'))
     }).options({ stripUnknown: true });
 
     return CleanErrorMessage(schema.validate(request));
@@ -77,12 +77,12 @@ function ValidatePassword(request) {
 function ValidateUpdateUser(request) {
     const schema = Joi.object({
         email: Joi.string().min(5).max(255).required().email(),
-        fname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
-        lname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(()=>new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
-        phonenumber: Joi.string().required().regex(regexPhoneNumber).error(()=>new Error('Phone number is required, must be 10 digits, and should only contain numbers.')),
+        fname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(() => new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
+        lname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(() => new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
+        phonenumber: Joi.string().required().regex(regexPhoneNumber).error(() => new Error('Phone number is required, must be 10 digits, and should only contain numbers.')),
 
     }).options({ stripUnknown: true });
-    
+
     return CleanErrorMessage(schema.validate(request));
 }
 

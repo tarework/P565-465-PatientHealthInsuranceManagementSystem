@@ -17,13 +17,13 @@ const DEFAULT_PROFILE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIAC
 const regexLettersOnly = new RegExp(`^[a-zA-Z]{2,}$`);
 const regexNumberOnly = new RegExp(`^[0-9]*$`);
 const regexPhoneNumber = new RegExp(`^\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})[-. )]*(\\d{3})[-. ]*(\\d{4})(?: *x(\\d+))?\\s*$`);
-const regexHeight = new RegExp(`^[3-7] (?:\\s*(?:1[01]|[0-9])(''|"))?$`); // Example 5 8"
+const regexHeight = new RegExp(`^[3-7] (?:\\s*(?:[0][0-9]|[1][0-1]|[0-9])")?$`); // Example 5 8"
 const regexWeight = new RegExp(`^(\\d*\\.?\\d{1,2})$`);
 
-function UserTypeToTableName(userType){
-    if(userType === USER_TYPES.PATIENT) return "patientUsers";
-    else if(userType === USER_TYPES.DOCTOR) return "doctorUsers";
-    else if(userType === USER_TYPES.INSURANCEPROVIDER) return "insuranceUsers";
+function UserTypeToTableName(userType) {
+    if (userType === USER_TYPES.PATIENT) return "patientUsers";
+    else if (userType === USER_TYPES.DOCTOR) return "doctorUsers";
+    else if (userType === USER_TYPES.INSURANCEPROVIDER) return "insuranceUsers";
     else return "ERROR";
 }
 

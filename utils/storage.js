@@ -13,20 +13,15 @@ const blobService = azure.createBlobService("apollocare", AZURE_STORAGE_KEY);
 // Don't write it 3 times,
 // Extract it to a single location.
 async function UpdateProfilePic(req, res) {
-  	// Token Validation
-	let token = DecodeAuthToken(req.header(TOKEN_HEADER));
-	if(token.id != req.body.id) return res.status(401).send({ error: "Token Invalid"});
-
+	// Data Validation
 	if (empty(req.body.img)) return res.status(400).send ({ error: "Image data is required." });
 
     container = token.userType + token.id;
   
     UploadFile(container, 'profile', req.body.img)
     .then((message)=> {
-		winston.info("The Then")
       return res.status(200).send({ result: message.result, response: message.response });
     }).catch((error)=> {
-		winston.info("The Catch")
       return res.status(500).send({ error: error.message });
     });  
 }

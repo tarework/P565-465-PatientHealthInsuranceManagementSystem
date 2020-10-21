@@ -1,5 +1,5 @@
 const { doQuery, sql } = require('../db');
-const { DecodeAuthToken, ValidatePassword, ValidateUpdateUser } = require('../models/user');
+const { ValidatePassword, ValidateUpdateUser } = require('../models/user');
 const { ValidatePatientMedicalData } = require('../models/puser');
 const constants = require('../utils/constants');
 //const mail = require('../utils/mail');
@@ -11,26 +11,26 @@ const winston = require('winston');
 const express = require('express');
 const { route } = require('./password');
 const router = express.Router();
-    
+
 
 // GET patientUser and patientMedicalData
-router.get('/:id', async function(req, res) {
+router.get('/:id', async function (req, res) {
 
   let query = `SELECT *, (SELECT * FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH) AS detail FROM patientUsers WHERE id = ${req.params.id};`;
   let params = [];
 
-  doQuery(res, query, params, function(selectData) {
+  doQuery(res, query, params, function (selectData) {
     if (empty(selectData.recordset)) return res.status(400).send({ error: "Patient record does not exist." })
-    
+
     delete selectData.recordset[0].pword
 
-    return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0]}))[0], userType: 'patient' });
+    return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0] }))[0], userType: 'patient' });
   });
 });
 
 //#region PUT patientUser/password/profilepic 
 
-router.put('/user', async function(req, res) {
+router.put('/user', async function (req, res) {
 
   // winston.info(req.body.id);
   // winston.info(req.body.email);
@@ -40,18 +40,18 @@ router.put('/user', async function(req, res) {
 
   // Data Validation
   const { error } = ValidateUpdateUser(req.body);
-  if(error) return res.status(400).send({ error: error.message });
+  if (error) return res.status(400).send({ error: error.message });
 
   // Make sure email isn't already registered in proper database table!!
   let query = `SELECT * FROM patientUsers WHERE email = @email and id <> @id;`;
   let params = [
-      { name: 'email', sqltype: sql.VarChar(255), value: req.body.email },
-      { name: 'id', sqltype: sql.Int, value: req.body.id }
+    { name: 'email', sqltype: sql.VarChar(255), value: req.body.email },
+    { name: 'id', sqltype: sql.Int, value: req.body.id }
   ];
-    
-  doQuery(res, query, params, async function(selectData) {
-      let user = empty(selectData.recordset) ? [] : selectData.recordset[0];
-      if (!empty(user)) return res.status(400).send({ error: `E-mail already registered.` });
+
+  doQuery(res, query, params, async function (selectData) {
+    let user = empty(selectData.recordset) ? [] : selectData.recordset[0];
+    if (!empty(user)) return res.status(400).send({ error: `E-mail already registered.` });
 
     let query = `UPDATE patientUsers 
     SET email = @email, fname = @fname, lname = @lname, phonenumber = @phonenumber
@@ -65,7 +65,7 @@ router.put('/user', async function(req, res) {
       { name: 'phonenumber', sqltype: sql.VarChar(50), value: req.body.phonenumber }
     ];
 
-    doQuery(res, query, params, function(updateData) {
+    doQuery(res, query, params, function (updateData) {
       if (empty(updateData.recordset)) return res.status(400).send({ error: "Data not saved." })
 
       delete updateData.recordset[0].pword
@@ -75,26 +75,26 @@ router.put('/user', async function(req, res) {
   });
 });
 
-router.put('/password', async function(req, res) {
-  
+router.put('/password', async function (req, res) {
+
   const { error } = ValidatePassword(req.body);
-  if(error) return res.status(400).send({ error: error.message });
+  if (error) return res.status(400).send({ error: error.message });
 
   let query = `SELECT * FROM patientUsers WHERE id = ${req.body.id};`;
   let params = [];
-  doQuery(res, query, params, async function(selectData) {    
+  doQuery(res, query, params, async function (selectData) {
     if (empty(selectData.recordset)) return res.status(400).send({ error: "Patient record does not exist." })
     const user = selectData.recordset[0];
 
     // Check password is correct
     bcrypt.compare(req.body.pwordOld, user.pword)
-    .then(async (isMatch) => {
+      .then(async (isMatch) => {
         if (!isMatch) return res.status(400).send({ error: `Incorrect old password.` });
-    })
-    .catch( (error) => {
-      winston.error("Password compare failure: " + error);
-      return res.status(400).send({ error: `ncorrect old password.` });
-    });
+      })
+      .catch((error) => {
+        winston.error("Password compare failure: " + error);
+        return res.status(400).send({ error: `ncorrect old password.` });
+      });
 
     // salt and hash new pword
     const salt = await bcrypt.genSalt(11);
@@ -110,7 +110,7 @@ router.put('/password', async function(req, res) {
       { name: 'pword', sqltype: sql.VarChar(255), value: hashedPassword }
     ];
 
-    doQuery(res, query, params, async function(updateData) { 
+    doQuery(res, query, params, async function (updateData) {
       if (empty(updateData.recordset)) return res.status(400).send({ error: "Data not saved." })
 
       delete updateData.recordset[0].pword
@@ -120,7 +120,7 @@ router.put('/password', async function(req, res) {
   });
 });
 
-router.put('/profilepic', async function(req, res) {
+router.put('/profilepic', async function (req, res) {
   // This method is in storage b/c
   // patients, doctors, and insurance users
   // can all do this.
@@ -134,11 +134,11 @@ router.put('/profilepic', async function(req, res) {
 //#region POST/PUT patientMedicalData
 
 // Creates patientMedicalData record for patientUser
-router.post('/onboard', async function(req, res) {
+router.post('/onboard', async function (req, res) {
 
   // Data Validation
   const { error } = ValidatePatientMedicalData(req.body);
-  if(error) return res.status(400).send({ error: error.message });
+  if (error) return res.status(400).send({ error: error.message });
 
   let query = `INSERT INTO patientMedicalData (id, address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq) 
                OUTPUT INSERTED.* 
@@ -163,20 +163,20 @@ router.post('/onboard', async function(req, res) {
     { name: 'caffeinefreq', sqltype: sql.Int, value: req.body.caffeinefreq || 0 }
   ];
 
-  doQuery(res, query, params, function(insertData) {
+  doQuery(res, query, params, function (insertData) {
     if (empty(insertData.recordset)) return res.status(500).send({ error: "Data not saved." })
-    
+
     return res.status(200).send({ detail: insertData.recordset[0] });
   });
 });
 
 // Updates patientMedicalData record for patientUser
-router.put('/details', async function(req, res) {
-  
+router.put('/details', async function (req, res) {
+
   // Data Validation
   const { error } = ValidatePatientMedicalData(req.body);
-  if(error) return res.status(400).send({ error: error.message });
-  
+  if (error) return res.status(400).send({ error: error.message });
+
   let query = `UPDATE patientMedicalData 
               SET address1 = @address1, address2 = @address2, state1 = @state1, city = @city, zipcode = @zipcode, birthdate = @birthdate, 
               sex = @sex, height = @height, weight1 = @weight1, bloodtype = @bloodtype, smoke = @smoke, smokefreq = @smokefreq, drink = @drink, 
@@ -202,9 +202,9 @@ router.put('/details', async function(req, res) {
     { name: 'caffeinefreq', sqltype: sql.Int, value: req.body.caffeinefreq || 0 }
   ];
 
-  doQuery(res, query, params, function(updateData) {
+  doQuery(res, query, params, function (updateData) {
     if (empty(updateData.recordset)) return res.status(500).send({ error: "Data not saved." })
-    
+
     return res.status(200).send({ detail: updateData.recordset[0] });
   });
 });
@@ -214,17 +214,17 @@ router.put('/details', async function(req, res) {
 //#region GET Billing Details
 
 // Gets patientUser bills sorted by paid/not paid then by date
-router.get('/:id/mybills', async function(req, res) {
+router.get('/:id/mybills', async function (req, res) {
 
   let query = `SELECT * FROM patientBills WHERE id = @id;`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.params.id }
   ];
 
-  doQuery(res, query, params, function(selectData) {
+  doQuery(res, query, params, function (selectData) {
     // No Bills? - This an acceptable scenario?
     if (empty(selectData.recordset)) return res.status(200).send({ bills: [] })
-    
+
     const bills = selectData.recordset;
     // sorts if paid/not paid then by date
     const billsSortedByDate = bills.sort((a, b) => b.settled - a.settled || b.statementdate - a.statementdate);

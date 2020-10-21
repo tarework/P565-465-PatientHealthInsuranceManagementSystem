@@ -24,7 +24,7 @@ module.exports = async (to, subject, html) => {
     // winston.info(transporter.auth.user);
     // winston.info(transporter.auth.pass);
     await transporter.verify();
-    return new Promise(function(resolve,reject) {
+    return new Promise(function (resolve, reject) {
       transporter.sendMail(mailOpts, (error, response) => {
         if (error) {
           return reject(error);  // Show a page indicating failure
@@ -34,7 +34,7 @@ module.exports = async (to, subject, html) => {
         }
       });
     });
-  } catch(ex) {
+  } catch (ex) {
     winston.error(ex);
     return reject(ex)
   }
