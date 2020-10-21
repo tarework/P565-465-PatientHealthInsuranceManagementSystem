@@ -46,11 +46,11 @@ router.post('/', async (req, res) => {
 
             storage.UploadFile(`${req.body.usertype}${insertData.recordset[0].id}`, "profile", constants.DEFAULT_PROFILE);
 
-            user = { "id": user['id'], "userType": req.body.usertype, exp: 3600 };
+            user = { "id": user['id'], "usertype": req.body.usertype, exp: 3600 };
 
             // Return authenication token and created user object
             const token = GenerateAuthToken(user);
-            return res.status(200).send({ token: token, id: user.id, userType: req.body.usertype });
+            return res.status(200).send({ token: token, id: user.id, usertype: req.body.usertype });
         });
     });
 });

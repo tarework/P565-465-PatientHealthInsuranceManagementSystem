@@ -23,7 +23,7 @@ router.get('/:id', async function (req, res) {
 
     delete selectData.recordset[0].pword
 
-    return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0] }))[0], userType: 'doctor' });
+    return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0] }))[0], usertype: 'doctor' });
   });
 });
 

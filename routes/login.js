@@ -51,7 +51,7 @@ router.post('/', async (req, res) => {
                 // Send email to user with duo code
                 mail(user.email, "2FA Login Code!", duoEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_DUO_CODE_", duoCode))
                     .then(() => {
-                        return res.status(200).send({ email: user.email, userType: req.body.usertype, hashedDuoCode: hashedDuoCode });
+                        return res.status(200).send({ email: user.email, usertype: req.body.usertype, hashedduocode: hashedDuoCode });
                     }).catch(() => {
                         return res.status(500).send({ error: `2FA Code Email failed to send.` });
                     });
@@ -83,7 +83,7 @@ router.post('/duoauth', async (req, res) => {
                 // Return authenication token
                 const token = GenerateAuthToken({
                     id: user['id'],
-                    userType: req.body.usertype
+                    usertype: req.body.usertype
                 });
                 return res.status(200).send({ token: token });
             });
@@ -125,7 +125,7 @@ router.post('/google', async (req, res) => {
                         // Send email to user with duo code
                         mail(user.email, "2FA Login Code!", duoEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_DUO_CODE_", duoCode))
                             .then(() => {
-                                return res.status(200).send({ email: user.email, userType: req.body.usertype, hashedDuoCode: hashedDuoCode });
+                                return res.status(200).send({ email: user.email, usertype: req.body.usertype, hashedduocode: hashedDuoCode });
                             }).catch(() => {
                                 return res.status(500).send({ error: `2FA Code Email failed to send.` });
                             });
@@ -151,7 +151,7 @@ router.post('/google', async (req, res) => {
                     // Send email to user with duo code
                     mail(user.email, "2FA Login Code!", duoEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_DUO_CODE_", duoCode))
                         .then(() => {
-                            return res.status(200).send({ email: user.email, userType: req.body.usertype, hashedDuoCode: hashedDuoCode });
+                            return res.status(200).send({ email: user.email, usertype: req.body.usertype, hashedduocode: hashedDuoCode });
                         }).catch(() => {
                             return res.status(500).send({ error: `2FA Code Email failed to send.` });
                         });
