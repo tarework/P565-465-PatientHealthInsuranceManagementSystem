@@ -132,11 +132,9 @@ router.post('/onboard', async function (req, res) {
   const { error } = ValidateDoctorDetails(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
-  let query = `INSERT INTO doctorDetails (id, practicename, address1, address2, city, state1, zipcode,
-              npinumber, specializations, treatscovid, bedsavilable, bedsmax) 
-              OUTPUT INSERTED.* 
-              VALUES (@id, @address1, @address2, @city, @state1, @zipcode, 
-              @npinumber, @specializations, @treatscovid, @bedsavilable, @bedsmax);`;
+  let query = `INSERT INTO doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsavailable, bedsmax) 
+    OUTPUT INSERTED.* 
+    VALUES (@id, @practicename, @address1, @address2, @city, @state1, @zipcode, @npinumber, @specializations, @treatscovid, @bedsavailable, @bedsmax);`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
     { name: 'practicename', sqltype: sql.VarChar(255), value: req.body.practicename },
@@ -152,6 +150,7 @@ router.post('/onboard', async function (req, res) {
     { name: 'bedsmax', sqltype: sql.Int, value: req.body.bedsmax }
   ];
 
+
   doQuery(res, query, params, function (insertData) {
     if (empty(insertData.recordset)) return res.status(500).send({ error: "Data not saved." })
 
@@ -165,11 +164,9 @@ router.put('/details', async function (req, res) {
   const { error } = ValidateDoctorDetails(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
-  let query = `INSERT INTO doctorDetails (id, practicename, address1, address2, city, state1, zipcode,
-    npinumber, specializations, treatscovid, bedsavilable, bedsmax) 
+  let query = `INSERT INTO doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsavailable, bedsmax) 
     OUTPUT INSERTED.* 
-    VALUES (@id, @address1, @address2, @city, @state1, @zipcode, 
-    @npinumber, @specializations, @treatscovid, @bedsavilable, @bedsmax);`;
+    VALUES (@id, @practicename, @address1, @address2, @city, @state1, @zipcode, @npinumber, @specializations, @treatscovid, @bedsavailable, @bedsmax);`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
     { name: 'practicename', sqltype: sql.VarChar(255), value: req.body.practicename },
