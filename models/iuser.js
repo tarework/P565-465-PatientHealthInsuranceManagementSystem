@@ -4,7 +4,7 @@ const constants = require('../utils/constants');
 
 function ValidanteInsuranceDetails(request) {
     const schema = Joi.object({
-        practicename: Joi.string().required(),
+        companyname: Joi.string().required(),
         address1: Joi.string().required(),
         address2: Joi.string().allow('', null),
         city: Joi.string().required().regex(constants.regexLettersOnly).error(() => new Error('City field is require and should contain only letters.')),
