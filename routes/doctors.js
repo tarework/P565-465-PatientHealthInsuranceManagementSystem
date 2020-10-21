@@ -81,7 +81,7 @@ router.put('/password', async function (req, res) {
     const user = selectData.recordset[0];
 
     // Check password is correct
-    bcrypt.compare(req.body.pwordOld, user.pword)
+    bcrypt.compare(req.body.pwordold, user.pword)
       .then(async (isMatch) => {
         if (!isMatch) return res.status(400).send({ error: `Incorrect old password.` });
       })

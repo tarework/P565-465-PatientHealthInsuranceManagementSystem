@@ -13,15 +13,15 @@ const router = express.Router();
 router.post('/', async (req, res) => {
     // validate is proper email
     const { error } = ValidateEmail(req.body);
-    if(error) return res.status(400).send({ error: error.message });
+    if (error) return res.status(400).send({ error: error.message });
 
     // validate is registered email
-    let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)} WHERE email = @email;`;
+    let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.usertype)} WHERE email = @email;`;
     let params = [
         { name: 'email', sqltype: sql.VarChar(255), value: req.body.email }
     ];
 
-    doQuery(res, query, params, async function(selectData) {
+    doQuery(res, query, params, async function (selectData) {
         let user = empty(selectData.recordset) ? {} : selectData.recordset[0];
         if (empty(user)) return res.status(400).send({ error: `E-mail not found.` });
 
@@ -37,24 +37,24 @@ router.post('/', async (req, res) => {
         // Protect the password, salt and hash it!
         const salt = await bcrypt.genSalt(11);
         let hashedPassword = await bcrypt.hash(newPassword, salt);
-        
+
         // Set generated password as password for the user
-        query = `UPDATE ${constants.UserTypeToTableName(req.body.userType)}
+        query = `UPDATE ${constants.UserTypeToTableName(req.body.usertype)}
         SET pword = @pword
         WHERE email = @email;`;
         params = [
             { name: 'email', sqltype: sql.VarChar(255), value: req.body.email },
             { name: 'pword', sqltype: sql.VarChar(1024), value: hashedPassword }
         ];
-        
-        doQuery(res, query, params, async function(updateData) { 
+
+        doQuery(res, query, params, async function (updateData) {
             // Send email to registered email with a new password
             mail(user.email, "Password Recovery!", passwordEmail.replace("_FIRST_NAME_", user.fname).replace("_LAST_NAME_", user.lname).replace("_PASSWORD_", newPassword))
-            .then(()=> {
-                return res.status(200).send({ message: `Email sent.` });
-            }).catch( ()=> {
-                return res.status(500).send({ error: `Password Recovery Email failed to send.` });
-            });
+                .then(() => {
+                    return res.status(200).send({ message: `Email sent.` });
+                }).catch(() => {
+                    return res.status(500).send({ error: `Password Recovery Email failed to send.` });
+                });
         });
     });
 });

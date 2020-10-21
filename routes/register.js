@@ -12,15 +12,15 @@ const storage = require('../utils/storage');
 router.post('/', async (req, res) => {
     // Validate information in request
     const { error } = ValidateRegistration(req.body);
-    if(error) return res.status(400).send({ error: error.message });
+    if (error) return res.status(400).send({ error: error.message });
 
     // Make sure email isn't already registered in proper database table!!
-    let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.userType)} WHERE email = @email;`;
+    let query = `SELECT * FROM ${constants.UserTypeToTableName(req.body.usertype)} WHERE email = @email;`;
     let params = [
         { name: 'email', sqltype: sql.VarChar(255), value: req.body.email }
     ];
-    
-    doQuery(res, query, params, async function(selectData) {
+
+    doQuery(res, query, params, async function (selectData) {
         let user = empty(selectData.recordset) ? [] : selectData.recordset[0];
         if (!empty(user)) return res.status(400).send({ error: `E-mail already registered.` });
 
@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
         user.pword = await bcrypt.hash(req.body.pword, salt);
 
         // Save new user to correct database table!
-        query = `INSERT INTO ${constants.UserTypeToTableName(req.body.userType)} (email, pword, fname, lname, phonenumber)
+        query = `INSERT INTO ${constants.UserTypeToTableName(req.body.usertype)} (email, pword, fname, lname, phonenumber)
         OUTPUT INSERTED.*
         VALUES (@email, @pword, @fname, @lname, @phonenumber);`
         params = [
@@ -40,17 +40,17 @@ router.post('/', async (req, res) => {
             { name: 'phonenumber', sqltype: sql.VarChar(50), value: req.body.phonenumber }
         ];
 
-        doQuery(res, query, params, function(insertData) { 
+        doQuery(res, query, params, function (insertData) {
             user = empty(insertData.recordset) ? [] : insertData.recordset[0];
-            if(empty(user)) return res.status(500).send("Failed to register user.");
+            if (empty(user)) return res.status(500).send("Failed to register user.");
 
-            storage.UploadFile(`${req.body.userType}${insertData.recordset[0].id}`, "profile", constants.DEFAULT_PROFILE);
+            storage.UploadFile(`${req.body.usertype}${insertData.recordset[0].id}`, "profile", constants.DEFAULT_PROFILE);
 
-            user = { "id": user['id'], "userType": req.body.userType, exp: 3600 };
+            user = { "id": user['id'], "userType": req.body.usertype, exp: 3600 };
 
             // Return authenication token and created user object
             const token = GenerateAuthToken(user);
-            return res.status(200).send({ token: token, id: user.id, userType: req.body.userType });
+            return res.status(200).send({ token: token, id: user.id, userType: req.body.usertype });
         });
     });
 });

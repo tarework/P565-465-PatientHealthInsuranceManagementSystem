@@ -29,7 +29,7 @@ function ValidateRegistration(request) {
         fname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(() => new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
         lname: Joi.string().min(2).max(255).required().regex(regexLettersOnly).error(() => new Error('Name fields are required, must be longer than 1 characters, and should only contain letters.')),
         phonenumber: Joi.string().required().regex(regexPhoneNumber).error(() => new Error('Phone number is required, must be 10 digits, and should only contain numbers.')),
-        userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(() => new Error('UserType is invalid or empty.')),
+        usertype: Joi.string().valid('patient', 'doctor', 'insurance').required().error(() => new Error('UserType is invalid or empty.')),
     });
 
     return CleanErrorMessage(schema.validate(request))
@@ -39,7 +39,7 @@ function ValidateLogin(request) {
     const schema = Joi.object({
         email: Joi.string().min(5).max(255).required().email(),
         pword: Joi.string().required(),
-        userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(() => new Error('UserType is invalid or empty.'))
+        usertype: Joi.string().valid('patient', 'doctor', 'insurance').required().error(() => new Error('UserType is invalid or empty.'))
     });
 
     return CleanErrorMessage(schema.validate(request))
@@ -48,7 +48,7 @@ function ValidateLogin(request) {
 function ValidateEmail(request) {
     const schema = Joi.object({
         email: Joi.string().min(5).max(255).required().email(),
-        userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(() => new Error('UserType is invalid or empty.'))
+        usertype: Joi.string().valid('patient', 'doctor', 'insurance').required().error(() => new Error('UserType is invalid or empty.'))
     });
 
     return CleanErrorMessage(schema.validate(request))
@@ -56,10 +56,10 @@ function ValidateEmail(request) {
 
 function ValidateDuoCode(request) {
     const schema = Joi.object({
-        hashedDuoCode: Joi.string().required(),
+        hashedduocode: Joi.string().required(),
         duo: Joi.string().required(),
         email: Joi.string().min(5).max(255).required().email(),
-        userType: Joi.string().valid('patient', 'doctor', 'insurance').required().error(() => new Error('UserType is invalid or empty.'))
+        usertype: Joi.string().valid('patient', 'doctor', 'insurance').required().error(() => new Error('UserType is invalid or empty.'))
     });
 
     return CleanErrorMessage(schema.validate(request))
@@ -68,7 +68,7 @@ function ValidateDuoCode(request) {
 function ValidatePassword(request) {
     const schema = Joi.object({
         pword: JoiPC(passwordOptions).required(),
-        pwordConfirmation: Joi.string().valid(Joi.ref('pword')).required().error(() => new Error('Passwords do not match.'))
+        pwordconfirmation: Joi.string().valid(Joi.ref('pword')).required().error(() => new Error('Passwords do not match.'))
     }).options({ stripUnknown: true });
 
     return CleanErrorMessage(schema.validate(request));

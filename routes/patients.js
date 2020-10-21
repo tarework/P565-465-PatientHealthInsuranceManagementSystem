@@ -31,13 +31,6 @@ router.get('/:id', async function (req, res) {
 //#region PUT patientUser/password/profilepic 
 
 router.put('/user', async function (req, res) {
-
-  // winston.info(req.body.id);
-  // winston.info(req.body.email);
-  // winston.info(req.body.fname);
-  // winston.info(req.body.lname);
-  // winston.info(req.body.phonenumber);
-
   // Data Validation
   const { error } = ValidateUpdateUser(req.body);
   if (error) return res.status(400).send({ error: error.message });
@@ -87,7 +80,7 @@ router.put('/password', async function (req, res) {
     const user = selectData.recordset[0];
 
     // Check password is correct
-    bcrypt.compare(req.body.pwordOld, user.pword)
+    bcrypt.compare(req.body.pwordold, user.pword)
       .then(async (isMatch) => {
         if (!isMatch) return res.status(400).send({ error: `Incorrect old password.` });
       })
