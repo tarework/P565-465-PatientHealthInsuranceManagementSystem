@@ -240,7 +240,7 @@ router.get('/:id/mydoctors', async function (req, res) {
       didList.push(selectData.recordset[d].did);
     }
     let query = `SELECT email, fname, lname, phonenumber, 
-      (SELECT address1, address2, state1, city, zipcode, npinumber, treatscovid, bedsavailable, bedsmax,
+      (SELECT address1, address2, state1, city, zipcode, npinumber, treatscovid, bedsmax,
         (SELECT * FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specializations
       FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail 
       FROM doctorUsers WHERE id IN (${didList});`;
@@ -265,7 +265,7 @@ router.get('/:id/mydoctor/:did', async function (req, res) {
     if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve doctor records." });
 
     let query = `SELECT email, fname, lname, phonenumber, 
-      (SELECT address1, address2, state1, city, zipcode, npinumber, treatscovid, bedsavailable, bedsmax,
+      (SELECT address1, address2, state1, city, zipcode, npinumber, treatscovid, bedsmax,
         (SELECT * FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specializations
       FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail 
       FROM doctorUsers WHERE id = (${req.params.did});`;

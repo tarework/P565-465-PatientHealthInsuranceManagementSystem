@@ -169,9 +169,9 @@ router.post('/onboard', async function (req, res) {
     specializations = insertData.recordset[0];
 
 
-    query = `INSERT INTO doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsavailable, bedsmax) 
+    query = `INSERT INTO doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsmax) 
       OUTPUT INSERTED.* 
-      VALUES (@id, @practicename, @address1, @address2, @city, @state1, @zipcode, @npinumber, @specializations, @treatscovid, @bedsavailable, @bedsmax);`;
+      VALUES (@id, @practicename, @address1, @address2, @city, @state1, @zipcode, @npinumber, @specializations, @treatscovid, @bedsmax);`;
     params = [
       { name: 'id', sqltype: sql.Int, value: req.body.id },
       { name: 'practicename', sqltype: sql.VarChar(255), value: req.body.practicename },
@@ -183,7 +183,7 @@ router.post('/onboard', async function (req, res) {
       { name: 'npinumber', sqltype: sql.VarChar(10), value: req.body.npinumber },
       { name: 'specializations', sqltype: sql.Int, value: req.body.id },
       { name: 'treatscovid', sqltype: sql.Bit, value: req.body.treatscovid },
-      { name: 'bedsavailable', sqltype: sql.Int, value: req.body.bedsavailable },
+      //{ name: 'bedsavailable', sqltype: sql.Int, value: req.body.bedsavailable },
       { name: 'bedsmax', sqltype: sql.Int, value: req.body.bedsmax }
     ];
 
@@ -245,7 +245,7 @@ router.put('/details', async function (req, res) {
 
     query = `UPDATE doctorDetails 
       SET practicename = @practicename, address1 = @address1, address2 = @address2, city = @city, state1 = @state1, zipcode = @zipcode, 
-      npinumber = @npinumber, specializations = @specializations, treatscovid = @treatscovid, bedsavailable = @bedsavailable, bedsmax = @bedsmax 
+      npinumber = @npinumber, specializations = @specializations, treatscovid = @treatscovid, bedsmax = @bedsmax 
       OUTPUT INSERTED.* WHERE id = @id`;
     params = [
       { name: 'id', sqltype: sql.Int, value: req.body.id },
@@ -258,7 +258,7 @@ router.put('/details', async function (req, res) {
       { name: 'npinumber', sqltype: sql.VarChar(10), value: req.body.npinumber },
       { name: 'specializations', sqltype: sql.Int, value: req.body.id },
       { name: 'treatscovid', sqltype: sql.Bit, value: req.body.treatscovid },
-      { name: 'bedsavailable', sqltype: sql.Int, value: req.body.bedsavailable },
+      //{ name: 'bedsavailable', sqltype: sql.Int, value: req.body.bedsavailable },
       { name: 'bedsmax', sqltype: sql.Int, value: req.body.bedsmax }
     ];
 
