@@ -278,24 +278,36 @@ router.put('/details', async function (req, res) {
 
 // Gets doctorUser's patient's sorted by name.
 router.get('/:id/mypatients', async function (req, res) {
+  let query = `SELECT * FROM patientDoctorRelations WHERE did = @did;`;
+  let params = [
+    { name: 'did', sqltype: sql.Int, value: req.params.id }
+  ];
+  doQuery(res, query, params, function (selectData) {
+    if (empty(selectData.recordset)) return res.status(500).send({ error: "No data found." });
 
-  // come back after validation for doctorDetails is done
+    const patientList = []
+    winston.info(patientList.length);
 
-  // let query = `SELECT * FROM patientBills WHERE id = @id;`;
-  // let params = [
-  //   { name: 'id', sqltype: sql.Int, value: req.params.id }
-  // ];
+    for (p = 0; p < selectData.recordset.length; p++) {
+      winston.info("Looking up patient " + selectData.recordset[p].pid);
+      let query = `SELECT *, (SELECT * FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH) AS detail FROM patientUsers WHERE id = ${selectData.recordset[p].pid};`;
+      let params = [];
 
-  // doQuery(res, query, params, function (selectData) {
-  //   // No Bills? - This an acceptable scenario?
-  //   if (empty(selectData.recordset)) return res.status(200).send({ bills: [] })
+      doQuery(res, query, params, async function (selectData) {
+        if (empty(selectData.recordset)) return res.status(400).send({ error: "Patient record does not exist." })
 
-  //   const bills = selectData.recordset;
-  //   // sorts if paid/not paid then by date
-  //   const billsSortedByDate = bills.sort((a, b) => b.settled - a.settled || b.statementdate - a.statementdate);
+        delete selectData.recordset[0].pword
 
-  //   return res.status(200).send({ bills: billsSortedByDate });
-  // });
+        patientList.push(selectData.recordset[0])
+
+        wait = false;
+        winston.info("look up done");
+      });
+    }
+
+    winston.info(patientList.length);
+
+  });
 });
 
 //#endregion

@@ -31,12 +31,13 @@ CREATE TABLE doctorSpecializations (
 CREATE TABLE doctorReviews (
     id int NOT NULL IDENTITY,
 	PRIMARY KEY (id),
-	reviewername varchar(255) NULL,
-	reviewerid int NULL,
-	revieweename varchar(255) NULL,
-	revieweeid int NULL,
+	patientname varchar(255) NULL,
+	pid int NULL,
+	doctorname varchar(255) NULL,
+	did int NULL,
 	rating int NULL,
-	reviewmessage varchar(max) NULL
+	reviewmessage varchar(max) NULL,
+	rewviewcompleted BIT NULL,
 );
 
 CREATE TABLE doctorDetails (
