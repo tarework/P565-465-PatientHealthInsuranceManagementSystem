@@ -274,31 +274,53 @@ router.put('/details', async function (req, res) {
 
 //#endregion
 
-//#region GET Doctor Patient Details
+//#region GET Doctor's Patient Details
 
-// Gets doctorUser's patient's sorted by name.
+// Gets doctorUser's patients'
 router.get('/:id/mypatients', async function (req, res) {
   let query = `SELECT * FROM patientDoctorRelations WHERE did = @did;`;
   let params = [
     { name: 'did', sqltype: sql.Int, value: req.params.id }
   ];
   doQuery(res, query, params, function (selectData) {
-    if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient records." })
+    if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient records." });
 
-    const pidList = []
+    const pidList = [];
     for (p = 0; p < selectData.recordset.length; p++) {
       pidList.push(selectData.recordset[p].pid);
     }
 
     let query = `SELECT email, fname, lname, phonenumber, 
-    (SELECT address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq 
+      (SELECT address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq 
       FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH)
       AS detail FROM patientUsers WHERE id IN (${pidList});`;
-    let params = [];
+    params = [];
     doQuery(res, query, params, async function (selectData) {
-      if (empty(selectData.recordset)) return res.status(400).send({ error: "Failed to retrieve patient records." })
+      if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient records." });
 
-      return res.status(200).send({ mypatients: selectData.recordset });
+      return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail) })) });
+    });
+  });
+});
+
+// Gets doctorUser's patient 
+router.get('/:id/mypatient/:pid', async function (req, res) {
+  let query = `SELECT * FROM patientDoctorRelations WHERE did = @did and pid = @pid;`;
+  let params = [
+    { name: 'did', sqltype: sql.Int, value: req.params.id },
+    { name: 'pid', sqltype: sql.Int, value: req.params.pid }
+  ];
+  doQuery(res, query, params, function (selectData) {
+    if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient records.1" });
+
+    let query = `SELECT email, fname, lname, phonenumber, 
+      (SELECT address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq 
+      FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH)
+      AS detail FROM patientUsers WHERE id = (${req.params.pid});`;
+    doQuery(res, query, [], async function (selectData) {
+      if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient records.2" });
+
+      return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0] }))[0] });
     });
   });
 });
