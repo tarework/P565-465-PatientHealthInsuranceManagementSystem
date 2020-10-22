@@ -132,29 +132,68 @@ router.post('/onboard', async function (req, res) {
   const { error } = ValidateDoctorDetails(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
-  let query = `INSERT INTO doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsavailable, bedsmax) 
-    OUTPUT INSERTED.* 
-    VALUES (@id, @practicename, @address1, @address2, @city, @state1, @zipcode, @npinumber, @specializations, @treatscovid, @bedsavailable, @bedsmax);`;
+  // Save Specializations
+  let specializations = [];
+  let query = `INSERT INTO doctorSpecializations (id, allergy, immunology, anesthesiology, dermatology, diagnosticradiology, emergencymedicine, familymedicine, internalmedicine, medicalgenetics, neurology, nuclearmedicine, obstetrics, gynecology, ophthalmology, pathology, pediatrics, physicalmedicine, rehabilitation, preventivemedicine, psychiatry, radiationoncology, surgery, urology)
+    OUTPUT INSERTED.*
+    VALUES(@id, @allergy, @immunology, @anesthesiology, @dermatology, @diagnosticradiology, @emergencymedicine, @familymedicine, @internalmedicine, @medicalgenetics, @neurology, @nuclearmedicine, @obstetrics, @gynecology, @ophthalmology, @pathology, @pediatrics, @physicalmedicine, @rehabilitation, @preventivemedicine, @psychiatry, @radiationoncology, @surgery, @urology)`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
-    { name: 'practicename', sqltype: sql.VarChar(255), value: req.body.practicename },
-    { name: 'address1', sqltype: sql.VarChar(255), value: req.body.address1 },
-    { name: 'address2', sqltype: sql.VarChar(255), value: req.body.address2 },
-    { name: 'city', sqltype: sql.VarChar(50), value: req.body.city },
-    { name: 'state1', sqltype: sql.VarChar(15), value: req.body.state1 },
-    { name: 'zipcode', sqltype: sql.VarChar(15), value: req.body.zipcode },
-    { name: 'npinumber', sqltype: sql.VarChar(10), value: req.body.npinumber },
-    { name: 'specializations', sqltype: sql.VarChar(255), value: req.body.specializations },
-    { name: 'treatscovid', sqltype: sql.Bit, value: req.body.treatscovid },
-    { name: 'bedsavailable', sqltype: sql.Int, value: req.body.bedsavailable },
-    { name: 'bedsmax', sqltype: sql.Int, value: req.body.bedsmax }
+    { name: 'allergy', sqltype: sql.Bit, value: req.body.specializations['allergy'] },
+    { name: 'immunology', sqltype: sql.Bit, value: req.body.specializations['immunology'] },
+    { name: 'anesthesiology', sqltype: sql.Bit, value: req.body.specializations['anesthesiology'] },
+    { name: 'dermatology', sqltype: sql.Bit, value: req.body.specializations['dermatology'] },
+    { name: 'diagnosticradiology', sqltype: sql.Bit, value: req.body.specializations['diagnosticradiology'] },
+    { name: 'emergencymedicine', sqltype: sql.Bit, value: req.body.specializations['emergencymedicine'] },
+    { name: 'familymedicine', sqltype: sql.Bit, value: req.body.specializations['familymedicine'] },
+    { name: 'internalmedicine', sqltype: sql.Bit, value: req.body.specializations['internalmedicine'] },
+    { name: 'medicalgenetics', sqltype: sql.Bit, value: req.body.specializations['medicalgenetics'] },
+    { name: 'neurology', sqltype: sql.Bit, value: req.body.specializations['neurology'] },
+    { name: 'nuclearmedicine', sqltype: sql.Bit, value: req.body.specializations['nuclearmedicine'] },
+    { name: 'obstetrics', sqltype: sql.Bit, value: req.body.specializations['obstetrics'] },
+    { name: 'gynecology', sqltype: sql.Bit, value: req.body.specializations['gynecology'] },
+    { name: 'ophthalmology', sqltype: sql.Bit, value: req.body.specializations['ophthalmology'] },
+    { name: 'pathology', sqltype: sql.Bit, value: req.body.specializations['pathology'] },
+    { name: 'pediatrics', sqltype: sql.Bit, value: req.body.specializations['pediatrics'] },
+    { name: 'physicalmedicine', sqltype: sql.Bit, value: req.body.specializations['physicalmedicine'] },
+    { name: 'rehabilitation', sqltype: sql.Bit, value: req.body.specializations['rehabilitation'] },
+    { name: 'preventivemedicine', sqltype: sql.Bit, value: req.body.specializations['preventivemedicine'] },
+    { name: 'psychiatry', sqltype: sql.Bit, value: req.body.specializations['psychiatry'] },
+    { name: 'radiationoncology', sqltype: sql.Bit, value: req.body.specializations['radiationoncology'] },
+    { name: 'surgery', sqltype: sql.Bit, value: req.body.specializations['surgery'] },
+    { name: 'urology', sqltype: sql.Bit, value: req.body.specializations['urology'] }
   ];
-
-
   doQuery(res, query, params, function (insertData) {
     if (empty(insertData.recordset)) return res.status(500).send({ error: "Data not saved." })
 
-    return res.status(200).send({ detail: insertData.recordset[0] });
+    specializations = insertData.recordset[0];
+
+
+    query = `INSERT INTO doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsavailable, bedsmax) 
+      OUTPUT INSERTED.* 
+      VALUES (@id, @practicename, @address1, @address2, @city, @state1, @zipcode, @npinumber, @specializations, @treatscovid, @bedsavailable, @bedsmax);`;
+    params = [
+      { name: 'id', sqltype: sql.Int, value: req.body.id },
+      { name: 'practicename', sqltype: sql.VarChar(255), value: req.body.practicename },
+      { name: 'address1', sqltype: sql.VarChar(255), value: req.body.address1 },
+      { name: 'address2', sqltype: sql.VarChar(255), value: req.body.address2 },
+      { name: 'city', sqltype: sql.VarChar(50), value: req.body.city },
+      { name: 'state1', sqltype: sql.VarChar(15), value: req.body.state1 },
+      { name: 'zipcode', sqltype: sql.VarChar(15), value: req.body.zipcode },
+      { name: 'npinumber', sqltype: sql.VarChar(10), value: req.body.npinumber },
+      { name: 'specializations', sqltype: sql.Int, value: req.body.id },
+      { name: 'treatscovid', sqltype: sql.Bit, value: req.body.treatscovid },
+      { name: 'bedsavailable', sqltype: sql.Int, value: req.body.bedsavailable },
+      { name: 'bedsmax', sqltype: sql.Int, value: req.body.bedsmax }
+    ];
+
+    doQuery(res, query, params, function (insertData) {
+      if (empty(insertData.recordset)) return res.status(500).send({ error: "Data not saved." })
+
+      insertData.recordset[0].specializations = specializations;
+
+      return res.status(200).send({ detail: insertData.recordset[0] });
+    });
   });
 });
 
@@ -164,29 +203,72 @@ router.put('/details', async function (req, res) {
   const { error } = ValidateDoctorDetails(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
-  let query = `UPDATE doctorDetails 
-    SET practicename = @practicename, address1 = @address1, address2 = @address2, city = @city, state1 = @state1, zipcode = @zipcode, 
-    npinumber = @npinumber, specializations = @specializations, treatscovid = @treatscovid, bedsavailable = @bedsavailable, bedsmax = @bedsmax 
-    OUTPUT INSERTED.* WHERE id = @id`;
+  // Save Specializations
+  let specializations = [];
+  let query = `UPDATE doctorSpecializations
+   SET allergy = @allergy, immunology = @immunology, anesthesiology = @anesthesiology, dermatology = @dermatology, diagnosticradiology = @diagnosticradiology, 
+   emergencymedicine = @emergencymedicine, familymedicine = @familymedicine, internalmedicine = @internalmedicine, medicalgenetics = @medicalgenetics, neurology = @neurology, 
+   nuclearmedicine = @nuclearmedicine, obstetrics = @obstetrics, gynecology = @gynecology, ophthalmology = @ophthalmology, pathology = @pathology, pediatrics = @pediatrics, 
+   physicalmedicine = @physicalmedicine, rehabilitation = @rehabilitation, preventivemedicine = @preventivemedicine, psychiatry = @psychiatry, radiationoncology = @radiationoncology, 
+   surgery = @surgery, urology = @urology
+   OUTPUT INSERTED.* WHERE id = @id`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
-    { name: 'practicename', sqltype: sql.VarChar(255), value: req.body.practicename },
-    { name: 'address1', sqltype: sql.VarChar(255), value: req.body.address1 },
-    { name: 'address2', sqltype: sql.VarChar(255), value: req.body.address2 },
-    { name: 'city', sqltype: sql.VarChar(50), value: req.body.city },
-    { name: 'state1', sqltype: sql.VarChar(15), value: req.body.state1 },
-    { name: 'zipcode', sqltype: sql.VarChar(15), value: req.body.zipcode },
-    { name: 'npinumber', sqltype: sql.VarChar(10), value: req.body.npinumber },
-    { name: 'specializations', sqltype: sql.VarChar(255), value: req.body.specializations },
-    { name: 'treatscovid', sqltype: sql.Bit, value: req.body.treatscovid },
-    { name: 'bedsavailable', sqltype: sql.Int, value: req.body.bedsavailable },
-    { name: 'bedsmax', sqltype: sql.Int, value: req.body.bedsmax }
+    { name: 'allergy', sqltype: sql.Bit, value: req.body.specializations['allergy'] },
+    { name: 'immunology', sqltype: sql.Bit, value: req.body.specializations['immunology'] },
+    { name: 'anesthesiology', sqltype: sql.Bit, value: req.body.specializations['anesthesiology'] },
+    { name: 'dermatology', sqltype: sql.Bit, value: req.body.specializations['dermatology'] },
+    { name: 'diagnosticradiology', sqltype: sql.Bit, value: req.body.specializations['diagnosticradiology'] },
+    { name: 'emergencymedicine', sqltype: sql.Bit, value: req.body.specializations['emergencymedicine'] },
+    { name: 'familymedicine', sqltype: sql.Bit, value: req.body.specializations['familymedicine'] },
+    { name: 'internalmedicine', sqltype: sql.Bit, value: req.body.specializations['internalmedicine'] },
+    { name: 'medicalgenetics', sqltype: sql.Bit, value: req.body.specializations['medicalgenetics'] },
+    { name: 'neurology', sqltype: sql.Bit, value: req.body.specializations['neurology'] },
+    { name: 'nuclearmedicine', sqltype: sql.Bit, value: req.body.specializations['nuclearmedicine'] },
+    { name: 'obstetrics', sqltype: sql.Bit, value: req.body.specializations['obstetrics'] },
+    { name: 'gynecology', sqltype: sql.Bit, value: req.body.specializations['gynecology'] },
+    { name: 'ophthalmology', sqltype: sql.Bit, value: req.body.specializations['ophthalmology'] },
+    { name: 'pathology', sqltype: sql.Bit, value: req.body.specializations['pathology'] },
+    { name: 'pediatrics', sqltype: sql.Bit, value: req.body.specializations['pediatrics'] },
+    { name: 'physicalmedicine', sqltype: sql.Bit, value: req.body.specializations['physicalmedicine'] },
+    { name: 'rehabilitation', sqltype: sql.Bit, value: req.body.specializations['rehabilitation'] },
+    { name: 'preventivemedicine', sqltype: sql.Bit, value: req.body.specializations['preventivemedicine'] },
+    { name: 'psychiatry', sqltype: sql.Bit, value: req.body.specializations['psychiatry'] },
+    { name: 'radiationoncology', sqltype: sql.Bit, value: req.body.specializations['radiationoncology'] },
+    { name: 'surgery', sqltype: sql.Bit, value: req.body.specializations['surgery'] },
+    { name: 'urology', sqltype: sql.Bit, value: req.body.specializations['urology'] }
   ];
-
-  doQuery(res, query, params, function (updateData) {
+  doQuery(res, query, params, async function (updateData) {
     if (empty(updateData.recordset)) return res.status(500).send({ error: "Data not saved." })
 
-    return res.status(200).send({ detail: updateData.recordset[0] });
+    specializations = updateData.recordset[0];
+
+    query = `UPDATE doctorDetails 
+      SET practicename = @practicename, address1 = @address1, address2 = @address2, city = @city, state1 = @state1, zipcode = @zipcode, 
+      npinumber = @npinumber, specializations = @specializations, treatscovid = @treatscovid, bedsavailable = @bedsavailable, bedsmax = @bedsmax 
+      OUTPUT INSERTED.* WHERE id = @id`;
+    params = [
+      { name: 'id', sqltype: sql.Int, value: req.body.id },
+      { name: 'practicename', sqltype: sql.VarChar(255), value: req.body.practicename },
+      { name: 'address1', sqltype: sql.VarChar(255), value: req.body.address1 },
+      { name: 'address2', sqltype: sql.VarChar(255), value: req.body.address2 },
+      { name: 'city', sqltype: sql.VarChar(50), value: req.body.city },
+      { name: 'state1', sqltype: sql.VarChar(15), value: req.body.state1 },
+      { name: 'zipcode', sqltype: sql.VarChar(15), value: req.body.zipcode },
+      { name: 'npinumber', sqltype: sql.VarChar(10), value: req.body.npinumber },
+      { name: 'specializations', sqltype: sql.Int, value: req.body.id },
+      { name: 'treatscovid', sqltype: sql.Bit, value: req.body.treatscovid },
+      { name: 'bedsavailable', sqltype: sql.Int, value: req.body.bedsavailable },
+      { name: 'bedsmax', sqltype: sql.Int, value: req.body.bedsmax }
+    ];
+
+    doQuery(res, query, params, function (updateData) {
+      if (empty(updateData.recordset)) return res.status(500).send({ error: "Data not saved." })
+
+      updateData.recordset[0].specializations = specializations;
+
+      return res.status(200).send({ detail: updateData.recordset[0] });
+    });
   });
 });
 

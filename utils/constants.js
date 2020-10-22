@@ -27,6 +27,33 @@ function UserTypeToTableName(userType) {
     else return "ERROR";
 }
 
+function ColumnNameToSpecializationString(columnName) {
+    if ('allergy' == columnName) return 'Allergy';
+    else if ('immunology' == columnName) return 'Immunology';
+    else if ('anesthesiology' == columnName) return 'Anesthesiology';
+    else if ('dermatology' == columnName) return 'Dermatology';
+    else if ('diagnosticradiology' == columnName) return 'Diagnostic Radiology';
+    else if ('emergencymedicine' == columnName) return 'Emergency Medicine';
+    else if ('familymedicine' == columnName) return 'Family Medicine';
+    else if ('internalmedicine' == columnName) return 'Internal Medicine';
+    else if ('medicalgenetics' == columnName) return 'Medical Genetics';
+    else if ('neurology' == columnName) return 'Neurology';
+    else if ('nuclearmedicine' == columnName) return 'Nuclear Medicine';
+    else if ('obstetrics' == columnName) return 'Obstetrics';
+    else if ('gynecology' == columnName) return 'Gynecology';
+    else if ('ophthalmology' == columnName) return 'Ophthalmology';
+    else if ('pathology' == columnName) return 'Pathology';
+    else if ('pediatrics' == columnName) return 'Pediatrics';
+    else if ('physicalmedicine' == columnName) return 'Physical Medicine';
+    else if ('rehabilitation' == columnName) return 'Rehabilitation';
+    else if ('preventivemedicine' == columnName) return 'Preventive Medicine';
+    else if ('psychiatry' == columnName) return 'Psychiatry';
+    else if ('radiationoncology' == columnName) return 'Radiation Oncology';
+    else if ('surgery' == columnName) return 'Surgery';
+    else if ('urology' == columnName) return 'Urology';
+    else return "ERROR";
+}
+
 function CleanErrorMessage(result) {
     if (result.error)
         result.error.message = result.error.message.replace(/\"/g, '');

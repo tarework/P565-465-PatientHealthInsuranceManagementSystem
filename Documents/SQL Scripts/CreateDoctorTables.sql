@@ -1,3 +1,33 @@
+/* https://www.sgu.edu/blog/medical/ultimate-list-of-medical-specialties/ */
+
+CREATE TABLE doctorSpecializations (
+    id int NOT NULL,
+	PRIMARY KEY (id),
+	allergy BIT NULL,
+	immunology BIT NULL,
+	anesthesiology BIT NULL,
+	dermatology BIT NULL,
+	diagnosticradiology BIT NULL,
+	emergencymedicine BIT NULL,
+	familymedicine BIT NULL,
+	internalmedicine BIT NULL,
+	medicalgenetics BIT NULL,
+	neurology BIT NULL,
+	nuclearmedicine BIT NULL,
+	obstetrics BIT NULL,
+	gynecology BIT NULL,
+	ophthalmology BIT NULL,
+	pathology BIT NULL,
+	pediatrics BIT NULL,
+	physicalmedicine BIT NULL,
+	rehabilitation BIT NULL,
+	preventivemedicine BIT NULL,
+	psychiatry BIT NULL,
+	radiationoncology BIT NULL,
+	surgery BIT NULL,
+	urology BIT NULL,
+);
+
 CREATE TABLE doctorReviews (
     id int NOT NULL IDENTITY,
 	PRIMARY KEY (id),
@@ -19,7 +49,7 @@ CREATE TABLE doctorDetails (
 	state1 varchar(15) NULL,
 	zipcode varchar(15) NULL,
 	npinumber varchar(10) NULL,
-	specializations varchar(255) NULL,
+	specializations int NULL,
 	treatscovid BIT NULL,
 	bedsavailable int NULL,
 	bedsmax int NULL

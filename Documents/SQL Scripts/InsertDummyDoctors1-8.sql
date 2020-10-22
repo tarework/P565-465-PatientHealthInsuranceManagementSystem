@@ -22,26 +22,42 @@ VALUES ('dummydoctor7@gmail.com', 'dummydoctor7', 'dummy7', 'doctor7', '201-201-
 INSERT INTO dbo.doctorUsers (email, pword, fname, lname, phonenumber)
 VALUES ('dummydoctor8@gmail.com', 'dummydoctor8', 'dummy8', 'doctor8', '201-201-2010');
 
+INSERT INTO dbo.doctorSpecializations(id, allergy, immunology, anesthesiology, dermatology, diagnosticradiology, emergencymedicine, familymedicine, internalmedicine, medicalgenetics, neurology, nuclearmedicine, obstetrics, gynecology, ophthalmology, pathology, pediatrics, physicalmedicine, rehabilitation, preventivemedicine, psychiatry, radiationoncology, surgery, urology)
+VALUES(12, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 INSERT INTO dbo.doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsavailable, bedsmax)
-VALUES (3, 'Dummy Doctor''s Practice 3', '527 E 1st St', 'N/A', 'Bloomington', 'IN', '47401', '1234567890', 'Anaesthesia, Clinical oncology', 0, 0, 0); 
+VALUES (12, 'Dummy Doctor''s Practice 3', '527 E 1st St', 'N/A', 'Bloomington', 'IN', '47401', '1234567890', 12, 0, 0, 0); 
 
+INSERT INTO dbo.doctorSpecializations(id, allergy, immunology, anesthesiology, dermatology, diagnosticradiology, emergencymedicine, familymedicine, internalmedicine, medicalgenetics, neurology, nuclearmedicine, obstetrics, gynecology, ophthalmology, pathology, pediatrics, physicalmedicine, rehabilitation, preventivemedicine, psychiatry, radiationoncology, surgery, urology)
+VALUES(4, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 INSERT INTO dbo.doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsavailable, bedsmax)
-VALUES (4, 'Hospital Joy', '525 E 1st St', 'N/A', 'Bloomington', 'IN', '47401', '1234567890', 'Allergy', 1, 1, 10); 
+VALUES (4, 'Hospital Joy', '525 E 1st St', 'N/A', 'Bloomington', 'IN', '47401', '1234567890', 4, 1, 1, 10); 
 
+INSERT INTO dbo.doctorSpecializations(id, allergy, immunology, anesthesiology, dermatology, diagnosticradiology, emergencymedicine, familymedicine, internalmedicine, medicalgenetics, neurology, nuclearmedicine, obstetrics, gynecology, ophthalmology, pathology, pediatrics, physicalmedicine, rehabilitation, preventivemedicine, psychiatry, radiationoncology, surgery, urology)
+VALUES(5, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 INSERT INTO dbo.doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsavailable, bedsmax)
-VALUES (5, 'Medical Waterfall Practice', '521 E 1st St', 'N/A', 'Bloomington', 'IN', '47401', '1234567890', 'Infectious Diseases', 1, 20, 20); 
+VALUES (5, 'Medical Waterfall Practice', '521 E 1st St', 'N/A', 'Bloomington', 'IN', '47401', '1234567890', 5, 1, 20, 20); 
 
+INSERT INTO dbo.doctorSpecializations(id, allergy, immunology, anesthesiology, dermatology, diagnosticradiology, emergencymedicine, familymedicine, internalmedicine, medicalgenetics, neurology, nuclearmedicine, obstetrics, gynecology, ophthalmology, pathology, pediatrics, physicalmedicine, rehabilitation, preventivemedicine, psychiatry, radiationoncology, surgery, urology)
+VALUES(6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0);
 INSERT INTO dbo.doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsavailable, bedsmax)
-VALUES (6, 'Dummy Doctor''s Practice 6', '519 E 1st St', 'N/A', 'Bloomington', 'IN', '47401', '1234567890', 'Nuclear Medicine', 0, 0, 0); 
+VALUES (6, 'Dummy Doctor''s Practice 6', '519 E 1st St', 'N/A', 'Bloomington', 'IN', '47401', '1234567890', 6, 0, 0, 0); 
 
+INSERT INTO dbo.doctorSpecializations(id, allergy, immunology, anesthesiology, dermatology, diagnosticradiology, emergencymedicine, familymedicine, internalmedicine, medicalgenetics, neurology, nuclearmedicine, obstetrics, gynecology, ophthalmology, pathology, pediatrics, physicalmedicine, rehabilitation, preventivemedicine, psychiatry, radiationoncology, surgery, urology)
+VALUES(7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
 INSERT INTO dbo.doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsavailable, bedsmax)
-VALUES (7, 'Joe''s Crab Stack Hospital', '515 E 1st St', 'N/A', 'Bloomington', 'IN', '47401', '1234567890', 'Sport and Exercise Medicine', 1, 1, 2); 
+VALUES (7, 'Joe''s Crab Stack Hospital', '515 E 1st St', 'N/A', 'Bloomington', 'IN', '47401', '1234567890', 7, 1, 1, 2); 
 
+INSERT INTO dbo.doctorSpecializations(id, allergy, immunology, anesthesiology, dermatology, diagnosticradiology, emergencymedicine, familymedicine, internalmedicine, medicalgenetics, neurology, nuclearmedicine, obstetrics, gynecology, ophthalmology, pathology, pediatrics, physicalmedicine, rehabilitation, preventivemedicine, psychiatry, radiationoncology, surgery, urology)
+VALUES(8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 INSERT INTO dbo.doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsavailable, bedsmax)
-VALUES (8, 'Dummy Doctor''s Practice 8', '509 E 1st St', 'N/A', 'Bloomington', 'IN', '47401', '1234567890', 'Paediatrics', 0, 5, 10); 
+VALUES (8, 'Dummy Doctor''s Practice 8', '509 E 1st St', 'N/A', 'Bloomington', 'IN', '47401', '1234567890', 8, 0, 5, 10); 
 
+INSERT INTO dbo.doctorSpecializations(id, allergy, immunology, anesthesiology, dermatology, diagnosticradiology, emergencymedicine, familymedicine, internalmedicine, medicalgenetics, neurology, nuclearmedicine, obstetrics, gynecology, ophthalmology, pathology, pediatrics, physicalmedicine, rehabilitation, preventivemedicine, psychiatry, radiationoncology, surgery, urology)
+VALUES(9, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 INSERT INTO dbo.doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsavailable, bedsmax)
-VALUES (9, 'Dummy Doctor''s Practice 9', '507 E 1st St', 'N/A', 'Bloomington', 'IN', '47401', '1234567890', 'Chemical Pathology', 1, 2, 5); 
+VALUES (9, 'Dummy Doctor''s Practice 9', '507 E 1st St', 'N/A', 'Bloomington', 'IN', '47401', '1234567890', 9, 1, 2, 5); 
 
+INSERT INTO dbo.doctorSpecializations(id, allergy, immunology, anesthesiology, dermatology, diagnosticradiology, emergencymedicine, familymedicine, internalmedicine, medicalgenetics, neurology, nuclearmedicine, obstetrics, gynecology, ophthalmology, pathology, pediatrics, physicalmedicine, rehabilitation, preventivemedicine, psychiatry, radiationoncology, surgery, urology)
+VALUES(10, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 INSERT INTO dbo.doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsavailable, bedsmax)
-VALUES (10, 'Sharpie''s Blue Pen Hospital', '505 E 1st St', 'N/A', 'Bloomington', 'IN', '47401', '1234567890', 'Public Health', 0, 0, 0); 
+VALUES (10, 'Sharpie''s Blue Pen Hospital', '505 E 1st St', 'N/A', 'Bloomington', 'IN', '47401', '1234567890', 10, 0, 0, 0); 

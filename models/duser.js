@@ -13,7 +13,7 @@ function ValidateDoctorDetails(request) {
             'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY').required().error(() => new Error('State abbreviation is empty or invalid.')),
         zipcode: Joi.string().min(5).max(5).regex(constants.regexNumberOnly).required().error(() => new Error('Zipcode is required and must be 5 numbers.')),
         npinumber: Joi.string().custom(NPINumber, 'NPI Number Validator').required().error(() => new Error('NPI Number is empty or invalid. (Debug Message: Use 1234567893 as a acceptable value)')),
-        specializations: Joi.string().required(),
+        specializations: Joi.required(),
         treatscovid: Joi.boolean().required(),
         bedsavailable: Joi.number().required().min(0).max(Joi.ref('bedsmax')),
         bedsmax: Joi.number().required().min(0)
