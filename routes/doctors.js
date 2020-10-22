@@ -283,30 +283,23 @@ router.get('/:id/mypatients', async function (req, res) {
     { name: 'did', sqltype: sql.Int, value: req.params.id }
   ];
   doQuery(res, query, params, function (selectData) {
-    if (empty(selectData.recordset)) return res.status(500).send({ error: "No data found." });
+    if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient records." })
 
-    const patientList = []
-    winston.info(patientList.length);
-
+    const pidList = []
     for (p = 0; p < selectData.recordset.length; p++) {
-      winston.info("Looking up patient " + selectData.recordset[p].pid);
-      let query = `SELECT *, (SELECT * FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH) AS detail FROM patientUsers WHERE id = ${selectData.recordset[p].pid};`;
-      let params = [];
-
-      doQuery(res, query, params, async function (selectData) {
-        if (empty(selectData.recordset)) return res.status(400).send({ error: "Patient record does not exist." })
-
-        delete selectData.recordset[0].pword
-
-        patientList.push(selectData.recordset[0])
-
-        wait = false;
-        winston.info("look up done");
-      });
+      pidList.push(selectData.recordset[p].pid);
     }
 
-    winston.info(patientList.length);
+    let query = `SELECT email, fname, lname, phonenumber, 
+    (SELECT address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq 
+      FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH)
+      AS detail FROM patientUsers WHERE id IN (${pidList});`;
+    let params = [];
+    doQuery(res, query, params, async function (selectData) {
+      if (empty(selectData.recordset)) return res.status(400).send({ error: "Failed to retrieve patient records." })
 
+      return res.status(200).send({ mypatients: selectData.recordset });
+    });
   });
 });
 
