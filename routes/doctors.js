@@ -164,9 +164,10 @@ router.put('/details', async function (req, res) {
   const { error } = ValidateDoctorDetails(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
-  let query = `INSERT INTO doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsavailable, bedsmax) 
-    OUTPUT INSERTED.* 
-    VALUES (@id, @practicename, @address1, @address2, @city, @state1, @zipcode, @npinumber, @specializations, @treatscovid, @bedsavailable, @bedsmax);`;
+  let query = `UPDATE doctorDetails 
+    SET practicename = @practicename, address1 = @address1, address2 = @address2, city = @city, state1 = @state1, zipcode = @zipcode, 
+    npinumber = @npinumber, specializations = @specializations, treatscovid = @treatscovid, bedsavailable = @bedsavailable, bedsmax = @bedsmax 
+    OUTPUT INSERTED.* WHERE id = @id`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
     { name: 'practicename', sqltype: sql.VarChar(255), value: req.body.practicename },
@@ -191,7 +192,7 @@ router.put('/details', async function (req, res) {
 
 //#endregion
 
-//#region GET Billing Details
+//#region GET Doctor Patient Details
 
 // Gets doctorUser's patient's sorted by name.
 router.get('/:id/mypatients', async function (req, res) {

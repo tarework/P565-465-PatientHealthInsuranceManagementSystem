@@ -157,9 +157,9 @@ router.put('/details', async function (req, res) {
   const { error } = ValidateInsuranceDetails(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
-  let query = `INSERT INTO insuranceDetails (id, companyname, address1, address2, state1, city, zipcode) 
-               OUTPUT INSERTED.* 
-               VALUES (@id, @companyname, @address1, @address2, @state1, @city, @zipcode);`;
+  let query = `UPDATE insuranceDetails 
+    SET companyname = @companyname, address1 = @address1, address2 = @address2, state1 = @state1, city = @city, zipcode = @zipcode 
+               OUTPUT INSERTED.* WHERE id = @id;`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
     { name: 'companyname', sqltype: sql.VarChar(255), value: req.body.companyname },
