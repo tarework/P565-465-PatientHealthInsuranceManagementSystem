@@ -264,10 +264,14 @@ router.get('/:id/mydoctor/:did', async function (req, res) {
   doQuery(res, query, params, function (selectData) {
     if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve doctor records." });
 
-    let query = `SELECT email, fname, lname, phonenumber, 
-      (SELECT address1, address2, state1, city, zipcode, npinumber, treatscovid, bedsmax,
-        (SELECT * FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specializations
-      FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail 
+    let query =
+      `SELECT email, fname, lname, phonenumber, 
+        (SELECT address1, address2, state1, city, zipcode, npinumber, treatscovid, bedsmax,
+          (SELECT * 
+          FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specializations
+        FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail,
+        (SELECT patientname, doctorname, rating, reviewmessage
+        FROM doctorReviews WHERE doctorUsers.id = doctorReviews.did FROM JSON PATH) AS reviews
       FROM doctorUsers WHERE id = (${req.params.did});`;
     params = [];
     doQuery(res, query, params, async function (selectData) {
@@ -280,4 +284,12 @@ router.get('/:id/mydoctor/:did', async function (req, res) {
 
 //#endregion
 
-module.exports = router;
+//#region GET Insurance Plans
+
+router.get('/insuranceplans', async function (req, res) {
+
+}); +
+
+  //#endregion
+
+  module.exports = router;

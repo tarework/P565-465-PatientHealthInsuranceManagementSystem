@@ -1,12 +1,12 @@
 const { doQuery, sql } = require('../db');
 const { GenerateAuthToken, ValidateRegistration } = require('../models/user')
 const constants = require('../utils/constants')
+const storage = require('../utils/storage');
 const bcrypt = require('bcryptjs');
 const empty = require('is-empty')
 const winston = require('winston');
 const express = require('express');
 const router = express.Router();
-const storage = require('../utils/storage');
 
 // Register New User
 router.post('/', async (req, res) => {

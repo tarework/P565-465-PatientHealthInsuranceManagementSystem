@@ -17,4 +17,20 @@ function ValidateInsuranceDetails(request) {
     return constants.CleanErrorMessage(schema.validate(request));
 }
 
+function ValidateInsurancePlan(request) {
+    const schema = Joi.object({
+        id: Joi.number().required(),
+        planname: Joi.string().required(),
+        policynumber: Joi.string(),
+        premium: Joi.number().required(),
+        deductible: Joi.number.required(),
+        includemedical: Joi.boolean.required(),
+        includedental: Joi.boolean.required(),
+        includevision: Joi.boolean.required()
+    }).options({ stripUnknown: true });
+
+    return constants.CleanErrorMessage(schema.validate(request));
+}
+
 module.exports.ValidateInsuranceDetails = ValidateInsuranceDetails;
+module.exports.ValidateInsurancePlan = ValidateInsurancePlan;

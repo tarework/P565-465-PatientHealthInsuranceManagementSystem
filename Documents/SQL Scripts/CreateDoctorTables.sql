@@ -25,7 +25,7 @@ CREATE TABLE doctorSpecializations (
 	psychiatry BIT NULL,
 	radiationoncology BIT NULL,
 	surgery BIT NULL,
-	urology BIT NULL,
+	urology BIT NULL
 );
 
 CREATE TABLE doctorReviews (
@@ -37,7 +37,7 @@ CREATE TABLE doctorReviews (
 	did int NULL,
 	rating int NULL,
 	reviewmessage varchar(max) NULL,
-	rewviewcompleted BIT NULL,
+	rewviewcompleted BIT NULL
 );
 
 CREATE TABLE doctorDetails (
@@ -52,7 +52,7 @@ CREATE TABLE doctorDetails (
 	npinumber varchar(10) NULL,
 	specializations int NULL,
 	treatscovid BIT NULL,
-	bedsavailable int NULL,
+	bedstaken int NULL,
 	bedsmax int NULL
 );
 
