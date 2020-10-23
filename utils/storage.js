@@ -18,23 +18,9 @@ async function UpdateProfilePic(req, res) {
 	if (token.id != req.body.id) return res.status(401).send({ error: "Token Invalid" });
 
 	// Data Validation
-<<<<<<< HEAD
-	if (empty(req.body.img)) return res.status(400).send ({ error: "Image data is required." });
-
-		let token = DecodeAuthToken(req.header(TOKEN_HEADER));
-
-    container = token.usertype + token.id;
-  
-    UploadFile(container, 'profile', req.body.img)
-    .then((message)=> {
-      return res.status(200).send({ result: message.result, response: message.response });
-    }).catch((error)=> {
-      return res.status(500).send({ error: error.message });
-    });  
-=======
 	if (empty(req.body.img)) return res.status(400).send({ error: "Image data is required." });
 
-	container = token.userType + token.id;
+	container = token.usertype + token.id;
 
 	UploadFile(container, 'profile', req.body.img)
 		.then((message) => {
@@ -42,7 +28,6 @@ async function UpdateProfilePic(req, res) {
 		}).catch((error) => {
 			return res.status(500).send({ error: error.message });
 		});
->>>>>>> 6bcb9d2a7793349d8ec48f0ea1d9e3b086841ae4
 }
 
 async function UploadFile(container, name, stream) {

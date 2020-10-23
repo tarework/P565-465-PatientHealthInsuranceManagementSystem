@@ -23,7 +23,7 @@ router.get('/:id', async function (req, res) {
 
     delete selectData.recordset[0].pword;
 
-    return res.status(200).send({ ...selectData.recordset.map(item => { let s = empty(JSON.parse(item.specialization)) ? {} : JSON.parse(item.specialization)[0]; delete item.specialization; return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], specializations: s, usertype: 'doctor' }) })[0]});
+    return res.status(200).send({ ...selectData.recordset.map(item => { let s = empty(JSON.parse(item.specialization)) ? {} : JSON.parse(item.specialization)[0]; delete item.specialization; return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], specializations: s, usertype: 'doctor' }) })[0] });
   });
 });
 
@@ -168,16 +168,9 @@ router.post('/onboard', async function (req, res) {
 
     specializations = insertData.recordset[0];
 
-
-<<<<<<< HEAD
     query = `INSERT INTO doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedstaken, bedsmax) 
       OUTPUT INSERTED.* 
       VALUES (@id, @practicename, @address1, @address2, @city, @state1, @zipcode, @npinumber, @specializations, @treatscovid, @bedstaken, @bedsmax);`;
-=======
-    query = `INSERT INTO doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsmax) 
-      OUTPUT INSERTED.* 
-      VALUES (@id, @practicename, @address1, @address2, @city, @state1, @zipcode, @npinumber, @specializations, @treatscovid, @bedsmax);`;
->>>>>>> 6bcb9d2a7793349d8ec48f0ea1d9e3b086841ae4
     params = [
       { name: 'id', sqltype: sql.Int, value: req.body.id },
       { name: 'practicename', sqltype: sql.VarChar(255), value: req.body.practicename },
@@ -189,11 +182,7 @@ router.post('/onboard', async function (req, res) {
       { name: 'npinumber', sqltype: sql.VarChar(10), value: req.body.npinumber },
       { name: 'specializations', sqltype: sql.Int, value: req.body.id },
       { name: 'treatscovid', sqltype: sql.Bit, value: req.body.treatscovid },
-<<<<<<< HEAD
       { name: 'bedstaken', sqltype: sql.Int, value: req.body.bedstaken },
-=======
-      //{ name: 'bedsavailable', sqltype: sql.Int, value: req.body.bedsavailable },
->>>>>>> 6bcb9d2a7793349d8ec48f0ea1d9e3b086841ae4
       { name: 'bedsmax', sqltype: sql.Int, value: req.body.bedsmax }
     ];
 
@@ -254,12 +243,8 @@ router.put('/details', async function (req, res) {
     specializations = updateData.recordset[0];
 
     query = `UPDATE doctorDetails 
-      SET practicename = @practicename, address1 = @address1, address2 = @address2, city = @city, state1 = @state1, zipcode = @zipcode, 
-<<<<<<< HEAD
-      npinumber = @npinumber, specializations = @specializations, treatscovid = @treatscovid, bedstaken = @bedstaken, bedsmax = @bedsmax 
-=======
-      npinumber = @npinumber, specializations = @specializations, treatscovid = @treatscovid, bedsmax = @bedsmax 
->>>>>>> 6bcb9d2a7793349d8ec48f0ea1d9e3b086841ae4
+      SET practicename = @practicename, address1 = @address1, address2 = @address2, city = @city, state1 = @state1, zipcode = @zipcode,
+      npinumber = @npinumber, specializations = @specializations, treatscovid = @treatscovid, bedstaken = @bedstaken, bedsmax = @bedsmax
       OUTPUT INSERTED.* WHERE id = @id`;
     params = [
       { name: 'id', sqltype: sql.Int, value: req.body.id },
@@ -272,11 +257,7 @@ router.put('/details', async function (req, res) {
       { name: 'npinumber', sqltype: sql.VarChar(10), value: req.body.npinumber },
       { name: 'specializations', sqltype: sql.Int, value: req.body.id },
       { name: 'treatscovid', sqltype: sql.Bit, value: req.body.treatscovid },
-<<<<<<< HEAD
       { name: 'bedstaken', sqltype: sql.Int, value: req.body.bedstaken },
-=======
-      //{ name: 'bedsavailable', sqltype: sql.Int, value: req.body.bedsavailable },
->>>>>>> 6bcb9d2a7793349d8ec48f0ea1d9e3b086841ae4
       { name: 'bedsmax', sqltype: sql.Int, value: req.body.bedsmax }
     ];
 
