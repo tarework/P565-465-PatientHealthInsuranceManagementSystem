@@ -16,7 +16,9 @@ async function UpdateProfilePic(req, res) {
 	// Data Validation
 	if (empty(req.body.img)) return res.status(400).send ({ error: "Image data is required." });
 
-    container = token.userType + token.id;
+		let token = DecodeAuthToken(req.header(TOKEN_HEADER));
+
+    container = token.usertype + token.id;
   
     UploadFile(container, 'profile', req.body.img)
     .then((message)=> {

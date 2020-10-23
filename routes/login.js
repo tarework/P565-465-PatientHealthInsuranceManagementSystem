@@ -3,6 +3,7 @@ const { GenerateAuthToken, ValidateLogin, ValidateDuoCode } = require('../models
 const constants = require('../utils/constants');
 const mail = require('../utils/mail');
 const verifyGoogleToken = require('../utils/verifyGoogleToken');
+const storage = require('../utils/storage');
 const bcrypt = require('bcryptjs');
 const pwGenerator = require('generate-password');
 const empty = require('is-empty');
@@ -108,6 +109,8 @@ router.post('/google', async (req, res) => {
                     doQuery(res, query2, params2, async function (insertData) {
                         //winston.info(insertData.recordset)
                         if (empty(insertData.recordset)) return res.status(401).send({ error: "User not registered." });
+
+                        storage.UploadFile(`${req.body.usertype}${insertData.recordset[0].id}`, "profile", constants.DEFAULT_PROFILE);
 
                         const user = insertData.recordset[0];
                         const duoCode = pwGenerator.generate({
