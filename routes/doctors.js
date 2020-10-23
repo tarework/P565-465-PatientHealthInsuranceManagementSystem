@@ -169,9 +169,15 @@ router.post('/onboard', async function (req, res) {
     specializations = insertData.recordset[0];
 
 
+<<<<<<< HEAD
     query = `INSERT INTO doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedstaken, bedsmax) 
       OUTPUT INSERTED.* 
       VALUES (@id, @practicename, @address1, @address2, @city, @state1, @zipcode, @npinumber, @specializations, @treatscovid, @bedstaken, @bedsmax);`;
+=======
+    query = `INSERT INTO doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedsmax) 
+      OUTPUT INSERTED.* 
+      VALUES (@id, @practicename, @address1, @address2, @city, @state1, @zipcode, @npinumber, @specializations, @treatscovid, @bedsmax);`;
+>>>>>>> 6bcb9d2a7793349d8ec48f0ea1d9e3b086841ae4
     params = [
       { name: 'id', sqltype: sql.Int, value: req.body.id },
       { name: 'practicename', sqltype: sql.VarChar(255), value: req.body.practicename },
@@ -183,7 +189,11 @@ router.post('/onboard', async function (req, res) {
       { name: 'npinumber', sqltype: sql.VarChar(10), value: req.body.npinumber },
       { name: 'specializations', sqltype: sql.Int, value: req.body.id },
       { name: 'treatscovid', sqltype: sql.Bit, value: req.body.treatscovid },
+<<<<<<< HEAD
       { name: 'bedstaken', sqltype: sql.Int, value: req.body.bedstaken },
+=======
+      //{ name: 'bedsavailable', sqltype: sql.Int, value: req.body.bedsavailable },
+>>>>>>> 6bcb9d2a7793349d8ec48f0ea1d9e3b086841ae4
       { name: 'bedsmax', sqltype: sql.Int, value: req.body.bedsmax }
     ];
 
@@ -245,7 +255,11 @@ router.put('/details', async function (req, res) {
 
     query = `UPDATE doctorDetails 
       SET practicename = @practicename, address1 = @address1, address2 = @address2, city = @city, state1 = @state1, zipcode = @zipcode, 
+<<<<<<< HEAD
       npinumber = @npinumber, specializations = @specializations, treatscovid = @treatscovid, bedstaken = @bedstaken, bedsmax = @bedsmax 
+=======
+      npinumber = @npinumber, specializations = @specializations, treatscovid = @treatscovid, bedsmax = @bedsmax 
+>>>>>>> 6bcb9d2a7793349d8ec48f0ea1d9e3b086841ae4
       OUTPUT INSERTED.* WHERE id = @id`;
     params = [
       { name: 'id', sqltype: sql.Int, value: req.body.id },
@@ -258,7 +272,11 @@ router.put('/details', async function (req, res) {
       { name: 'npinumber', sqltype: sql.VarChar(10), value: req.body.npinumber },
       { name: 'specializations', sqltype: sql.Int, value: req.body.id },
       { name: 'treatscovid', sqltype: sql.Bit, value: req.body.treatscovid },
+<<<<<<< HEAD
       { name: 'bedstaken', sqltype: sql.Int, value: req.body.bedstaken },
+=======
+      //{ name: 'bedsavailable', sqltype: sql.Int, value: req.body.bedsavailable },
+>>>>>>> 6bcb9d2a7793349d8ec48f0ea1d9e3b086841ae4
       { name: 'bedsmax', sqltype: sql.Int, value: req.body.bedsmax }
     ];
 
@@ -274,39 +292,54 @@ router.put('/details', async function (req, res) {
 
 //#endregion
 
-//#region GET Doctor Patient Details
+//#region GET Doctor's Patient Details
 
-// Gets doctorUser's patient's sorted by name.
+// Gets doctorUser's patients'
 router.get('/:id/mypatients', async function (req, res) {
   let query = `SELECT * FROM patientDoctorRelations WHERE did = @did;`;
   let params = [
     { name: 'did', sqltype: sql.Int, value: req.params.id }
   ];
   doQuery(res, query, params, function (selectData) {
-    if (empty(selectData.recordset)) return res.status(500).send({ error: "No data found." });
+    if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient records." });
 
-    const patientList = []
-    winston.info(patientList.length);
-
+    const pidList = [];
     for (p = 0; p < selectData.recordset.length; p++) {
-      winston.info("Looking up patient " + selectData.recordset[p].pid);
-      let query = `SELECT *, (SELECT * FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH) AS detail FROM patientUsers WHERE id = ${selectData.recordset[p].pid};`;
-      let params = [];
-
-      doQuery(res, query, params, async function (selectData) {
-        if (empty(selectData.recordset)) return res.status(400).send({ error: "Patient record does not exist." })
-
-        delete selectData.recordset[0].pword
-
-        patientList.push(selectData.recordset[0])
-
-        wait = false;
-        winston.info("look up done");
-      });
+      pidList.push(selectData.recordset[p].pid);
     }
 
-    winston.info(patientList.length);
+    let query = `SELECT email, fname, lname, phonenumber, 
+      (SELECT address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq 
+      FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH)
+      AS detail FROM patientUsers WHERE id IN (${pidList});`;
+    params = [];
+    doQuery(res, query, params, async function (selectData) {
+      if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient records." });
 
+      return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail) })) });
+    });
+  });
+});
+
+// Gets doctorUser's patient 
+router.get('/:id/mypatient/:pid', async function (req, res) {
+  let query = `SELECT * FROM patientDoctorRelations WHERE did = @did and pid = @pid;`;
+  let params = [
+    { name: 'did', sqltype: sql.Int, value: req.params.id },
+    { name: 'pid', sqltype: sql.Int, value: req.params.pid }
+  ];
+  doQuery(res, query, params, function (selectData) {
+    if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient records.1" });
+
+    let query = `SELECT email, fname, lname, phonenumber, 
+      (SELECT address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq 
+      FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH)
+      AS detail FROM patientUsers WHERE id = (${req.params.pid});`;
+    doQuery(res, query, [], async function (selectData) {
+      if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient records.2" });
+
+      return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0] }))[0] });
+    });
   });
 });
 

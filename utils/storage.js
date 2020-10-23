@@ -13,7 +13,12 @@ const blobService = azure.createBlobService("apollocare", AZURE_STORAGE_KEY);
 // Don't write it 3 times,
 // Extract it to a single location.
 async function UpdateProfilePic(req, res) {
+	// Token Validation
+	let token = DecodeAuthToken(req.header(TOKEN_HEADER));
+	if (token.id != req.body.id) return res.status(401).send({ error: "Token Invalid" });
+
 	// Data Validation
+<<<<<<< HEAD
 	if (empty(req.body.img)) return res.status(400).send ({ error: "Image data is required." });
 
 		let token = DecodeAuthToken(req.header(TOKEN_HEADER));
@@ -26,6 +31,18 @@ async function UpdateProfilePic(req, res) {
     }).catch((error)=> {
       return res.status(500).send({ error: error.message });
     });  
+=======
+	if (empty(req.body.img)) return res.status(400).send({ error: "Image data is required." });
+
+	container = token.userType + token.id;
+
+	UploadFile(container, 'profile', req.body.img)
+		.then((message) => {
+			return res.status(200).send({ result: message.result, response: message.response });
+		}).catch((error) => {
+			return res.status(500).send({ error: error.message });
+		});
+>>>>>>> 6bcb9d2a7793349d8ec48f0ea1d9e3b086841ae4
 }
 
 async function UploadFile(container, name, stream) {
@@ -33,13 +50,13 @@ async function UploadFile(container, name, stream) {
 	const filetype = await FileType.fromBuffer(buffer);
 	const options = { contentSettings: { contentType: filetype.mime } }
 
-	return new Promise(async function(resolve, reject) {
-		blobService.createContainerIfNotExists(container, {publicAccessLevel: 'blob'}, function(error, existResult, existResponse) {
+	return new Promise(async function (resolve, reject) {
+		blobService.createContainerIfNotExists(container, { publicAccessLevel: 'blob' }, function (error, existResult, existResponse) {
 			if (error) {
 				winston.error(error);
 				return reject(error);
 			}
-			blobService.createBlockBlobFromText(container, name, buffer, options, function(error, textResult, textResponse){
+			blobService.createBlockBlobFromText(container, name, buffer, options, function (error, textResult, textResponse) {
 				if (error) {
 					winston.error(error);
 					reject(error);
@@ -51,4 +68,4 @@ async function UploadFile(container, name, stream) {
 }
 
 
-module.exports = { UpdateProfilePic, UploadFile };
+module.exports = { UpdateProfilePic, UpdateBenefitsPdf, UploadFile };

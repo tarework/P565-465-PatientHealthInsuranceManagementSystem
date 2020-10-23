@@ -1,6 +1,6 @@
 const { doQuery, sql } = require('../db');
 const { ValidatePassword, ValidateUpdateUser } = require('../models/user');
-const { ValidateInsuranceDetails } = require('../models/iuser');
+const { ValidateInsuranceDetails, ValidateInsurancePlan } = require('../models/iuser');
 const constants = require('../utils/constants');
 //const mail = require('../utils/mail');
 const storage = require('../utils/storage');
@@ -175,6 +175,102 @@ router.put('/details', async function (req, res) {
 
     return res.status(200).send({ detail: updateData.recordset[0] });
   });
+});
+
+//#endregion
+
+//#region GET/POST/PUT insurancePlans
+
+// Get all insurance plans
+router.get('/insuranceplans', async function (req, res) {
+  let query = `SELECT * FROM insurancePlans WHERE id = ${req.params.id};`;
+  let params = [];
+  doQuery(res, query, params, function (selectData) {
+    if (empty(selectData.recordset)) return res.status(400).send({ error: "Insurance records do not exist." })
+
+    return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail) })) });
+  });
+});
+
+// Get a single insurance plan pid == plan id, id = insuranceUser's id
+router.get('/insuranceplan/:pid', async function (req, res) {
+  let query = `SELECT * FROM insurancePlans WHERE id = ${req.body.id} and pid = ${req.params.pid};`;
+  let params = [];
+  doQuery(res, query, params, function (selectData) {
+    if (empty(selectData.recordset)) return res.status(400).send({ error: "Insurance plan record does not exist." })
+
+    return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0] }))[0] });
+  });
+});
+
+// Create a single insurance plan
+router.post('/insuranceplan/', async function (req, res) {
+  // Data Validation
+  const { error } = ValidateInsurancePlan(req.body);
+  if (error) return res.status(400).send({ error: error.message });
+
+  let query = `INSERT INTO insurancePlan (id, planname, policynumber, premium, deductible, includemedical, includedental, includevision) 
+               OUTPUT INSERTED.* 
+               VALUES (@id, @planname, @policynumber, @premium, @deductible, @includemedical, @includedental, @includevision);`;
+  let params = [
+    { name: 'id', sqltype: sql.Int, value: req.body.id },
+    { name: 'planname', sqltype: sql.VarChar(255), value: req.body.planname },
+    { name: 'policynumber', sqltype: sql.VarChar(255), value: req.body.policynumber },
+    { name: 'premium', sqltype: sql.Int, value: req.body.premium },
+    { name: 'deductible', sqltype: sql.Int, value: req.body.deductible },
+    { name: 'includemedical', sqltype: sql.Bit, value: req.body.includemedical },
+    { name: 'includedental', sqltype: sql.Bit, value: req.body.includedental },
+    { name: 'includevision', sqltype: sql.Bit, value: req.body.includevision }
+  ];
+
+  doQuery(res, query, params, function (insertData) {
+    if (empty(insertData.recordset)) return res.status(500).send({ error: "Data not saved." })
+
+    return res.status(200).send({ detail: insertData.recordset[0] });
+  });
+});
+
+// Update a single insurance plan
+router.put('/insuranceplan/:planid', async function (req, res) {
+  // Data Validation
+  const { error } = ValidateInsurancePlan(req.body);
+  if (error) return res.status(400).send({ error: error.message });
+
+  let query = `UPDATE insurancePlan 
+    SET planname = @planname, policynumber = @policynumbe, premium = @premium, deductible = @deductible, includemedical = @includemedical, includedental = @includedental, includevision = @includevision) 
+    OUTPUT INSERTED.* WHERE planid = @planid;`;
+  let params = [
+    { name: 'planid', sqltype: sql.Int, value: req.body.planid },
+    { name: 'planname', sqltype: sql.VarChar(255), value: req.body.planname },
+    { name: 'policynumber', sqltype: sql.VarChar(255), value: req.body.policynumber },
+    { name: 'premium', sqltype: sql.Int, value: req.body.premium },
+    { name: 'deductible', sqltype: sql.Int, value: req.body.deductible },
+    { name: 'includemedical', sqltype: sql.Bit, value: req.body.includemedical },
+    { name: 'includedental', sqltype: sql.Bit, value: req.body.includedental },
+    { name: 'includevision', sqltype: sql.Bit, value: req.body.includevision }
+  ];
+
+  doQuery(res, query, params, function (insertData) {
+    if (empty(insertData.recordset)) return res.status(500).send({ error: "Data not saved." })
+
+    return res.status(200).send({ detail: insertData.recordset[0] });
+  });
+});
+
+// Update a insurance plan's explaination of benefits pdf
+router.put('/insuranceplan/:planid/benefitspdf', async function (req, res) {
+  // Data Validation
+  if (empty(req.body.pdf)) return res.status(400).send({ error: "PDF data is required." });
+
+  let token = DecodeAuthToken(req.header(TOKEN_HEADER));
+  container = token.userType + token.id;
+
+  storage.UploadFile(container, req.body.planname, req.body.pdf)
+    .then((message) => {
+      return res.status(200).send({ result: message.result, response: message.response });
+    }).catch((error) => {
+      return res.status(500).send({ error: error.message });
+    });
 });
 
 //#endregion

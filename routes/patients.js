@@ -224,4 +224,72 @@ router.get('/:id/mybills', async function (req, res) {
 
 //#endregion
 
-module.exports = router;
+//#region GET Patient's Doctors
+
+// Gets patientUser's doctors'
+router.get('/:id/mydoctors', async function (req, res) {
+  let query = `SELECT * FROM patientDoctorRelations WHERE pid = @pid;`;
+  let params = [
+    { name: 'pid', sqltype: sql.Int, value: req.params.id }
+  ];
+  doQuery(res, query, params, function (selectData) {
+    if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve doctor records." });
+
+    const didList = [];
+    for (d = 0; d < selectData.recordset.length; d++) {
+      didList.push(selectData.recordset[d].did);
+    }
+    let query = `SELECT email, fname, lname, phonenumber, 
+      (SELECT address1, address2, state1, city, zipcode, npinumber, treatscovid, bedsmax,
+        (SELECT * FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specializations
+      FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail 
+      FROM doctorUsers WHERE id IN (${didList});`;
+    params = [];
+    doQuery(res, query, params, async function (selectData) {
+      if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve doctor records." });
+
+      return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail) })) });
+    });
+  });
+});
+
+// Gets doctorUser's patient 
+router.get('/:id/mydoctor/:did', async function (req, res) {
+  let query = `SELECT * FROM patientDoctorRelations WHERE pid = @pid and did = @did;`;
+  let params = [
+    { name: 'pid', sqltype: sql.Int, value: req.params.id },
+    { name: 'did', sqltype: sql.Int, value: req.params.did }
+
+  ];
+  doQuery(res, query, params, function (selectData) {
+    if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve doctor records." });
+
+    let query =
+      `SELECT email, fname, lname, phonenumber, 
+        (SELECT address1, address2, state1, city, zipcode, npinumber, treatscovid, bedsmax,
+          (SELECT * 
+          FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specializations
+        FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail,
+        (SELECT patientname, doctorname, rating, reviewmessage
+        FROM doctorReviews WHERE doctorUsers.id = doctorReviews.did FROM JSON PATH) AS reviews
+      FROM doctorUsers WHERE id = (${req.params.did});`;
+    params = [];
+    doQuery(res, query, params, async function (selectData) {
+      if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve doctor records." });
+
+      return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail) })) });
+    });
+  });
+});
+
+//#endregion
+
+//#region GET Insurance Plans
+
+router.get('/insuranceplans', async function (req, res) {
+
+}); +
+
+  //#endregion
+
+  module.exports = router;

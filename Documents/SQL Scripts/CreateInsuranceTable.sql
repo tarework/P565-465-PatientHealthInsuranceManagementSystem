@@ -6,7 +6,7 @@ CREATE TABLE insuranceDetails (
 	address2 varchar(255) NULL,
 	city varchar(255) NULL,
 	state1 varchar(15) NULL,
-	zipcode varchar(15) NULL,
+	zipcode varchar(15) NULL
 ); 
 
 CREATE TABLE insuranceUsers (
@@ -16,7 +16,8 @@ CREATE TABLE insuranceUsers (
 	pword varchar(1024) NULL,
 	fname varchar(255) NULL,
 	lname varchar(255) NULL,
-	phonenumber varchar(50) NULL
+	phonenumber varchar(50) NULL,
+	goauth varchar(50) NULL
 ); 
 
 CREATE TABLE insurancePlans (
@@ -28,4 +29,7 @@ CREATE TABLE insurancePlans (
 	premium varchar(255) NULL,
 	deductible varchar(255) NULL,
 	benefitspdf varchar(1024) NULL,  
-	);
+	includesmedical bit NULL,
+	includesdental bit NULL,
+	includesvision bit NULL
+);
