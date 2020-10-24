@@ -267,17 +267,21 @@ router.get('/:id/mydoctor/:did', async function (req, res) {
     let query =
       `SELECT email, fname, lname, phonenumber, 
         (SELECT address1, address2, state1, city, zipcode, npinumber, treatscovid, bedsmax,
-          (SELECT * 
-          FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specializations
+          (SELECT * FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specializations
         FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail,
-        (SELECT patientname, doctorname, rating, reviewmessage
-        FROM doctorReviews WHERE doctorUsers.id = doctorReviews.did FROM JSON PATH) AS reviews
+        (SELECT patientname, doctorname, rating, reviewmessage FROM doctorReviews WHERE doctorUsers.id = doctorReviews.did FOR JSON PATH) AS reviews
       FROM doctorUsers WHERE id = (${req.params.did});`;
     params = [];
     doQuery(res, query, params, async function (selectData) {
       if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve doctor records." });
 
-      return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail) })) });
+      return res.status(200).send({
+        ...selectData.recordset.map(item => ({
+          ...item,
+          detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail),
+          reviews: empty(JSON.parse(item.reviews)) ? {} : JSON.parse(item.reviews)
+        }))
+      });
     });
   });
 });
@@ -286,10 +290,10 @@ router.get('/:id/mydoctor/:did', async function (req, res) {
 
 //#region GET Insurance Plans
 
-router.get('/insuranceplans', async function (req, res) {
+// router.get('/insuranceplans', async function (req, res) {
 
-}); +
+// });
 
-  //#endregion
+//#endregion
 
-  module.exports = router;
+module.exports = router;

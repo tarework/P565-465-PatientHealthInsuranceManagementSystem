@@ -23,10 +23,10 @@ function ValidateInsurancePlan(request) {
         planname: Joi.string().required(),
         policynumber: Joi.string(),
         premium: Joi.number().required(),
-        deductible: Joi.number.required(),
-        includemedical: Joi.boolean.required(),
-        includedental: Joi.boolean.required(),
-        includevision: Joi.boolean.required()
+        deductible: Joi.number().required(),
+        includesmedical: Joi.boolean().required(),
+        includesdental: Joi.boolean().required(),
+        includesvision: Joi.boolean().required()
     }).options({ stripUnknown: true });
 
     return constants.CleanErrorMessage(schema.validate(request));

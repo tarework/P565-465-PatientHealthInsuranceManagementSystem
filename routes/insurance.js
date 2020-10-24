@@ -1,5 +1,5 @@
 const { doQuery, sql } = require('../db');
-const { ValidatePassword, ValidateUpdateUser } = require('../models/user');
+const { DecodeAuthToken, ValidatePassword, ValidateUpdateUser } = require('../models/user');
 const { ValidateInsuranceDetails, ValidateInsurancePlan } = require('../models/iuser');
 const constants = require('../utils/constants');
 //const mail = require('../utils/mail');
@@ -9,7 +9,6 @@ const empty = require('is-empty');
 //const moment = require('moment'),
 const winston = require('winston');
 const express = require('express');
-const { route } = require('./password');
 const router = express.Router();
 
 
@@ -183,8 +182,11 @@ router.put('/details', async function (req, res) {
 
 // Get all insurance plans
 router.get('/insuranceplans', async function (req, res) {
-  let query = `SELECT * FROM insurancePlans WHERE id = ${req.params.id};`;
-  let params = [];
+  winston.info('lol1');
+  let query = `SELECT * FROM insurancePlans WHERE id = @id;`;
+  let params = [
+    { name: 'id', sqltype: sql.Int, value: req.body.id },
+  ];
   doQuery(res, query, params, function (selectData) {
     if (empty(selectData.recordset)) return res.status(400).send({ error: "Insurance records do not exist." })
 
@@ -192,14 +194,17 @@ router.get('/insuranceplans', async function (req, res) {
   });
 });
 
-// Get a single insurance plan pid == plan id, id = insuranceUser's id
-router.get('/insuranceplan/:pid', async function (req, res) {
-  let query = `SELECT * FROM insurancePlans WHERE id = ${req.body.id} and pid = ${req.params.pid};`;
-  let params = [];
+// Get a single insurance planid == planid, id = insuranceUser's id
+router.get('/insuranceplan/:planid', async function (req, res) {
+  let query = `SELECT * FROM insurancePlans WHERE id = @id and planid = @planid;`;
+  let params = [
+    { name: 'id', sqltype: sql.Int, value: req.body.id },
+    { name: 'planid', sqltype: sql.Int, value: req.params.planid }
+  ];
   doQuery(res, query, params, function (selectData) {
     if (empty(selectData.recordset)) return res.status(400).send({ error: "Insurance plan record does not exist." })
 
-    return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0] }))[0] });
+    return res.status(200).send({ ...selectData.recordset[0] });
   });
 });
 
@@ -209,18 +214,18 @@ router.post('/insuranceplan/', async function (req, res) {
   const { error } = ValidateInsurancePlan(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
-  let query = `INSERT INTO insurancePlan (id, planname, policynumber, premium, deductible, includemedical, includedental, includevision) 
+  let query = `INSERT INTO insurancePlans (id, planname, policynumber, premium, deductible, includesmedical, includesdental, includesvision) 
                OUTPUT INSERTED.* 
-               VALUES (@id, @planname, @policynumber, @premium, @deductible, @includemedical, @includedental, @includevision);`;
+               VALUES (@id, @planname, @policynumber, @premium, @deductible, @includesmedical, @includesdental, @includesvision);`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
     { name: 'planname', sqltype: sql.VarChar(255), value: req.body.planname },
     { name: 'policynumber', sqltype: sql.VarChar(255), value: req.body.policynumber },
     { name: 'premium', sqltype: sql.Int, value: req.body.premium },
     { name: 'deductible', sqltype: sql.Int, value: req.body.deductible },
-    { name: 'includemedical', sqltype: sql.Bit, value: req.body.includemedical },
-    { name: 'includedental', sqltype: sql.Bit, value: req.body.includedental },
-    { name: 'includevision', sqltype: sql.Bit, value: req.body.includevision }
+    { name: 'includesmedical', sqltype: sql.Bit, value: req.body.includesmedical },
+    { name: 'includesdental', sqltype: sql.Bit, value: req.body.includesdental },
+    { name: 'includesvision', sqltype: sql.Bit, value: req.body.includesvision }
   ];
 
   doQuery(res, query, params, function (insertData) {
@@ -236,18 +241,18 @@ router.put('/insuranceplan/:planid', async function (req, res) {
   const { error } = ValidateInsurancePlan(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
-  let query = `UPDATE insurancePlan 
-    SET planname = @planname, policynumber = @policynumbe, premium = @premium, deductible = @deductible, includemedical = @includemedical, includedental = @includedental, includevision = @includevision) 
+  let query = `UPDATE insurancePlans 
+    SET planname = @planname, policynumber = @policynumber, premium = @premium, deductible = @deductible, includesmedical = @includesmedical, includesdental = @includesdental, includesvision = @includesvision
     OUTPUT INSERTED.* WHERE planid = @planid;`;
   let params = [
-    { name: 'planid', sqltype: sql.Int, value: req.body.planid },
+    { name: 'planid', sqltype: sql.Int, value: req.params.planid },
     { name: 'planname', sqltype: sql.VarChar(255), value: req.body.planname },
     { name: 'policynumber', sqltype: sql.VarChar(255), value: req.body.policynumber },
     { name: 'premium', sqltype: sql.Int, value: req.body.premium },
     { name: 'deductible', sqltype: sql.Int, value: req.body.deductible },
-    { name: 'includemedical', sqltype: sql.Bit, value: req.body.includemedical },
-    { name: 'includedental', sqltype: sql.Bit, value: req.body.includedental },
-    { name: 'includevision', sqltype: sql.Bit, value: req.body.includevision }
+    { name: 'includesmedical', sqltype: sql.Bit, value: req.body.includesmedical },
+    { name: 'includesdental', sqltype: sql.Bit, value: req.body.includesdental },
+    { name: 'includesvision', sqltype: sql.Bit, value: req.body.includesvision }
   ];
 
   doQuery(res, query, params, function (insertData) {
@@ -262,8 +267,8 @@ router.put('/insuranceplan/:planid/benefitspdf', async function (req, res) {
   // Data Validation
   if (empty(req.body.pdf)) return res.status(400).send({ error: "PDF data is required." });
 
-  let token = DecodeAuthToken(req.header(TOKEN_HEADER));
-  container = token.userType + token.id;
+  let token = DecodeAuthToken(req.header(constants.TOKEN_HEADER));
+  container = token.usertype + token.id;
 
   storage.UploadFile(container, req.body.planname, req.body.pdf)
     .then((message) => {
