@@ -1,27 +1,28 @@
 const winston = require('winston');
 require('express-async-errors');
 var express = require('express'),
-        app = express(),
-        path = require('path'),
-        port = process.env.PORT || 3002,
-        hostname = process.env.HOST || '127.0.0.1',
-        bodyParser = require("body-parser"),
-        cors = require('cors'),
-        auth = require('./middleware/auth/role'),
-        register = require('./routes/register'),
-        login = require('./routes/login'),
-        password = require('./routes/password'),
-        patients = require('./routes/patients'),
-        insurance = require('./routes/insurance'),
-        doctors = require('./routes/doctors'),
-        error = require('./middleware/error');
+  app = express(),
+  path = require('path'),
+  port = process.env.PORT || 3002,
+  hostname = process.env.HOST || '127.0.0.1',
+  bodyParser = require("body-parser"),
+  cors = require('cors'),
+  auth = require('./middleware/auth/role'),
+  register = require('./routes/register'),
+  login = require('./routes/login'),
+  password = require('./routes/password'),
+  patients = require('./routes/patients'),
+  doctorsearch = require('./routes/doctorsearch'),
+  insurance = require('./routes/insurance'),
+  doctors = require('./routes/doctors'),
+  error = require('./middleware/error');
 
 // Winston Log Configuration
 winston.configure({
   format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: "logfile.log"})
+    new winston.transports.File({ filename: "logfile.log" })
   ]
 });
 process.on('uncaughtException', (ex) => {
@@ -35,9 +36,9 @@ process.on('unhandledRejection', (ex) => {
 
 app.use(cors());
 
-app.use(bodyParser.json({limit: '10mb'}));
+app.use(bodyParser.json({ limit: '10mb' }));
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
@@ -49,11 +50,12 @@ app.use('/api/register', register);
 app.use('/api/login', login);
 app.use('/api/password', password);
 app.use('/api/patients', auth, patients);
+app.use('/api/doctorsearch', doctorsearch);
 app.use('/api/doctors', auth, doctors);
 app.use('/api/insurance', auth, insurance);
 app.use(error);
 
-app.get(['/', '/*'], function(req, res) {
+app.get(['/', '/*'], function (req, res) {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 

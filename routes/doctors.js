@@ -1,15 +1,11 @@
 const { doQuery, sql } = require('../db');
 const { ValidatePassword, ValidateUpdateUser } = require('../models/user');
 const { ValidateDoctorDetails } = require('../models/duser');
-const constants = require('../utils/constants');
-//const mail = require('../utils/mail');
 const storage = require('../utils/storage');
 const bcrypt = require('bcryptjs');
 const empty = require('is-empty');
-//const moment = require('moment'),
 const winston = require('winston');
 const express = require('express');
-const { route } = require('./password');
 const router = express.Router();
 
 

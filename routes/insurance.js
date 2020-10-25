@@ -2,11 +2,9 @@ const { doQuery, sql } = require('../db');
 const { DecodeAuthToken, ValidatePassword, ValidateUpdateUser } = require('../models/user');
 const { ValidateInsuranceDetails, ValidateInsurancePlan } = require('../models/iuser');
 const constants = require('../utils/constants');
-//const mail = require('../utils/mail');
 const storage = require('../utils/storage');
 const bcrypt = require('bcryptjs');
 const empty = require('is-empty');
-//const moment = require('moment'),
 const winston = require('winston');
 const express = require('express');
 const router = express.Router();
@@ -181,7 +179,8 @@ router.put('/details', async function (req, res) {
 //#region GET/POST/PUT insurancePlans
 
 // Get all insurance plans
-router.get('/insuranceplans', async function (req, res) {
+// Without :id the above get captures this call
+router.get('/insuranceplans/:id', async function (req, res) {
   winston.info('lol1');
   let query = `SELECT * FROM insurancePlans WHERE id = @id;`;
   let params = [
@@ -190,7 +189,7 @@ router.get('/insuranceplans', async function (req, res) {
   doQuery(res, query, params, function (selectData) {
     if (empty(selectData.recordset)) return res.status(400).send({ error: "Insurance records do not exist." })
 
-    return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail) })) });
+    return res.status(200).send({ plans: selectData.recordset });
   });
 });
 

@@ -1,15 +1,11 @@
 const { doQuery, sql } = require('../db');
 const { ValidatePassword, ValidateUpdateUser } = require('../models/user');
 const { ValidatePatientMedicalData } = require('../models/puser');
-const constants = require('../utils/constants');
-//const mail = require('../utils/mail');
 const storage = require('../utils/storage');
 const bcrypt = require('bcryptjs');
 const empty = require('is-empty');
-//const moment = require('moment'),
 const winston = require('winston');
 const express = require('express');
-const { route } = require('./password');
 const router = express.Router();
 
 
@@ -290,9 +286,6 @@ router.get('/:id/mydoctor/:did', async function (req, res) {
 
 //#region GET Insurance Plans
 
-// router.get('/insuranceplans', async function (req, res) {
-
-// });
 
 //#endregion
 

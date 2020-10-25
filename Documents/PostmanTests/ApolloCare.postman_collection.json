@@ -5573,7 +5573,7 @@
 									{
 										"key": "Authorization",
 										"type": "text",
-										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcnR5cGUiOiJpbnN1cmFuY2UiLCJpYXQiOjE2MDM0OTUwMzcsImV4cCI6MTYwMzQ5ODYzN30.y1z4uwwmYTVcsXQmU7eMRFNG0D609uOTBKKVvS8Nheo"
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcnR5cGUiOiJpbnN1cmFuY2UiLCJpYXQiOjE2MDM2NTA5NDIsImV4cCI6MTYwMzY1NDU0Mn0.AEBQCd14LE3Fqf1uhuXzouMpYu0FSu1kDm3tu1TjYaY"
 									},
 									{
 										"key": "Content-Type",
@@ -5618,7 +5618,7 @@
 									{
 										"key": "Authorization",
 										"type": "text",
-										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcnR5cGUiOiJpbnN1cmFuY2UiLCJpYXQiOjE2MDM0OTUwMzcsImV4cCI6MTYwMzQ5ODYzN30.y1z4uwwmYTVcsXQmU7eMRFNG0D609uOTBKKVvS8Nheo"
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcnR5cGUiOiJpbnN1cmFuY2UiLCJpYXQiOjE2MDM2NTA5NDIsImV4cCI6MTYwMzY1NDU0Mn0.AEBQCd14LE3Fqf1uhuXzouMpYu0FSu1kDm3tu1TjYaY"
 									},
 									{
 										"key": "Content-Type",
@@ -5636,7 +5636,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3002/api/insurance/insuranceplans",
+									"raw": "http://localhost:3002/api/insurance/insuranceplans/2",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -5645,7 +5645,8 @@
 									"path": [
 										"api",
 										"insurance",
-										"insuranceplans"
+										"insuranceplans",
+										"2"
 									]
 								}
 							},
@@ -5696,6 +5697,76 @@
 					],
 					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "DoctorSearch",
+			"item": [
+				{
+					"name": "Search by Address - 142",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"covidonly\": false,\r\n    \"namesearch\": false,\r\n    \"address\": \"E 1st St\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/doctorsearch",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"doctorsearch"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search by Name - 143",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"covidonly\": false,\r\n    \"namesearch\": true,\r\n    \"name\": \"Dummy\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/doctorsearch",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"doctorsearch"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
