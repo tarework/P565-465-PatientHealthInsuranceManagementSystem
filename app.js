@@ -50,7 +50,7 @@ app.use('/api/register', register);
 app.use('/api/login', login);
 app.use('/api/password', password);
 app.use('/api/patients', auth, patients);
-app.use('/api/doctorsearch', doctorsearch);
+app.use('/api/doctorsearch', auth, doctorsearch);
 app.use('/api/doctors', auth, doctors);
 app.use('/api/insurance', auth, insurance);
 app.use(error);
