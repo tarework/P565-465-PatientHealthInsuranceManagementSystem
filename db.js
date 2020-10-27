@@ -31,7 +31,7 @@ async function doQuery(res, query, params, callback) {
     const pool = await poolPromise;
     let request = pool.request();
 
-    winston.info(query);
+    // winston.info(query);
 
     params.forEach(function (p) {
       request.input(p.name, p.sqltype, p.value);
