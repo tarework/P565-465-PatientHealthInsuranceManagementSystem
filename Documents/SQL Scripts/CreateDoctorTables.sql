@@ -53,7 +53,9 @@ CREATE TABLE doctorDetails (
 	specializations int NULL,
 	treatscovid BIT NULL,
 	bedstaken int NULL,
-	bedsmax int NULL
+	bedsmax int NULL,
+	lat float NULL,
+	lng float NULL
 );
 
 CREATE TABLE doctorUsers (
