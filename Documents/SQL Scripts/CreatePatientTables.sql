@@ -26,7 +26,9 @@ CREATE TABLE patientMedicalData (
 	drink BIT NULL,
 	drinkfreq int NULL,
 	caffeine BIT NULL,
-	caffeinefreq int NULL
+	caffeinefreq int NULL,
+	lat float NULL,
+	lng float NULL
 );
 
 CREATE TABLE patientUsers (

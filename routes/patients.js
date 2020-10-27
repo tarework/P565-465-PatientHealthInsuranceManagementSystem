@@ -315,6 +315,12 @@ router.get('/:id/mydoctor/:did', async function (req, res) {
 
 //#region GET Insurance Plans
 
+// Get insurance plan for certain insurance company
+
+// Get all insurance plans for a certain insurance company
+
+// POST a insurance/patient relationship to create a subscription
+
 
 //#endregion
 
