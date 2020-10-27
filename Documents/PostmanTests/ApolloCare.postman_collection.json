@@ -1482,7 +1482,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"hashedduocode\": \"$2a$11$jK6Itl6vi5Un5mw0pv3LLeY2dPpf9XjhcYlLKrqjn/nJTIdxBL5fa\",\r\n    \"duo\": \"5RVNF9\",\r\n    \"email\": \"behar.ethan@gmail.com\",\r\n    \"usertype\": \"insurance\"\r\n}",
+							"raw": "{\r\n    \"hashedduocode\": \"$2a$11$uyK8O1biulCQC3GIDwjabeeKv7S/ZtFwGAuVa188yAuvMire3a1ui\",\r\n    \"duo\": \"HW4U51\",\r\n    \"email\": \"behar.ethan@gmail.com\",\r\n    \"usertype\": \"patient\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2281,7 +2281,7 @@
 									{
 										"key": "Authorization",
 										"type": "text",
-										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJ0eXBlIjoicGF0aWVudCIsImlhdCI6MTYwMzgzMjI4NSwiZXhwIjoxNjAzODM1ODg1fQ.f6Ob8zCy0MqiMv7arb1R5PRTocla9UgtZIQH1wTQd9Y"
 									},
 									{
 										"key": "Content-Type",
@@ -2291,7 +2291,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\" : \"10\",\r\n    \"email\" : \"1behar.ethan@gmail.com\",\r\n    \"fname\" : \"Ricky\",\r\n    \"lname\" : \"Bobby\",\r\n    \"phonenumber\" : \"9999690255\"\r\n}",
+									"raw": "{\r\n    \"id\" : \"10\",\r\n    \"email\" : \"behar.ethan@gmail.com\",\r\n    \"fname\" : \"Ricky\",\r\n    \"lname\" : \"Bobby\",\r\n    \"phonenumber\" : \"9999690255\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3025,7 +3025,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3066,7 +3066,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3107,7 +3107,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Blooming123@#ton\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Blooming123@#ton\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3148,7 +3148,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3189,7 +3189,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IadsN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IadsN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3230,7 +3230,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3271,7 +3271,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"111121\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"111121\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3312,7 +3312,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47a41asd\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47a41asd\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3353,7 +3353,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47011\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47011\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3394,7 +3394,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"2022-10-17\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"2022-10-17\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3435,7 +3435,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"12-31-1899\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"12-31-1899\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3476,7 +3476,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"23-37-1232\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"23-37-1232\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3517,7 +3517,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3558,7 +3558,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Malasde\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Malasde\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3599,7 +3599,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3640,7 +3640,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"15 27\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"15 27\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3722,7 +3722,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.0000123\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.0000123\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3763,7 +3763,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3804,7 +3804,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"NOTREAL\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"NOTREAL\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3886,7 +3886,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : 1,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : 1,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3927,7 +3927,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : \"a\",\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : \"a\",\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3968,7 +3968,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4009,7 +4009,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : 1,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : 1,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4050,7 +4050,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : \"\",\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : \"\",\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4091,7 +4091,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4132,7 +4132,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : 123,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : 123,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4173,7 +4173,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : true\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : true\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4204,7 +4204,7 @@
 									{
 										"key": "Authorization",
 										"type": "text",
-										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJUeXBlIjoicGF0aWVudCIsImlhdCI6MTYwMjc5NjQ5MX0.zBOQRQQwT8qu6j7OcEwzEZxzxuSWqdv9E5wLjRH-2Yw"
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJ0eXBlIjoicGF0aWVudCIsImlhdCI6MTYwMzgzMjI4NSwiZXhwIjoxNjAzODM1ODg1fQ.f6Ob8zCy0MqiMv7arb1R5PRTocla9UgtZIQH1wTQd9Y"
 									},
 									{
 										"key": "Content-Type",
@@ -4214,7 +4214,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 10,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -5009,12 +5009,12 @@
 						{
 							"name": "Valid POST/PUT Doctor Details - 127",
 							"request": {
-								"method": "POST",
+								"method": "PUT",
 								"header": [
 									{
 										"key": "Authorization",
 										"type": "text",
-										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsInVzZXJ0eXBlIjoiZG9jdG9yIiwiaWF0IjoxNjAzMzk0MDgxLCJleHAiOjE2MDMzOTc2ODF9.Fmw4ZwlHu8klIY61KPZNaLYWZ2RuPZ8C-9LSMV2RUe4"
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsInVzZXJ0eXBlIjoiZG9jdG9yIiwiaWF0IjoxNjAzODMxNjEwLCJleHAiOjE2MDM4MzUyMTB9.sdG4ucZ-EUrG8a_jRPQUklMs_PlmxhPEmQuI98BtjAU"
 									},
 									{
 										"key": "Content-Type",
@@ -5032,7 +5032,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3002/api/doctors/onboard",
+									"raw": "http://localhost:3002/api/doctors/details",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -5041,7 +5041,7 @@
 									"path": [
 										"api",
 										"doctors",
-										"onboard"
+										"details"
 									]
 								}
 							},
@@ -5414,7 +5414,7 @@
 									{
 										"key": "Authorization",
 										"type": "text",
-										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcnR5cGUiOiJpbnN1cmFuY2UiLCJpYXQiOjE2MDMzODU4OTEsImV4cCI6MTYwMzM4OTQ5MX0.WC2JHqKXqYPIqIhFLWThRuOl7yStkJFX1OHGq_g8gsw"
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcnR5cGUiOiJpbnN1cmFuY2UiLCJpYXQiOjE2MDM4MzIyMjYsImV4cCI6MTYwMzgzNTgyNn0.tLwzKQ0eAjDvx3O1ZDrNL-Rb_n-rcewur5Am8qVqN9E"
 									},
 									{
 										"key": "Content-Type",

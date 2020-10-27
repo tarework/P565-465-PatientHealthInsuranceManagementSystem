@@ -1,6 +1,7 @@
 const { doQuery, sql } = require('../db');
 const { ValidatePassword, ValidateUpdateUser } = require('../models/user');
 const { ValidateDoctorDetails } = require('../models/duser');
+const { geocoder } = require('../utils/geocoder');
 const storage = require('../utils/storage');
 const bcrypt = require('bcryptjs');
 const empty = require('is-empty');
@@ -159,14 +160,28 @@ router.post('/onboard', async function (req, res) {
     { name: 'surgery', sqltype: sql.Bit, value: req.body.specializations['surgery'] },
     { name: 'urology', sqltype: sql.Bit, value: req.body.specializations['urology'] }
   ];
-  doQuery(res, query, params, function (insertData) {
+
+
+  doQuery(res, query, params, async function (insertData) {
     if (empty(insertData.recordset)) return res.status(500).send({ error: "Data not saved." })
 
     specializations = insertData.recordset[0];
 
-    query = `INSERT INTO doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedstaken, bedsmax) 
+    let lat = null;
+    let lng = null;
+    await geocoder.geocode(`${req.body.address1} ${req.body.city} ${req.body.state1} ${req.body.zip}`)
+      .then(function (result) {
+        lat = result[0].latitude;
+        lng = result[0].longitude
+      })
+      .catch(function (error) {
+        winston.error(`Failed to find location for ${req.body.address1} ${req.body.city} ${req.body.state1} ${req.body.zip}. Error: ${error}`)
+        return res.status(400).send({ error: "Address is invalid." });
+      });
+
+    query = `INSERT INTO doctorDetails (id, practicename, address1, address2, city, state1, zipcode, npinumber, specializations, treatscovid, bedstaken, bedsmax, lat, lng) 
       OUTPUT INSERTED.* 
-      VALUES (@id, @practicename, @address1, @address2, @city, @state1, @zipcode, @npinumber, @specializations, @treatscovid, @bedstaken, @bedsmax);`;
+      VALUES (@id, @practicename, @address1, @address2, @city, @state1, @zipcode, @npinumber, @specializations, @treatscovid, @bedstaken, @bedsmax, @lat, @lng);`;
     params = [
       { name: 'id', sqltype: sql.Int, value: req.body.id },
       { name: 'practicename', sqltype: sql.VarChar(255), value: req.body.practicename },
@@ -179,10 +194,14 @@ router.post('/onboard', async function (req, res) {
       { name: 'specializations', sqltype: sql.Int, value: req.body.id },
       { name: 'treatscovid', sqltype: sql.Bit, value: req.body.treatscovid },
       { name: 'bedstaken', sqltype: sql.Int, value: req.body.bedstaken },
-      { name: 'bedsmax', sqltype: sql.Int, value: req.body.bedsmax }
+      { name: 'bedsmax', sqltype: sql.Int, value: req.body.bedsmax },
+      { name: 'lat', sqltype: sql.Float, value: lat },
+      { name: 'lng', sqltype: sql.Float, value: lng }
     ];
 
-    doQuery(res, query, params, function (insertData) {
+
+
+    doQuery(res, query, params, async function (insertData) {
       if (empty(insertData.recordset)) return res.status(500).send({ error: "Data not saved." })
 
       insertData.recordset[0].specializations = specializations;
@@ -238,9 +257,21 @@ router.put('/details', async function (req, res) {
 
     specializations = updateData.recordset[0];
 
+    let lat = null;
+    let lng = null;
+    await geocoder.geocode(`${req.body.address1} ${req.body.city} ${req.body.state1} ${req.body.zip}`)
+      .then(function (result) {
+        lat = result[0].latitude;
+        lng = result[0].longitude
+      })
+      .catch(function (error) {
+        winston.error(`Failed to find location for ${req.body.address1} ${req.body.city} ${req.body.state1} ${req.body.zip}. Error: ${error}`)
+        return res.status(400).send({ error: "Address is invalid." });
+      });
+
     query = `UPDATE doctorDetails 
       SET practicename = @practicename, address1 = @address1, address2 = @address2, city = @city, state1 = @state1, zipcode = @zipcode,
-      npinumber = @npinumber, specializations = @specializations, treatscovid = @treatscovid, bedstaken = @bedstaken, bedsmax = @bedsmax
+      npinumber = @npinumber, specializations = @specializations, treatscovid = @treatscovid, bedstaken = @bedstaken, bedsmax = @bedsmax, lng = @lng, lat = @lat
       OUTPUT INSERTED.* WHERE id = @id`;
     params = [
       { name: 'id', sqltype: sql.Int, value: req.body.id },
@@ -254,15 +285,15 @@ router.put('/details', async function (req, res) {
       { name: 'specializations', sqltype: sql.Int, value: req.body.id },
       { name: 'treatscovid', sqltype: sql.Bit, value: req.body.treatscovid },
       { name: 'bedstaken', sqltype: sql.Int, value: req.body.bedstaken },
-      { name: 'bedsmax', sqltype: sql.Int, value: req.body.bedsmax }
+      { name: 'bedsmax', sqltype: sql.Int, value: req.body.bedsmax },
+      { name: 'lat', sqltype: sql.Float, value: lat },
+      { name: 'lng', sqltype: sql.Float, value: lng }
     ];
 
     doQuery(res, query, params, function (updateData) {
       if (empty(updateData.recordset)) return res.status(500).send({ error: "Data not saved." })
 
-      updateData.recordset[0].specializations = specializations;
-
-      return res.status(200).send({ detail: updateData.recordset[0] });
+      return res.status(200).send({ detail: updateData.recordset[0], specializations: specializations });
     });
   });
 });

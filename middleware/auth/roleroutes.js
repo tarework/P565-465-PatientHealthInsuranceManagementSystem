@@ -1,5 +1,5 @@
 module.exports = {
-	patient: ["patients"],
+	patient: ["patients", "doctorsearch"],
 	doctor: ["doctors"],
 	insurance: ["insurance"]
 }

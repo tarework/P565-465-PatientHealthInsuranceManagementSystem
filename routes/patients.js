@@ -1,6 +1,7 @@
 const { doQuery, sql } = require('../db');
 const { ValidatePassword, ValidateUpdateUser } = require('../models/user');
 const { ValidatePatientMedicalData } = require('../models/puser');
+const { geocoder } = require('../utils/geocoder');
 const storage = require('../utils/storage');
 const bcrypt = require('bcryptjs');
 const empty = require('is-empty');
@@ -127,9 +128,21 @@ router.post('/onboard', async function (req, res) {
   const { error } = ValidatePatientMedicalData(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
-  let query = `INSERT INTO patientMedicalData (id, address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq) 
+  let lat = null;
+  let lng = null;
+  await geocoder.geocode(`${req.body.address1} ${req.body.city} ${req.body.state1} ${req.body.zip}`)
+    .then(function (result) {
+      lat = result[0].latitude;
+      lng = result[0].longitude
+    })
+    .catch(function (error) {
+      winston.error(`Failed to find location for ${req.body.address1} ${req.body.city} ${req.body.state1} ${req.body.zip}. Error: ${error}`)
+      return res.status(400).send({ error: "Address is invalid." });
+    });
+
+  let query = `INSERT INTO patientMedicalData (id, address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq, lat, lng) 
                OUTPUT INSERTED.* 
-               VALUES (@id, @address1, @address2, @state1, @city, @zipcode, @birthdate, @sex, @height, @weight1, @bloodtype, @smoke, @smokefreq, @drink, @drinkfreq, @caffeine, @caffeinefreq);`;
+               VALUES (@id, @address1, @address2, @state1, @city, @zipcode, @birthdate, @sex, @height, @weight1, @bloodtype, @smoke, @smokefreq, @drink, @drinkfreq, @caffeine, @caffeinefreq, @lat, @lng);`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
     { name: 'address1', sqltype: sql.VarChar(255), value: req.body.address1 },
@@ -147,7 +160,9 @@ router.post('/onboard', async function (req, res) {
     { name: 'drink', sqltype: sql.Bit, value: req.body.drink },
     { name: 'drinkfreq', sqltype: sql.Int, value: req.body.drinkfreq || 0 },
     { name: 'caffeine', sqltype: sql.Bit, value: req.body.caffeine },
-    { name: 'caffeinefreq', sqltype: sql.Int, value: req.body.caffeinefreq || 0 }
+    { name: 'caffeinefreq', sqltype: sql.Int, value: req.body.caffeinefreq || 0 },
+    { name: 'lat', sqltype: sql.Float, value: lat },
+    { name: 'lng', sqltype: sql.Float, value: lng }
   ];
 
   doQuery(res, query, params, function (insertData) {
@@ -163,10 +178,22 @@ router.put('/details', async function (req, res) {
   const { error } = ValidatePatientMedicalData(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
+  let lat = null;
+  let lng = null;
+  await geocoder.geocode(`${req.body.address1} ${req.body.city} ${req.body.state1} ${req.body.zip}`)
+    .then(function (result) {
+      lat = result[0].latitude;
+      lng = result[0].longitude
+    })
+    .catch(function (error) {
+      winston.error(`Failed to find location for ${req.body.address1} ${req.body.city} ${req.body.state1} ${req.body.zip}. Error: ${error}`)
+      return res.status(400).send({ error: "Address is invalid." });
+    });
+
   let query = `UPDATE patientMedicalData 
               SET address1 = @address1, address2 = @address2, state1 = @state1, city = @city, zipcode = @zipcode, birthdate = @birthdate, 
               sex = @sex, height = @height, weight1 = @weight1, bloodtype = @bloodtype, smoke = @smoke, smokefreq = @smokefreq, drink = @drink, 
-              drinkfreq = @drinkfreq, caffeine = @caffeine, caffeinefreq = @caffeinefreq 
+              drinkfreq = @drinkfreq, caffeine = @caffeine, caffeinefreq = @caffeinefreq, lat = @lat, lng = @lng 
               OUTPUT INSERTED.* WHERE id = @id;`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
@@ -185,7 +212,9 @@ router.put('/details', async function (req, res) {
     { name: 'drink', sqltype: sql.Bit, value: req.body.drink },
     { name: 'drinkfreq', sqltype: sql.Int, value: req.body.drinkfreq || 0 },
     { name: 'caffeine', sqltype: sql.Bit, value: req.body.caffeine },
-    { name: 'caffeinefreq', sqltype: sql.Int, value: req.body.caffeinefreq || 0 }
+    { name: 'caffeinefreq', sqltype: sql.Int, value: req.body.caffeinefreq || 0 },
+    { name: 'lat', sqltype: sql.Float, value: lat },
+    { name: 'lng', sqltype: sql.Float, value: lng }
   ];
 
   doQuery(res, query, params, function (updateData) {
@@ -285,6 +314,12 @@ router.get('/:id/mydoctor/:did', async function (req, res) {
 //#endregion
 
 //#region GET Insurance Plans
+
+// Get insurance plan for certain insurance company
+
+// Get all insurance plans for a certain insurance company
+
+// POST a insurance/patient relationship to create a subscription
 
 
 //#endregion

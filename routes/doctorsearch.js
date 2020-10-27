@@ -9,51 +9,59 @@ const empty = require('is-empty');
 // const moment = require('moment'),
 const winston = require('winston');
 const express = require('express');
+const { geocoder } = require('../utils/geocoder');
 const router = express.Router();
 
+//select *, dbo.CalculateDistance(@lng, @lat, lng, lat) as distance from doctorUsers where distance < 30;
 
 // GET Doctor's based on params
-router.get('/', async function (req, res) {
-    const covidOnly = req.body.covidonly;
+router.post('/', async function (req, res) {
+    const covidOnly = req.body.treatscovid;
     const nameSearch = req.body.namesearch;
+    const speciality = req.body.speciality;
 
-    let query = '';
+    //covidonly will be 'Yes', 'No', or ''
+
     let params = [];
-    if (nameSearch) {
-        query = `SELECT fname, lname, email, phonenumber, 
-        (SELECT * FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail
-        FROM doctorUsers WHERE fname LIKE '%${req.body.name}%' OR lname LIKE '%${req.body.name}%'`;
-    }
-    else {
-        query = `SELECT *,
-        (SELECT fname, lname, email, phonenumber FROM doctorUsers WHERE doctorDetails.id = doctorUsers.id FOR JSON PATH) AS duser
-        FROM doctorDetails WHERE address1 LIKE '%${req.body.address}%' OR address2 LIKE '%${req.body.address}%' OR city LIKE '%${req.body.address}%' OR state1 LIKE '%${req.body.address}%' OR zipcode LIKE '%${req.body.address}%'`;
-    }
 
-    doQuery(res, query, params, function (selectData) {
-        if (empty(selectData.recordset)) return res.status(400).send({ error: "No doctors found." })
+    if (empty(req.body.address)) {
+        let query = `SELECT doctorUsers.id, doctorUsers.fname, doctorUsers.lname, doctorUsers.email, doctorUsers.phonenumber, 
+        (SELECT * FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail,
+        (SELECT doctorSpecializations.* FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specialization
+        FROM doctorUsers 
+        INNER JOIN doctorDetails on doctorDetails.id = doctorUsers.id 
+        INNER JOIN doctorSpecializations on doctorUsers.id = doctorSpecializations.id
+        ${nameSearch ? `WHERE (doctorUsers.fname LIKE '%${req.body.name}%' OR doctorUsers.lname LIKE '%${req.body.name}%' OR CONCAT(doctorUsers.fname, ' ', doctorUsers.lname) = '${req.body.name}') ` : ''}
+        ${!nameSearch ? `WHERE (doctorSpecializations.${speciality} = 1) ` : ''}
+        ${empty(covidOnly) ? '' : `and doctorDetails.treatscovid = ${covidOnly === "Yes" ? 1 : 0}`};`;
 
-        let results = []
+        doQuery(res, query, params, function (selectData) {
+            res.send(selectData.recordset.map(item => { let s = empty(JSON.parse(item.specialization)) ? {} : JSON.parse(item.specialization)[0]; delete item.specialization; return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], specializations: s }) }) );
+        });
 
-        if (nameSearch) {
-            results = selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0] }));
-        } else {
-            results = selectData.recordset.map(rs => {
-                const details = rs;
-                const duser = rs["duser"];
-                delete details.duser;
-                rs = JSON.parse(duser);
-                rs[0].detail = details;
-                return rs[0];
+    } else {
+        geocoder.geocode(`${req.body.address}`)
+            .then(function (result) {
+                if (empty(result)) return res.status(400).send({ error: "Location not found." });
+                let query = `SELECT doctorUsers.id, doctorUsers.fname, doctorUsers.lname, doctorUsers.email, doctorUsers.phonenumber, dbo.CalculateDistance(${result[0].longitude}, ${result[0].latitude}, doctorDetails.lng, doctorDetails.lat) as distance,
+                (SELECT * FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail,
+                (SELECT doctorSpecializations.* FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specialization
+                FROM doctorUsers 
+                INNER JOIN doctorDetails on doctorDetails.id = doctorUsers.id 
+                INNER JOIN doctorSpecializations on doctorUsers.id = doctorSpecializations.id
+                ${nameSearch ? `WHERE (doctorUsers.fname LIKE '%${req.body.name}%' OR doctorUsers.lname LIKE '%${req.body.name}%' OR CONCAT(doctorUsers.fname, ' ', doctorUsers.lname) = '${req.body.name}') ` : ''}
+                ${!nameSearch ? `WHERE (doctorSpecializations.${speciality} = 1) ` : ''}
+                and dbo.CalculateDistance(${result[0].longitude}, ${result[0].latitude}, doctorDetails.lng, doctorDetails.lat) < 50
+                ${empty(covidOnly) ? '' : `and doctorDetails.treatscovid = ${covidOnly === "Yes" ? 1 : 0}`};`;
+
+                doQuery(res, query, params, function (selectData) {
+                    res.send(selectData.recordset.map(item => { let s = empty(JSON.parse(item.specialization)) ? {} : JSON.parse(item.specialization)[0]; delete item.specialization; return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], specializations: s }) }) );
+                });
+            })
+            .catch(function (error) {
+                return res.status(400).send({ error: "Location not found." });
             });
-        }
-
-        if (covidOnly) {
-            results = results.filter(rs => { return rs["detail"]["treatscovid"] });
-        }
-
-        return res.status(200).send({ ...results /*, usertype: 'patient'*/ });
-    });
+    }
 });
 
 module.exports = router;

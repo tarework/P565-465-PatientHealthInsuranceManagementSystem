@@ -2,6 +2,7 @@ const { doQuery, sql } = require('../db');
 const { DecodeAuthToken, ValidatePassword, ValidateUpdateUser } = require('../models/user');
 const { ValidateInsuranceDetails, ValidateInsurancePlan } = require('../models/iuser');
 const constants = require('../utils/constants');
+const { geocoder } = require('../utils/geocoder');
 const storage = require('../utils/storage');
 const bcrypt = require('bcryptjs');
 const empty = require('is-empty');
@@ -128,9 +129,21 @@ router.post('/onboard', async function (req, res) {
   const { error } = ValidateInsuranceDetails(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
-  let query = `INSERT INTO insuranceDetails (id, companyname, address1, address2, state1, city, zipcode) 
+  let lat = null;
+  let lng = null;
+  await geocoder.geocode(`${req.body.address1} ${req.body.city} ${req.body.state1} ${req.body.zip}`)
+    .then(function (result) {
+      lat = result[0].latitude;
+      lng = result[0].longitude
+    })
+    .catch(function (error) {
+      winston.error(`Failed to find location for ${req.body.address1} ${req.body.city} ${req.body.state1} ${req.body.zip}. Error: ${error}`)
+      return res.status(400).send({ error: "Address is invalid." });
+    });
+
+  let query = `INSERT INTO insuranceDetails (id, companyname, address1, address2, state1, city, zipcode, lat, lng)  
                OUTPUT INSERTED.* 
-               VALUES (@id, @companyname, @address1, @address2, @state1, @city, @zipcode);`;
+               VALUES (@id, @companyname, @address1, @address2, @state1, @city, @zipcode, @lat, @lng);`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
     { name: 'companyname', sqltype: sql.VarChar(255), value: req.body.companyname },
@@ -138,7 +151,9 @@ router.post('/onboard', async function (req, res) {
     { name: 'address2', sqltype: sql.VarChar(255), value: req.body.address2 },
     { name: 'state1', sqltype: sql.VarChar(15), value: req.body.state1 },
     { name: 'city', sqltype: sql.VarChar(50), value: req.body.city },
-    { name: 'zipcode', sqltype: sql.VarChar(15), value: req.body.zipcode }
+    { name: 'zipcode', sqltype: sql.VarChar(15), value: req.body.zipcode },
+    { name: 'lat', sqltype: sql.Float, value: lat },
+    { name: 'lng', sqltype: sql.Float, value: lng }
   ];
 
   doQuery(res, query, params, function (insertData) {
@@ -154,8 +169,20 @@ router.put('/details', async function (req, res) {
   const { error } = ValidateInsuranceDetails(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
+  let lat = null;
+  let lng = null;
+  await geocoder.geocode(`${req.body.address1} ${req.body.city} ${req.body.state1} ${req.body.zip}`)
+    .then(function (result) {
+      lat = result[0].latitude;
+      lng = result[0].longitude
+    })
+    .catch(function (error) {
+      winston.error(`Failed to find location for ${req.body.address1} ${req.body.city} ${req.body.state1} ${req.body.zip}. Error: ${error}`)
+      return res.status(400).send({ error: "Address is invalid." });
+    });
+
   let query = `UPDATE insuranceDetails 
-    SET companyname = @companyname, address1 = @address1, address2 = @address2, state1 = @state1, city = @city, zipcode = @zipcode 
+    SET companyname = @companyname, address1 = @address1, address2 = @address2, state1 = @state1, city = @city, zipcode = @zipcode, lat = @lat, lng = @lng
                OUTPUT INSERTED.* WHERE id = @id;`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
@@ -164,7 +191,9 @@ router.put('/details', async function (req, res) {
     { name: 'address2', sqltype: sql.VarChar(255), value: req.body.address2 },
     { name: 'state1', sqltype: sql.VarChar(15), value: req.body.state1 },
     { name: 'city', sqltype: sql.VarChar(50), value: req.body.city },
-    { name: 'zipcode', sqltype: sql.VarChar(15), value: req.body.zipcode }
+    { name: 'zipcode', sqltype: sql.VarChar(15), value: req.body.zipcode },
+    { name: 'lat', sqltype: sql.Float, value: lat },
+    { name: 'lng', sqltype: sql.Float, value: lng }
   ];
 
   doQuery(res, query, params, function (updateData) {

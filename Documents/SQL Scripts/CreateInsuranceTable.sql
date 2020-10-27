@@ -6,7 +6,9 @@ CREATE TABLE insuranceDetails (
 	address2 varchar(255) NULL,
 	city varchar(255) NULL,
 	state1 varchar(15) NULL,
-	zipcode varchar(15) NULL
+	zipcode varchar(15) NULL,
+	lat float NULL,
+	lng float NULL
 ); 
 
 CREATE TABLE insuranceUsers (
