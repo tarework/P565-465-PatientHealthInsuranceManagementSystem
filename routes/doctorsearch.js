@@ -11,6 +11,7 @@ const winston = require('winston');
 const express = require('express');
 const router = express.Router();
 
+//select *, dbo.CalculateDistance(@lng, @lat, lng, lat) as distance from doctorUsers where distance < 30;
 
 // GET Doctor's based on params
 router.get('/', async function (req, res) {
