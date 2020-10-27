@@ -25,8 +25,9 @@ router.post('/', async function (req, res) {
     let params = [];
 
     if (empty(req.body.address)) {
-        let query = `SELECT doctorUsers.fname, doctorUsers.lname, doctorUsers.email, doctorUsers.phonenumber, 
-        (SELECT * FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail
+        let query = `SELECT doctorUsers.id, doctorUsers.fname, doctorUsers.lname, doctorUsers.email, doctorUsers.phonenumber, 
+        (SELECT * FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail,
+        (SELECT doctorSpecializations.* FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specialization
         FROM doctorUsers 
         INNER JOIN doctorDetails on doctorDetails.id = doctorUsers.id 
         INNER JOIN doctorSpecializations on doctorUsers.id = doctorSpecializations.id
@@ -35,25 +36,26 @@ router.post('/', async function (req, res) {
         ${empty(covidOnly) ? '' : `and doctorDetails.treatscovid = ${covidOnly === "Yes" ? 1 : 0}`};`;
 
         doQuery(res, query, params, function (selectData) {
-            res.send(selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0] })));
+            res.send(selectData.recordset.map(item => { let s = empty(JSON.parse(item.specialization)) ? {} : JSON.parse(item.specialization)[0]; delete item.specialization; return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], specializations: s }) }) );
         });
 
     } else {
         geocoder.geocode(`${req.body.address}`)
             .then(function (result) {
                 if (empty(result)) return res.status(400).send({ error: "Location not found." });
-                let query = `SELECT doctorUsers.fname, doctorUsers.lname, doctorUsers.email, doctorUsers.phonenumber, dbo.CalculateDistance(${result[0].longitude}, ${result[0].latitude}, doctorDetails.lng, doctorDetails.lat) as distance
-            (SELECT * FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail
-            FROM doctorUsers 
-            INNER JOIN doctorDetails on doctorDetails.id = doctorUsers.id 
-            INNER JOIN doctorSpecializations on doctorUsers.id = doctorSpecializations.id
-            ${nameSearch ? `WHERE (doctorUsers.fname LIKE '%${req.body.name}%' OR doctorUsers.lname LIKE '%${req.body.name}%' OR CONCAT(doctorUsers.fname, ' ', doctorUsers.lname) = '${req.body.name}') ` : ''}
-            ${!nameSearch ? `WHERE (doctorSpecializations.${speciality} = 1) ` : ''}
-            and distance < 50
-            ${empty(covidOnly) ? '' : `and doctorDetails.treatscovid = ${covidOnly === "Yes" ? 1 : 0}`};`;
+                let query = `SELECT doctorUsers.id, doctorUsers.fname, doctorUsers.lname, doctorUsers.email, doctorUsers.phonenumber, dbo.CalculateDistance(${result[0].longitude}, ${result[0].latitude}, doctorDetails.lng, doctorDetails.lat) as distance,
+                (SELECT * FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail,
+                (SELECT doctorSpecializations.* FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specialization
+                FROM doctorUsers 
+                INNER JOIN doctorDetails on doctorDetails.id = doctorUsers.id 
+                INNER JOIN doctorSpecializations on doctorUsers.id = doctorSpecializations.id
+                ${nameSearch ? `WHERE (doctorUsers.fname LIKE '%${req.body.name}%' OR doctorUsers.lname LIKE '%${req.body.name}%' OR CONCAT(doctorUsers.fname, ' ', doctorUsers.lname) = '${req.body.name}') ` : ''}
+                ${!nameSearch ? `WHERE (doctorSpecializations.${speciality} = 1) ` : ''}
+                and dbo.CalculateDistance(${result[0].longitude}, ${result[0].latitude}, doctorDetails.lng, doctorDetails.lat) < 50
+                ${empty(covidOnly) ? '' : `and doctorDetails.treatscovid = ${covidOnly === "Yes" ? 1 : 0}`};`;
 
                 doQuery(res, query, params, function (selectData) {
-                    res.send(selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0] })));
+                    res.send(selectData.recordset.map(item => { let s = empty(JSON.parse(item.specialization)) ? {} : JSON.parse(item.specialization)[0]; delete item.specialization; return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], specializations: s }) }) );
                 });
             })
             .catch(function (error) {
