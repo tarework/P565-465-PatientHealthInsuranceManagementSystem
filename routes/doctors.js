@@ -262,7 +262,7 @@ router.put('/details', async function (req, res) {
 
       updateData.recordset[0].specializations = specializations;
 
-      return res.status(200).send({ detail: updateData.recordset[0] });
+      return res.status(200).send({ detail: updateData.recordset[0], specializations: specializations });
     });
   });
 });
