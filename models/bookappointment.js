@@ -14,16 +14,14 @@ function ValidateBookAppointment(request) {
     return constants.CleanErrorMessage(schema.validate(request));
 }
 
-const NPINumber = (value, helpers) => {
+function ValidateGetAppointments(request) {
+    const schema = Joi.object({
+        did: Joi.string().required(),
+        startdate: Joi.date().required(),
+    }).options({ stripUnknown: true });
 
-    try {
-        if (ValidateNPINumber(value))
-            return value;
-        else
-            throw new Error('NPI Number is invalid. (Debug Message: Use 1234567893 as a acceptable value)');
-    } catch (ex) {
-        throw new Error('NPI Number is invalid. (Debug Message: Use 1234567893 as a acceptable value)');
-    }
-};
+    return constants.CleanErrorMessage(schema.validate(request));
+}
 
 module.exports.ValidateBookAppointment = ValidateBookAppointment;
+module.exports.ValidateGetAppointments = ValidateGetAppointments;

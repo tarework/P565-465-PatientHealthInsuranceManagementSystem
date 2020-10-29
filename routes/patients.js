@@ -253,7 +253,9 @@ router.get('/:id/mybills', async function (req, res) {
 
 // Gets patientUser's doctors'
 router.get('/:id/mydoctors', async function (req, res) {
-  let query = `SELECT * FROM patientDoctorRelations WHERE pid = @pid;`;
+  // changed from patientDoctorRelations to appointments 10/29
+  // not tested yet. Remove these comments when tested
+  let query = `SELECT * FROM appointments WHERE pid = @pid;`;
   let params = [
     { name: 'pid', sqltype: sql.Int, value: req.params.id }
   ];
@@ -280,14 +282,16 @@ router.get('/:id/mydoctors', async function (req, res) {
 
 // Gets doctorUser's patient 
 router.get('/:id/mydoctor/:did', async function (req, res) {
-  let query = `SELECT * FROM patientDoctorRelations WHERE pid = @pid and did = @did;`;
+  // changed from patientDoctorRelations to appointments 10/29
+  // not tested yet. Remove these comments when tested
+  let query = `SELECT * FROM appointments WHERE pid = @pid and did = @did;`;
   let params = [
     { name: 'pid', sqltype: sql.Int, value: req.params.id },
     { name: 'did', sqltype: sql.Int, value: req.params.did }
 
   ];
   doQuery(res, query, params, function (selectData) {
-    if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve doctor records." });
+    if (empty(selectData.recordset)) return res.status(500).send({ error: "Doctor patient relation doesn't exist." });
 
     let query =
       `SELECT email, fname, lname, phonenumber, 

@@ -1,5 +1,5 @@
 const { doQuery, sql } = require('../db');
-const { ValidateBookAppointment } = require('../models/bookappointment');
+const { ValidateBookAppointment, ValidateGetAppointments } = require('../models/bookappointment');
 // const { ValidatePatientMedicalData } = require('../models/puser');
 // const constants = require('../utils/constants');
 const { geocoder } = require('../utils/geocoder');
@@ -7,22 +7,40 @@ const mail = require('../utils/mail');
 // const storage = require('../utils/storage');
 const bcrypt = require('bcryptjs');
 const empty = require('is-empty');
+const moment = require('moment');
 const winston = require('winston');
 const express = require('express');
 const router = express.Router();
 
 // GET Appointment
 router.get('/', async function (req, res) {
+    // Data Validation
+    const { error } = ValidateGetAppointments(req.body);
+    if (error) return res.status(400).send({ error: error.message });
 
+    const enddate = moment(new Date(req.body.startdate)).add(5, 'days').format('MM-DD-YYYY');
+    winston.info(req.body.startdate);
+    winston.info(enddate);
+
+    const query = `SELECT * FROM appointments
+    WHERE did = @did AND appointmentdate BETWEEN @startdate AND @enddate`
+    const params = [
+        { name: 'did', sqltype: sql.Int, value: req.body.did },
+        { name: 'startdate', sqltype: sql.Date, value: req.body.startdate },
+        { name: 'enddate', sqltype: sql.Date, value: enddate }
+    ];
+
+    doQuery(res, query, params, async function (selectData) {
+        return res.status(200).send({ appointments: selectData.recordset });
+    });
 });
 
 // CREATE Appointment
 // FLOW
 //  -> Check appointment slot is open
 //      -> Save new appointment in DB
-//          -> Create patient doctor relation in DB
-//              -> Grab e-mails for email confirmation
-//                  -> DONE!
+//          -> Grab e-mails for email confirmation
+//              -> DONE!
 router.post('/', async function (req, res) {
     // Data Validation
     const { error } = ValidateBookAppointment(req.body);
@@ -56,42 +74,41 @@ router.post('/', async function (req, res) {
 
             let appointmentData = insertData.recordset[0];
 
-            query = `INSERT INTO patientDoctorRelations (pid, did)
-            OUTPUT INSERTED.*
-            VALUES (@pid, @did);`;
-            params = [
-                { name: 'did', sqltype: sql.Int, value: req.body.did },
-                { name: 'pid', sqltype: sql.Int, value: req.body.pid }
-            ];
-            // TODO Figure out the CAPS 
-            // Save patient doctor relation - BUT WHAT IF THIS ALREADY EXISTS?!
-            doQuery(res, query, params, function (insertData) {
-                //if (empty(insertData.recordset)) return res.status(400).send({ error: "Failed to create patient doctor relation." });
-
-                query = `SELECT email, fname, lname FROM doctorUsers
+            query = `SELECT email, fname, lname FROM doctorUsers
                 WHERE id = @did
                 UNION ALL
                 SELECT email, fname, lname FROM patientUsers
                 WHERE id = @pid;`
-                params = [
-                    { name: 'did', sqltype: sql.Int, value: req.body.did },
-                    { name: 'pid', sqltype: sql.Int, value: req.body.pid }
-                ];
-                // Grab e-mails for the email confirmation
-                doQuery(res, query, params, async function (selectData) {
-                    if (empty(selectData.recordset)) return res.status(400).send({ error: "Doctor and Patient are not in the system." });
+            params = [
+                { name: 'did', sqltype: sql.Int, value: req.body.did },
+                { name: 'pid', sqltype: sql.Int, value: req.body.pid }
+            ];
+            // Grab e-mails for the email confirmation
+            doQuery(res, query, params, async function (selectData) {
+                if (empty(selectData.recordset)) return res.status(400).send({ error: "Doctor and Patient are not in the system." });
 
-                    let doctor = selectData.recordset[0];
-                    let patient = selectData.recordset[1];
+                let doctor = selectData.recordset[0];
+                let patient = selectData.recordset[1];
 
-                    // TODO - Can't send e-amisl, kill the request?
-                    if (empty(doctor) || empty(patient))
-                        winston.error('Doctor or Patient is empty. Email will fail to send but appointment created successfully?');
+                // Can't send e-mails, kill the request?
+                // Honestly shouldn't be feasible but we'll log it if it comes up
+                if (empty(doctor) || empty(patient))
+                    winston.error('Doctor or Patient is empty. Email will fail to send but appointment created successfully?');
 
-                    SendConfirmationEmails(doctor, patient, appointmentData.appointmentdate, GetTime(appointmentData.starttime));
+                mail(
+/*Emails 2 send 2*/[doctor.email, patient.email],
+/*Subject*/         "Appointment Confirmation",
+/*Body*/            appointmentEmail.replace('_P_FIRST_NAME', patient.fname).replace('_P_LAST_NAME', patient.lname)
+                        .replace('_D_LAST_NAME', doctor.lname).replace('_APPOINTMENT_DATE_', appointmentData.appointmentdate)
+                        .replace('_APPOINTMENT_TIME_', (Math.floor(appointmentData.starttime / 60) + ":" + (appointmentData.starttime % 60))))
 
-                    return res.status(200).send({ appointment: appointmentData });
-                });
+                    .then(() => {
+                        winston.info(`Appointment confirmation emails successfully sent: ${patient.email},${patient.fname},${patient.lname},${doctor.emai},${doctor.lname},${date},${time},`);
+                        return res.status(200).send({ appointment: appointmentData });
+                    }).catch((error) => {
+                        winston.error(`Appointment confirmation emails failed to send.: ${patient.email},${patient.fname},${patient.lname},${doctor.emai},${doctor.lname},${date},${time}. ERROR: ${error}`);
+                        return res.status(500).send({ error: `Confirmation emails failed to send.` });
+                    });
             });
         });
     });
@@ -108,21 +125,6 @@ router.delete('/', async function (req, res) {
 });
 
 module.exports = router;
-
-function GetTime(minutes) {
-    return Math.floor(minutes / 60) + ":" + (minutes % 60);
-}
-
-async function SendConfirmationEmails(doctor, patient, date, time) {
-    mail([doctor.email, patient.email], "Appointment Confirmation",
-        appointmentEmail.replace('_P_FIRST_NAME', patient.fname).replace('_P_LAST_NAME', patient.lname)
-            .replace('_D_LAST_NAME', doctor.lname).replace('_APPOINTMENT_DATE_', date).replace('_APPOINTMENT_TIME_', time))
-        .then(() => {
-            winston.info(`Appointment emails failed to send.: ${patient.email},${patient.fname},${patient.lname},${doctor.emai},${doctor.lname},${date},${time},`);
-        }).catch((error) => {
-            winston.error(`Appointment emails failed to send.: ${patient.email},${patient.fname},${patient.lname},${doctor.emai},${doctor.lname},${date},${time}. ERROR: ${error}`);
-        });
-}
 
 const appointmentEmail = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" style="width:100%;font-family:arial, 'helvetica neue', helvetica, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0"><head><meta charset="UTF-8"><meta content="width=device-width, initial-scale=1" name="viewport"><meta name="x-apple-disable-message-reformatting"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta content="telephone=no" name="format-detection"><title>AppointmentConfirmation</title> <!--[if (mso 16)]><style type="text/css">     a {text-decoration: none;}     </style><![endif]--> <!--[if gte mso 9]><style>sup { font-size: 100% !important; }</style><![endif]--> <!--[if gte mso 9]><xml> <o:OfficeDocumentSettings> <o:AllowPNG></o:AllowPNG> <o:PixelsPerInch>
 96</o:PixelsPerInch> </o:OfficeDocumentSettings> </xml><![endif]--><style type="text/css">

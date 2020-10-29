@@ -19,11 +19,11 @@ function ValidatePatientMedicalData(request) {
         weight1: Joi.string().regex(constants.regexWeight).required().error(() => new Error('Weight is empty or invalid.')),
         bloodtype: Joi.string().valid('O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+', 'Unknown').required().error(() => new Error('Blood type is empty or invalid.')),
         smoke: Joi.boolean().required(),
-        //smokefreq: Joi.string().allow('', null),
+        smokefreq: Joi.number().allow(null),
         drink: Joi.boolean().required(),
-        //drinkfreq: Joi.string().allow('', null),
-        caffeine: Joi.boolean().required()
-        //caffeinefreq: Joi.string().allow('', null),
+        drinkfreq: Joi.number().allow(null),
+        caffeine: Joi.boolean().required(),
+        caffeinefreq: Joi.number().allow(null)
     }).options({ stripUnknown: true });
 
     return constants.CleanErrorMessage(schema.validate(request));
