@@ -304,7 +304,9 @@ router.put('/details', async function (req, res) {
 
 // Gets doctorUser's patients'
 router.get('/:id/mypatients', async function (req, res) {
-  let query = `SELECT * FROM patientDoctorRelations WHERE did = @did;`;
+  // changed from patientDoctorRelations to appointments 10/29
+  // not tested yet. Remove these comments when tested
+  let query = `SELECT * FROM appointments WHERE did = @did;`;
   let params = [
     { name: 'did', sqltype: sql.Int, value: req.params.id }
   ];
@@ -331,20 +333,22 @@ router.get('/:id/mypatients', async function (req, res) {
 
 // Gets doctorUser's patient 
 router.get('/:id/mypatient/:pid', async function (req, res) {
-  let query = `SELECT * FROM patientDoctorRelations WHERE did = @did and pid = @pid;`;
+  // changed from patientDoctorRelations to appointments 10/29
+  // not tested yet. Remove these comments when tested
+  let query = `SELECT * FROM appointments WHERE did = @did and pid = @pid;`;
   let params = [
     { name: 'did', sqltype: sql.Int, value: req.params.id },
     { name: 'pid', sqltype: sql.Int, value: req.params.pid }
   ];
   doQuery(res, query, params, function (selectData) {
-    if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient records.1" });
+    if (empty(selectData.recordset)) return res.status(500).send({ error: "Doctor patient relation doesn't exist." });
 
     let query = `SELECT email, fname, lname, phonenumber, 
       (SELECT address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq 
       FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH)
       AS detail FROM patientUsers WHERE id = (${req.params.pid});`;
     doQuery(res, query, [], async function (selectData) {
-      if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient records.2" });
+      if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient records." });
 
       return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0] }))[0] });
     });

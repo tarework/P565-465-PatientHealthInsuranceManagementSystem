@@ -15,8 +15,8 @@ function ValidateDoctorDetails(request) {
         npinumber: Joi.string().custom(NPINumber, 'NPI Number Validator').required().error(() => new Error('NPI Number is empty or invalid. (Debug Message: Use 1234567893 as a acceptable value)')),
         specializations: Joi.required(),
         treatscovid: Joi.boolean().required(),
-        bedstaken: Joi.number().min(0).max(Joi.ref('bedsmax')),
-        bedsmax: Joi.number().min(0)
+        bedstaken: Joi.number().min(0).max(Joi.ref('bedsmax')).allow(null),
+        bedsmax: Joi.number().min(0).allow(null)
 
     }).options({ stripUnknown: true });
 

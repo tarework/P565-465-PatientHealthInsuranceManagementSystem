@@ -19,6 +19,8 @@ const regexNumberOnly = new RegExp(`^[0-9]*$`);
 const regexPhoneNumber = new RegExp(`^\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})[-. )]*(\\d{3})[-. ]*(\\d{4})(?: *x(\\d+))?\\s*$`);
 const regexHeight = new RegExp(`^[3-7] (?:\\s*(?:[0][0-9]|[1][0-1]|[0-9])")?$`); // Example 5 8"
 const regexWeight = new RegExp(`^(\\d*\\.?\\d{1,2})$`);
+const regexTime = new RegExp(`^(\\d*\\.?\\d{1,2})$`);
+
 
 function UserTypeToTableName(userType) {
     if (userType === USER_TYPES.PATIENT) return "patientUsers";
@@ -35,6 +37,6 @@ function CleanErrorMessage(result) {
 
 module.exports = {
     DB_PASS, JWT_SECRET, TOKEN_HEADER, GMAIL_PASSWORD, AZURE_STORAGE_KEY, USER_TYPES, DEFAULT_PROFILE,
-    regexLettersOnly, regexNumberOnly, regexPhoneNumber, regexHeight, regexWeight,
+    regexLettersOnly, regexNumberOnly, regexPhoneNumber, regexHeight, regexWeight, regexTime,
     UserTypeToTableName, CleanErrorMessage
 };
