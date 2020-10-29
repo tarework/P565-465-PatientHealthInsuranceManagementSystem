@@ -5,7 +5,7 @@ CREATE TABLE appointments (
     starttime int NOT NULL,
     endtime int NOT NULL,
     
-	PRIMARY KEY (did, pid, appointmentdate, startTime),
+	PRIMARY KEY (did, appointmentdate, startTime),
     
 	CONSTRAINT mustStartOnThirtyMinuteBoundary CHECK (
         starttime % 30 = 0
