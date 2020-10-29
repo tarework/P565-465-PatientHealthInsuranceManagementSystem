@@ -13,6 +13,7 @@ var express = require('express'),
   password = require('./routes/password'),
   patients = require('./routes/patients'),
   doctorsearch = require('./routes/doctorsearch'),
+  bookappointment = require('./routes/bookappointment'),
   insurance = require('./routes/insurance'),
   doctors = require('./routes/doctors'),
   error = require('./middleware/error');
@@ -51,6 +52,7 @@ app.use('/api/login', login);
 app.use('/api/password', password);
 app.use('/api/patients', auth, patients);
 app.use('/api/doctorsearch', auth, doctorsearch);
+app.use('/api/bookappointment', auth, bookappointment);
 app.use('/api/doctors', auth, doctors);
 app.use('/api/insurance', auth, insurance);
 app.use(error);

@@ -1,17 +1,18 @@
 CREATE FUNCTION slotIsAvailable(
     @did INT,
-    @slotStartDateTime DATETIME2(0),
-    @slotEndDateTime DATETIME2(0)
+	@slotAppointmentDate DATE,
+    @slotStartTime INT,
+    @slotEndTime INT
 ) RETURNS BIT 
 BEGIN
     RETURN CASE WHEN EXISTS (
         SELECT 'TRUE'
         FROM appointments AS a
         WHERE
-                CAST(@slotStartDateTime AS  TIME(0)) < a.endTime
-            AND CAST(@slotEndDateTime AS    TIME(0)) > a.startTime
-            AND a.did = @did
-            AND a.appointmentdate = CAST(@slotStartDateTime AS  DATE)
+			@slotStartTime < a.endtime AND 
+			@slotEndTime > a.starttime AND
+			a.did = @did AND
+			a.appointmentdate = @slotAppointmentDate
     ) THEN 'FALSE' ELSE 'TRUE'
     END;
 END; 

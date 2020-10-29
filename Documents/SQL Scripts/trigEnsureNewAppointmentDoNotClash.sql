@@ -2,27 +2,33 @@ CREATE TRIGGER ensureNewAppointmentsDoNotClash ON appointments
 INSTEAD OF INSERT
 AS
 BEGIN
-	DECLARE @did int,
+	DECLARE @did INT,
 			@appointmentdate DATE,
-			@startTime TIME,
-			@endTime TIME
+			@starttime INT,
+			@endtime INT
+
 	SELECT	@did = did,
 			@appointmentdate = appointmentdate,
-			@startTime = startTime,
-			@endTime = endTime
+			@starttime = starttime,
+			@endtime = endtime
+
 	FROM INSERTED
-		IF NOT dbo.slotIsAvailable(@did,
-			CAST(CONCAT(@appointmentdate, ' ', @startTime) AS DATETIME2(0)),
-			CAST(CONCAT(@appointmentdate, ' ', @endTime) AS DATETIME2(0))
-		) = 1
-		BEGIN
-			RAISERROR('Appointment clashes with an existing appointment!', 16, 1);
-			ROLLBACK TRANSACTION
-		END
-ELSE
-	BEGIN	
-		INSERT INTO appointments(did, pid, appointmentdate, startTime, endTime)
-		SELECT did, pid, appointmentdate, startTime, endTime FROM INSERTED
-	END
+		IF NOT dbo.slotIsAvailable(@did, @appointmentdate, @starttime, @endtime) = 1
+			BEGIN
+				RAISERROR('Appointment clashes with an existing appointment!', 16, 1);
+				ROLLBACK TRANSACTION
+			END
+		ELSE
+			BEGIN
+				DECLARE @t TABLE (
+					did INT,
+					pid INT,
+					appointmentdate DATE,
+					starttime INT,
+					endtime INT
+				)
+				INSERT INTO appointments(did, pid, appointmentdate, starttime, endtime)
+				SELECT did, pid, appointmentdate, startTime, endTime FROM INSERTED
+			END
 END; 
 GO
