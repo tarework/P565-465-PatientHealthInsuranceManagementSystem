@@ -5,8 +5,8 @@ const constants = require('../utils/constants');
 
 function ValidateBookAppointment(request) {
     const schema = Joi.object({
-        did: Joi.string().required(),
-        pid: Joi.string().required(),
+        did: Joi.required(),
+        pid: Joi.required(),
         appointmentdate: Joi.date().min(moment().format('MM-DD-YYYY')).required(),
         starttime: Joi.number().min(540).max(990).required().error(() => new Error('Start time is missing or invalid.'))
     }).options({ stripUnknown: true });
@@ -16,7 +16,7 @@ function ValidateBookAppointment(request) {
 
 function ValidateGetAppointments(request) {
     const schema = Joi.object({
-        did: Joi.string().required(),
+        did: Joi.required(),
         startdate: Joi.date().required(),
     }).options({ stripUnknown: true });
 
