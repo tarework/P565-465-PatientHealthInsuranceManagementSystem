@@ -96,9 +96,9 @@ router.post('/', async function (req, res) {
                     winston.error('Doctor or Patient is empty. Email will fail to send but appointment created successfully?');
 
                 mail(
-/*Emails 2 send 2*/[doctor.email, patient.email],
-/*Subject*/         "Appointment Confirmation",
-/*Body*/            appointmentEmail.replace('_P_FIRST_NAME', patient.fname).replace('_P_LAST_NAME', patient.lname)
+                    [doctor.email, patient.email],
+                    "Appointment Confirmation",
+                    appointmentEmail.replace('_P_FIRST_NAME', patient.fname).replace('_P_LAST_NAME', patient.lname)
                         .replace('_D_LAST_NAME', doctor.lname).replace('_APPOINTMENT_DATE_', appointmentData.appointmentdate)
                         .replace('_APPOINTMENT_TIME_', (Math.floor(appointmentData.starttime / 60) + ":" + (appointmentData.starttime % 60))))
 

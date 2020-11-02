@@ -15,6 +15,7 @@ const router = express.Router();
 // select *, dbo.CalculateDistance(@lng, @lat, lng, lat) as distance from doctorUsers where distance < 30;
 
 router.get('/:id', async function (req, res) {
+    //validation needed - params.id
 
     let query = `SELECT *, (SELECT * FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail, (SELECT doctorSpecializations.* FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specialization FROM doctorUsers WHERE id = ${req.params.id};`;
     let params = [];
@@ -31,11 +32,13 @@ router.get('/:id', async function (req, res) {
 
 // GET Doctor's based on params
 router.post('/', async function (req, res) {
+    // validation needed - body - treatscovid, namesearch, speciality, name, address
+
+    // covidonly will be 'Yes', 'No', or ''
     const covidOnly = req.body.treatscovid;
     const nameSearch = req.body.namesearch;
     const speciality = req.body.speciality;
 
-    // covidonly will be 'Yes', 'No', or ''
 
     let params = [];
 
