@@ -3,8 +3,6 @@ const winston = require('winston');
 const constants = require('../utils/constants');
 
 function ValidatePatientMedicalData(request) {
-
-    winston.info(constants.regexWeight);
     const schema = Joi.object({
         address1: Joi.string().required(),
         address2: Joi.string().allow('', null),
@@ -19,11 +17,11 @@ function ValidatePatientMedicalData(request) {
         weight1: Joi.string().regex(constants.regexWeight).required().error(() => new Error('Weight is empty or invalid.')),
         bloodtype: Joi.string().valid('O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+', 'Unknown').required().error(() => new Error('Blood type is empty or invalid.')),
         smoke: Joi.boolean().required(),
-        smokefreq: Joi.number().allow(null),
+        smokefreq: Joi.number().min(0).allow(null),
         drink: Joi.boolean().required(),
-        drinkfreq: Joi.number().allow(null),
+        drinkfreq: Joi.number().min(0).allow(null),
         caffeine: Joi.boolean().required(),
-        caffeinefreq: Joi.number().allow(null)
+        caffeinefreq: Joi.number().min(0).allow(null)
     }).options({ stripUnknown: true });
 
     return constants.CleanErrorMessage(schema.validate(request));
