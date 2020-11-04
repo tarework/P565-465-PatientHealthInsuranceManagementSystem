@@ -317,8 +317,40 @@ router.get('/:id/mydoctor/:did', async function (req, res) {
 //#region GET Insurance Plans
 
 // Get insurance plan for certain insurance company
+ router.get('/plans/:id/:planid', async function(req,res) { //get specific plan from insurance company
+  //req.body
+  let specPlan = parseInt(req.params.planid); 
+  console.log(specPlan);
+  let query = `SELECT * FROM insurancePlans WHERE id = @id`;
+
+  let params = [
+    {name: 'id', sqltype: sql.Int, value: req.params.id},
+    {name: 'planid', sqltype: sql.Int, value: req.params.planid}
+  ]; 
+
+  doQuery(res, query, params, async function (selectData) {
+    if (empty(selectData.recordset[specPlan])) return res.status(500).send({ error: "Enter a Valid Company Plan" });
+
+    return res.status(200).send({ plans: selectData.recordset[specPlan]});
+  });
+
+});
+
 
 // Get all insurance plans for a certain insurance company
+router.get(`/plans/:id/`, async function(req,res) {
+
+  let query = `SELECT * FROM insurancePlans WHERE id = @id;`; //gives duplicates/creates dupes in post
+  let params = [
+    {name: 'id', sqltype: sql.Int, value: req.params.id} 
+  ]
+
+  doQuery(res, query, params, async function (selectData) {
+    if (empty(selectData.recordset)) return res.status(500).send({ error: "No Data Available" });
+
+    return res.status(200).send({ plans: selectData.recordset});
+  });
+});
 
 // POST an insurance/patient relationship to create a subscription
 router.post('/:pid/subscribe/:insid', async function(req,res){ //already subscribed?
@@ -330,8 +362,6 @@ router.post('/:pid/subscribe/:insid', async function(req,res){ //already subscri
     { name: 'insid', sqltype: sql.Int, value: req.params.insid }
   ];   
   //need to send below query to users via email. 
-  //let query = `SELECT companyname FROM insuranceDetails WHERE InsurancePatientSubscription.insid = insuranceDetails.id` 
-
 
   //get all information and send this to email 
   //get insurance provider and send email of subscription 
@@ -347,9 +377,8 @@ router.post('/:pid/subscribe/:insid', async function(req,res){ //already subscri
   
     doQuery(res, query2, params, async function(selectData){
       if (empty(selectData.recordset)) return res.status(500).send({ error: "Records not found" });
-        let insuranceUser = selectData.recordset[0];
-        let insuranceDetails = selectData.recordset[1];
-        let patientUser = selectData.recordset[2];
+        const insuranceDetails = selectData.recordset[0];
+        const patientUser = selectData.recordset[1];
 
         mail(patientUser.email, "Thank You For Subscribing!", subscription.replace("_FIRST_", patientUser.fname).replace("_LAST_", patientUser.lname).replace
         ("_INSURANCE_NAME_", insuranceDetails.email).replace("_INSURANCE_NAME_", insuranceDetails.email))
@@ -360,9 +389,6 @@ router.post('/:pid/subscribe/:insid', async function(req,res){ //already subscri
         }); 
     });
   });  
-
-
-
 });
 
 //#endregion
