@@ -3,6 +3,7 @@ const { ValidateBookAppointment, ValidateGetAppointments } = require('../models/
 // const { ValidatePatientMedicalData } = require('../models/puser');
 // const constants = require('../utils/constants');
 const { geocoder } = require('../utils/geocoder');
+const addWeekday = require('../utils/addWeekday');
 const mail = require('../utils/mail');
 // const storage = require('../utils/storage');
 const bcrypt = require('bcryptjs');
@@ -13,14 +14,12 @@ const express = require('express');
 const router = express.Router();
 
 // GET Appointment
-router.get('/', async function (req, res) {
+router.post('/get', async function (req, res) {
     // Data Validation
     const { error } = ValidateGetAppointments(req.body);
     if (error) return res.status(400).send({ error: error.message });
 
-    const enddate = moment(new Date(req.body.startdate)).add(5, 'days').format('MM-DD-YYYY');
-    winston.info(req.body.startdate);
-    winston.info(enddate);
+    const enddate = addWeekday(moment(req.body.startdate), 5).format('MM-DD-YYYY');
 
     const query = `SELECT * FROM appointments
     WHERE did = @did AND appointmentdate BETWEEN @startdate AND @enddate`
@@ -31,7 +30,7 @@ router.get('/', async function (req, res) {
     ];
 
     doQuery(res, query, params, async function (selectData) {
-        return res.status(200).send({ appointments: selectData.recordset });
+        return res.status(200).send(selectData.recordset);
     });
 });
 
@@ -103,10 +102,8 @@ router.post('/', async function (req, res) {
                         .replace('_APPOINTMENT_TIME_', (Math.floor(appointmentData.starttime / 60) + ":" + (appointmentData.starttime % 60))))
 
                     .then(() => {
-                        winston.info(`Appointment confirmation emails successfully sent: ${patient.email},${patient.fname},${patient.lname},${doctor.emai},${doctor.lname},${date},${time},`);
-                        return res.status(200).send({ appointment: appointmentData });
+                        return res.status(200).send(appointmentData);
                     }).catch((error) => {
-                        winston.error(`Appointment confirmation emails failed to send.: ${patient.email},${patient.fname},${patient.lname},${doctor.emai},${doctor.lname},${date},${time}. ERROR: ${error}`);
                         return res.status(500).send({ error: `Confirmation emails failed to send.` });
                     });
             });
