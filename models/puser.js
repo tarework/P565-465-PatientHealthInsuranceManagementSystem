@@ -27,4 +27,14 @@ function ValidatePatientMedicalData(request) {
     return constants.CleanErrorMessage(schema.validate(request));
 }
 
+function ValidateSubscription(request) {
+    const schema = Joi.object({
+        pid: Joi.string().required(),
+        insid: Joi.string().required()
+    }).options({ stripUnknown: true });
+
+    return constants.CleanErrorMessage(schema.validate(request));
+}
+
 module.exports.ValidatePatientMedicalData = ValidatePatientMedicalData;
+module.exports.ValidateSubscription = ValidateSubscription;
