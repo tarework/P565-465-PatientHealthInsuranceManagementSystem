@@ -1,6 +1,6 @@
 const { doQuery, sql } = require('../db');
 const { ValidatePassword, ValidateUpdateUser } = require('../models/user');
-const { ValidatePatientMedicalData } = require('../models/puser');
+const { ValidatePatientMedicalData, ValidateSubscription} = require('../models/puser');
 const { geocoder } = require('../utils/geocoder');
 const storage = require('../utils/storage');
 const bcrypt = require('bcryptjs');
@@ -322,79 +322,75 @@ router.get('/:id/mydoctor/:did', async function (req, res) {
 //#region GET Insurance Plans
 
 // Get insurance plan for certain insurance company
-router.get('/plans/:id/:planid', async function (req, res) {
-  // Data Validation ?
 
-  // In this table planId is the primary key so we should be using that
-  // However we should use the insurance users id as well. 
-  // So we'll need to utilize both in this query
-  let query = `SELECT * FROM insurancePlans WHERE id = @id`;
+ router.get('/plans/:id/:planid', async function(req,res) { //get specific plan from insurance company
 
+  let query = `SELECT * FROM insurancePlans WHERE id = @id AND planid = @planid`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.params.id },
     { name: 'planid', sqltype: sql.Int, value: req.params.planid }
   ];
 
   doQuery(res, query, params, async function (selectData) {
-    if (empty(selectData.recordset)) return res.status(500).send({ error: "Invalid insurance plan." });
+    if (empty(selectData.recordset)) return res.status(500).send({ error: "Invalid Insurance Plan" });
 
-    return res.status(200).send({ ...selectData.recordset });
+    return res.status(200).send({ ...selectData.recordset});
   });
-
 });
 
 
 // Get all insurance plans for a certain insurance company
-router.get(`/plans/:id/`, async function (req, res) {
-  let query = `SELECT * FROM insurancePlans WHERE id = @id;`;
+router.get(`/plans/:id/`, async function(req,res) {
+  let query = `SELECT * FROM insurancePlans WHERE id = @id;`; 
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.params.id }
   ]
 
   doQuery(res, query, params, async function (selectData) {
-    if (empty(selectData.recordset)) return res.status(500).send({ error: "No insurance plans for given id." });
+    if (empty(selectData.recordset)) return res.status(500).send({ error: "No Insurance Plans For Given ID" });
 
-    return res.status(200).send({ ...selectData.recordset });
+    return res.status(200).send({ ...selectData.recordset});
   });
 });
 
 // POST an insurance/patient relationship to create a subscription
-router.post('/:pid/subscribe/:insid', async function (req, res) { //already subscribed?
+//validate ID's 
+
+router.post('/:pid/subscribe/:insid', async function(req,res){
+  //data validation
+  const { error } = ValidateSubscription(req.params);
+  if (error) return res.status(400).send({ error: error.message });
+
   let query = `INSERT INTO insurancePatientSubscription (pid, insid) OUTPUT INSERTED.*
   VALUES (@pid, @insid);`;
 
   let params = [
     { name: 'pid', sqltype: sql.Int, value: req.params.pid },
     { name: 'insid', sqltype: sql.Int, value: req.params.insid }
-  ];
-  //need to send below query to users via email. 
+  ];   
 
-  //get all information and send this to email 
-  //get insurance provider and send email of subscription 
   doQuery(res, query, params, async function (insertData) {
     if (empty(insertData.recordset)) return res.status(500).send({ error: "Data not saved." });
 
     let query2 = `
-    SELECT companyname, address1, address2 FROM insuranceDetails
-    WHERE id = @insid
-    UNION ALL
     SELECT email, fname, lname FROM patientUsers
-    WHERE id = @pid;`
-
-    doQuery(res, query2, params, async function (selectData) {
-      if (empty(selectData.recordset)) return res.status(500).send({ error: "Records not found" });
-
-      const insuranceDetails = selectData.recordset[0];
-
-      const patientUser = selectData.recordset[1];
-
-      mail(patientUser.email, "Thank You For Subscribing!", subscription.replace("_FIRST_", patientUser.fname).replace("_LAST_", patientUser.lname).replace
+    WHERE id = @pid
+    UNION ALL
+    SELECT companyname, address1, address2 FROM insuranceDetails
+    WHERE id = @insid;`;
+  
+  
+    doQuery(res, query2, params, async function(selectData){
+      if (empty(selectData.recordset[0]) && empty(selectData.recordset[1])) return res.status(500).send({ error: "Records not found" });
+        const insuranceDetails = selectData.recordset[1];
+        const patientUser = selectData.recordset[0];
+        mail(patientUser.email, "Thank You For Subscribing!", subscription.replace("_FIRST_", patientUser.fname).replace("_LAST_", patientUser.lname).replace
         ("_INSURANCE_NAME_", insuranceDetails.email).replace("_INSURANCE_NAME_", insuranceDetails.email))
         .then(() => {
-          return res.status(200).send({ relation: insertData.recordset });
-        }).catch(() => {
-          return res.status(500).send({ error: `Subscription failed` });
-        });
+            return res.status(200).send({ relation: insertData.recordset});
+        }).catch((error) => {
+            return res.status(500).send({ error: 'Subscription Failed'});
+        }); 
     });
   });
 });
