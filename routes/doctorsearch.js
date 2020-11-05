@@ -17,7 +17,8 @@ const router = express.Router();
 router.get('/:id', async function (req, res) {
     //validation needed - params.id
 
-    let query = `SELECT *, (SELECT * FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail, (SELECT doctorSpecializations.* FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specialization FROM doctorUsers WHERE id = ${req.params.id};`;
+    let query = `SELECT *, (SELECT * FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail, 
+    (SELECT doctorSpecializations.* FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specialization FROM doctorUsers WHERE id = ${req.params.id};`;
     let params = [];
 
     doQuery(res, query, params, function (selectData) {
@@ -31,6 +32,12 @@ router.get('/:id', async function (req, res) {
 });
 
 // GET Doctor's based on params
+
+// insurance MAX premium = $1000 this or lower
+// medical = bool 
+// dental = bool
+// vision = bool
+// SELECT *
 router.post('/', async function (req, res) {
     // validation needed - body - treatscovid, namesearch, speciality, name, address
 
