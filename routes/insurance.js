@@ -210,7 +210,7 @@ router.put('/details', async function (req, res) {
 // Get all insurance plans
 // Without :id the above get captures this call
 router.get('/insuranceplans/:id', async function (req, res) {
-  winston.info('lol1');
+  // winston.info('lol1');
   let query = `SELECT * FROM insurancePlans WHERE id = @id;`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
