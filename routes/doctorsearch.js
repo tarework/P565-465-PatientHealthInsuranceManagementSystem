@@ -12,8 +12,6 @@ const express = require('express');
 const { geocoder } = require('../utils/geocoder');
 const router = express.Router();
 
-// select *, dbo.CalculateDistance(@lng, @lat, lng, lat) as distance from doctorUsers where distance < 30;
-
 router.get('/:id', async function (req, res) {
     //validation needed - params.id
 
@@ -32,12 +30,6 @@ router.get('/:id', async function (req, res) {
 });
 
 // GET Doctor's based on params
-
-// insurance MAX premium = $1000 this or lower
-// medical = bool 
-// dental = bool
-// vision = bool
-// SELECT *
 router.post('/', async function (req, res) {
     // validation needed - body - treatscovid, namesearch, speciality, name, address
 
