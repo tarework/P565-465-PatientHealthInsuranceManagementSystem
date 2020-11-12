@@ -1,6 +1,7 @@
 CREATE TABLE insurancePatientSubscription( 
     id int NOT NULL IDENTITY,
 	PRIMARY KEY (id),
-	pid int NULL, patient
-	insid int NULL insurance
+	patientemail varchar(255) NULL,
+	pid int NULL,
+	iid int NULL
 );

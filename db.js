@@ -45,6 +45,24 @@ async function doQuery(res, query, params, callback) {
   }
 }
 
+async function doQueryNoRes(query, params, callback) {
+  try {
+    const pool = await poolPromise;
+    let request = pool.request();
+
+    // winston.info(query);
+
+    params.forEach(function (p) {
+      request.input(p.name, p.sqltype, p.value);
+    });
+
+    let result = await request.query(query);
+    callback(result);
+  } catch (err) {
+    winston.error(`doQuery failed due to error: ${err}`, err);
+  }
+}
+
 module.exports = {
-  sql, poolPromise, doQuery
+  sql, poolPromise, doQuery, doQueryNoRes
 }

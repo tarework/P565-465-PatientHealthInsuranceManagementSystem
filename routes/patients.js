@@ -1,6 +1,6 @@
 const { doQuery, sql } = require('../db');
 const { ValidatePassword, ValidateUpdateUser } = require('../models/user');
-const { ValidatePatientMedicalData, ValidateSubscription} = require('../models/puser');
+const { ValidatePatientMedicalData, ValidateSubscription, ValidateAddInsurance } = require('../models/puser');
 const { geocoder } = require('../utils/geocoder');
 const storage = require('../utils/storage');
 const bcrypt = require('bcryptjs');
@@ -21,6 +21,7 @@ router.get('/:id', async function (req, res) {
     if (empty(selectData.recordset)) return res.status(400).send({ error: "Patient record does not exist." })
 
     delete selectData.recordset[0].pword;
+    delete selectData.recordset[0].goauth;
 
     data = selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0] }))[0];
     data.detail.birthdate = moment(data.detail.birthdate).format('YYYY-MM-DD');
@@ -155,7 +156,7 @@ router.post('/onboard', async function (req, res) {
     { name: 'state1', sqltype: sql.VarChar(15), value: req.body.state1 },
     { name: 'city', sqltype: sql.VarChar(50), value: req.body.city },
     { name: 'zipcode', sqltype: sql.VarChar(15), value: req.body.zipcode },
-    { name: 'birthdate', sqltype: sql.VarChar(15), value: req.body.birthdate },
+    { name: 'birthdate', sqltype: sql.VarChar(15), value: moment(req.body.birthdate).format('YYYY-MM-DD') },
     { name: 'sex', sqltype: sql.VarChar(10), value: req.body.sex },
     { name: 'height', sqltype: sql.VarChar(10), value: req.body.height },
     { name: 'weight1', sqltype: sql.VarChar(10), value: req.body.weight1 },
@@ -319,11 +320,159 @@ router.get('/:id/mydoctor/:did', async function (req, res) {
 
 //#endregion
 
-//#region GET Insurance Plans
+//#region Patient Insurance Plan 
 
+// Get Patient's Insurance Plan
+router.get('/:id/myinsurance/', async function (req, res) {
+  // Data Validation
+  // const { error } = ValidateAddInsurance(req.body);
+  // if (error) return res.status(400).send({ error: error.message });
+
+  query = "SELECT * FROM patientInsurancePlans WHERE id = @pid;";
+  let params = [
+    { name: 'pid', sqltype: sql.Int, value: req.params.id }
+  ];
+
+  doQuery(res, query, params, async function (selectData) {
+    if (empty(selectData.recordset)) return res.status(500).send({ error: "Patient does not have a insurance plan." });
+
+    let patientId = selectData.recordset[0].id
+
+    query = `SELECT * FROM insurancePlans WHERE id = @iid AND planid = @planid`;
+    params = [
+      { name: 'iid', sqltype: sql.Int, value: selectData.recordset[0].iid },
+      { name: 'planid', sqltype: sql.Int, value: selectData.recordset[0].planid }
+    ];
+    doQuery(res, query, params, async function (selectData) {
+      if (empty(selectData.recordset)) return res.status(500).send({ error: "Insurance plan does not exist." });
+
+      insuranceId = selectData.recordset[0].id;
+      selectData.recordset[0].id = patientId;
+      selectData.recordset[0].iid = insuranceId
+      return res.status(200).send({ ...selectData.recordset[0] });
+    });
+  });
+});
+
+// Create/Update Patient's Insurance Plan
+router.post('/:id/addinsurance/', async function (req, res) {
+  // Data Validation
+  const { error } = ValidateAddInsurance(req.body);
+  if (error) return res.status(400).send({ error: error.message });
+
+  let query = "SELECT * FROM insurancePlans WHERE planid = @planid and id = @iid;";
+  let params = [
+    { name: 'id', sqltype: sql.Int, value: req.params.id },
+    { name: 'iid', sqltype: sql.Int, value: req.body.iid },
+    { name: 'planid', sqltype: sql.Int, value: req.body.planid }];
+
+  // Check Insurance User/Plan exists
+  doQuery(res, query, params, async function (selectData) {
+    if (empty(selectData.recordset)) return res.status(400).send({ error: "Insurance user or insurance plan does not exist." });
+
+    // Check if Patient has a plan already
+    query = "SELECT * FROM patientInsurancePlans WHERE id = @id;";
+    doQuery(res, query, params, async function (selectData) {
+
+      // If no plan create record
+      if (empty(selectData.recordset)) {
+        query = `INSERT INTO patientInsurancePlans (id, iid, planid) 
+          OUTPUT INSERTED.*
+          VALUES (@id, @iid, @planid);`;
+
+        doQuery(res, query, params, async function (insertData) {
+          if (empty(insertData.recordset)) return res.status(500).send({ error: "Failed to add insurance plan to patient." });
+
+          return res.status(200).send({ ...insertData.recordset[0] });
+        });
+
+        // If plan update it
+      } else {
+        query = `UPDATE patientInsurancePlans 
+          SET id = @id, iid = @iid, planid = @planid
+          OUTPUT INSERTED.*
+          WHERE id = @id;`;
+
+        doQuery(res, query, params, async function (updateData) {
+          if (empty(updateData.recordset)) return res.status(500).send({ error: "Failed to add insurance plan to patient." });
+
+          return res.status(200).send({ ...updateData.recordset[0] });
+        });
+      }
+    });
+  });
+});
+
+// Remove Patient's Insurance Plan
+router.delete('/:id/removeinsurance/', async function (req, res) {
+  // Data Validation
+  // const { error } = ValidateRemoveInsurance(req.body);
+  // if (error) return res.status(400).send({ error: error.message });
+
+  let query = `DELETE FROM patientInsurancePlans
+  OUTPUT DELETED.*
+  WHERE patientInsurancePlans.id = @id`
+  let params = [
+    { name: 'id', sqltype: sql.Int, value: req.params.id }
+  ];
+
+  doQuery(res, query, params, async function (deleteData) {
+    if (empty(deleteData.recordset)) return res.status(500).send({ error: "Failed to remove insurance plan to patient." });
+
+    return res.status(200).send({ ...deleteData.recordset[0] });
+  });
+});
+
+// POST an insurance/patient relationship to create a subscription
+router.post('/:id/subscribe/:iid', async function (req, res) {
+  // Data Validation
+  const { error } = ValidateSubscription(req.params);
+  if (error) return res.status(400).send({ error: error.message });
+
+  let query = `SELECT email FROM patientUsers WHERE id = ${req.params.id};`;
+
+  doQuery(res, query, [], function (selectData) {
+    if (empty(selectData.recordset)) return res.status(400).send({ error: "Patient record does not exist." });
+
+    query = `INSERT INTO insurancePatientSubscription (pid, iid, patientemail) OUTPUT INSERTED.*
+      VALUES (@pid, @iid, @patientemail);`;
+    let params = [
+      { name: 'pid', sqltype: sql.Int, value: req.params.id },
+      { name: 'iid', sqltype: sql.Int, value: req.params.iid },
+      { name: 'patientemail', sqltype: sql.VarChar, value: selectData.recordset[0].email }
+    ];
+
+    doQuery(res, query, params, async function (insertData) {
+      if (empty(insertData.recordset)) return res.status(500).send({ error: "Failed to save patient subscription." });
+
+      query = `
+        SELECT email, fname, lname FROM patientUsers
+        WHERE id = @pid
+        UNION ALL
+        SELECT companyname, address1, address2 FROM insuranceDetails
+        WHERE id = @iid;`;
+
+      doQuery(res, query, params, async function (selectData) {
+        if (empty(selectData.recordset[0]) && empty(selectData.recordset[1])) return res.status(500).send({ error: "Records not found" });
+
+        const insuranceDetails = selectData.recordset[1];
+        const patientUser = selectData.recordset[0];
+
+        mail(patientUser.email, "Thank You For Subscribing!", subscription.replace("_FIRST_", patientUser.fname).replace("_LAST_", patientUser.lname).replace
+          ("_INSURANCE_NAME_", insuranceDetails.email).replace("_INSURANCE_NAME_", insuranceDetails.email))
+          .then(() => {
+            return res.status(200).send({ ...insertData.recordset[0] });
+          }).catch((error) => {
+            return res.status(500).send({ error: `Subscription Failed: + ${error}` });
+          });
+      });
+    });
+  });
+});
+
+// Probably not needed if we are doing search =/
 // Get insurance plan for certain insurance company
-
- router.get('/plans/:id/:planid', async function(req,res) { //get specific plan from insurance company
+router.get('/plans/:id/:planid', async function (req, res) {
 
   let query = `SELECT * FROM insurancePlans WHERE id = @id AND planid = @planid`;
   let params = [
@@ -334,14 +483,13 @@ router.get('/:id/mydoctor/:did', async function (req, res) {
   doQuery(res, query, params, async function (selectData) {
     if (empty(selectData.recordset)) return res.status(500).send({ error: "Invalid Insurance Plan" });
 
-    return res.status(200).send({ ...selectData.recordset});
+    return res.status(200).send({ ...selectData.recordset });
   });
 });
-
-
+// Probably not needed if we are doing search =/
 // Get all insurance plans for a certain insurance company
-router.get(`/plans/:id/`, async function(req,res) {
-  let query = `SELECT * FROM insurancePlans WHERE id = @id;`; 
+router.get(`/plans/:id/`, async function (req, res) {
+  let query = `SELECT * FROM insurancePlans WHERE id = @id;`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.params.id }
   ]
@@ -349,53 +497,13 @@ router.get(`/plans/:id/`, async function(req,res) {
   doQuery(res, query, params, async function (selectData) {
     if (empty(selectData.recordset)) return res.status(500).send({ error: "No Insurance Plans For Given ID" });
 
-    return res.status(200).send({ ...selectData.recordset});
+    return res.status(200).send({ ...selectData.recordset });
   });
 });
-
-// POST an insurance/patient relationship to create a subscription
-//validate ID's 
-
-router.post('/:pid/subscribe/:insid', async function(req,res){
-  //data validation
-  const { error } = ValidateSubscription(req.params);
-  if (error) return res.status(400).send({ error: error.message });
-
-  let query = `INSERT INTO insurancePatientSubscription (pid, insid) OUTPUT INSERTED.*
-  VALUES (@pid, @insid);`;
-
-  let params = [
-    { name: 'pid', sqltype: sql.Int, value: req.params.pid },
-    { name: 'insid', sqltype: sql.Int, value: req.params.insid }
-  ];   
-
-  doQuery(res, query, params, async function (insertData) {
-    if (empty(insertData.recordset)) return res.status(500).send({ error: "Data not saved." });
-
-    let query2 = `
-    SELECT email, fname, lname FROM patientUsers
-    WHERE id = @pid
-    UNION ALL
-    SELECT companyname, address1, address2 FROM insuranceDetails
-    WHERE id = @insid;`;
-  
-  
-    doQuery(res, query2, params, async function(selectData){
-      if (empty(selectData.recordset[0]) && empty(selectData.recordset[1])) return res.status(500).send({ error: "Records not found" });
-        const insuranceDetails = selectData.recordset[1];
-        const patientUser = selectData.recordset[0];
-        mail(patientUser.email, "Thank You For Subscribing!", subscription.replace("_FIRST_", patientUser.fname).replace("_LAST_", patientUser.lname).replace
-        ("_INSURANCE_NAME_", insuranceDetails.email).replace("_INSURANCE_NAME_", insuranceDetails.email))
-        .then(() => {
-            return res.status(200).send({ relation: insertData.recordset});
-        }).catch((error) => {
-            return res.status(500).send({ error: 'Subscription Failed'});
-        }); 
-    });
-  });
-});
-
 //#endregion
+
+module.exports = router;
+
 const subscription = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" style="width:100%;font-family:arial, 'helvetica neue', helvetica, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0"><head><meta charset="UTF-8"><meta content="width=device-width, initial-scale=1" name="viewport"><meta name="x-apple-disable-message-reformatting"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta content="telephone=no" name="format-detection"><title>New email</title> <!--[if (mso 16)]><style type="text/css">     a {text-decoration: none;}     </style><![endif]--> <!--[if gte mso 9]><style>sup { font-size: 100% !important; }</style><![endif]--> <!--[if gte mso 9]><xml> <o:OfficeDocumentSettings> <o:AllowPNG></o:AllowPNG> <o:PixelsPerInch>96</o:PixelsPerInch>
 </o:OfficeDocumentSettings> </xml><![endif]--><style type="text/css">
 #outlook a {	padding:0;}.ExternalClass {	width:100%;}.ExternalClass,.ExternalClass p,.ExternalClass span,.ExternalClass font,.ExternalClass td,.ExternalClass div {	line-height:100%;}.es-button {	mso-style-priority:100!important;	text-decoration:none!important;}a[x-apple-data-detectors] {	color:inherit!important;	text-decoration:none!important;	font-size:inherit!important;	font-family:inherit!important;	font-weight:inherit!important;	line-height:inherit!important;}.es-desk-hidden {	display:none;	float:left;	overflow:hidden;	width:0;	max-height:0;	line-height:0;	mso-hide:all;}@media only screen and (max-width:600px) {p, ul li, ol li, a { font-size:16px!important; line-height:150%!important } h1 { font-size:30px!important; text-align:center; line-height:120%!important } h2 { font-size:26px!important; text-align:center; line-height:120%!important } h3 { font-size:20px!important; text-align:center; line-height:120%!important } h1 a { 
@@ -404,10 +512,9 @@ font-size:20px!important; display:block!important; border-width:10px 0px 10px 0p
 float:none!important; max-height:inherit!important; line-height:inherit!important } tr.es-desk-hidden { display:table-row!important } table.es-desk-hidden { display:table!important } td.es-desk-menu-hidden { display:table-cell!important } .es-menu td { width:1%!important } table.es-table-not-adapt, .esd-block-html table { width:auto!important } table.es-social { display:inline-block!important } table.es-social td { display:inline-block!important } }</style></head><body style="width:100%;font-family:arial, 'helvetica neue', helvetica, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0"><div class="es-wrapper-color" style="background-color:#F6F6F6"> <!--[if gte mso 9]><v:background xmlns:v="urn:schemas-microsoft-com:vml" fill="t"> <v:fill type="tile" color="#f6f6f6"></v:fill> </v:background><![endif]-->
 <table class="es-wrapper" width="100%" cellspacing="0" cellpadding="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;padding:0;Margin:0;width:100%;height:100%;background-repeat:repeat;background-position:center top"><tr style="border-collapse:collapse"><td valign="top" style="padding:0;Margin:0"><table class="es-content" cellspacing="0" cellpadding="0" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%"><tr style="border-collapse:collapse"><td align="center" style="padding:0;Margin:0"><table class="es-content-body" cellspacing="0" cellpadding="0" bgcolor="#ffffff" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:600px"><tr style="border-collapse:collapse">
 <td align="left" style="Margin:0;padding-top:20px;padding-bottom:20px;padding-left:20px;padding-right:20px"><table width="100%" cellspacing="0" cellpadding="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"><tr style="border-collapse:collapse"><td valign="top" align="center" style="padding:0;Margin:0;width:560px"><table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"><tr style="border-collapse:collapse"><td align="left" style="padding:0;Margin:0;padding-bottom:15px"><h2 style="Margin:0;line-height:29px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:24px;font-style:normal;font-weight:normal;color:#333333">Hello _FIRST_ _LAST_</h2></td></tr><tr style="border-collapse:collapse">
-<td align="left" style="padding:0;Margin:0;padding-top:20px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333">Thank you for subscribing to _INSURANCE_NAME_ , <br>Here at _INSURANCE_NAME_ we value your health first and foremost. Thank you for subscribing to stay up to date on our latest plans!.</p></td></tr><tr style="border-collapse:collapse"><td align="left" style="padding:0;Margin:0;padding-top:15px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333">Love,<br>The Apollo Care IT Team<br></p></td></tr></table></td></tr></table></td></tr></table></td></tr></table>
+<td align="left" style="padding:0;Margin:0;padding-top:20px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333">Thank you for subscribing to _INSURANCE_NAME_, <br>Here at _INSURANCE_NAME_ we value your health first and foremost. Thank you for subscribing to stay up to date on our latest plans!.</p></td></tr><tr style="border-collapse:collapse"><td align="left" style="padding:0;Margin:0;padding-top:15px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333">Love,<br>The Apollo Care IT Team<br></p></td></tr></table></td></tr></table></td></tr></table></td></tr></table>
 <table class="es-footer" cellspacing="0" cellpadding="0" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%;background-color:transparent;background-repeat:repeat;background-position:center top"><tr style="border-collapse:collapse"><td align="center" style="padding:0;Margin:0"><table class="es-footer-body" cellspacing="0" cellpadding="0" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;width:600px"><tr style="border-collapse:collapse"><td align="left" style="Margin:0;padding-top:20px;padding-bottom:20px;padding-left:20px;padding-right:20px"><table width="100%" cellspacing="0" cellpadding="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"><tr style="border-collapse:collapse">
 <td valign="top" align="center" style="padding:0;Margin:0;width:560px"><table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"><tr style="border-collapse:collapse"><td align="center" style="padding:20px;Margin:0;font-size:0"><table width="75%" height="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"><tr style="border-collapse:collapse"><td style="padding:0;Margin:0;border-bottom:1px solid #CCCCCC;background:none;height:1px;width:100%;margin:0px"></td></tr></table></td></tr><tr style="border-collapse:collapse"><td align="center" style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px">
 <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:11px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:17px;color:#333333">&lt;3 Apollo Care loves you and wants you to be healthy &lt;3 </p></td></tr><tr style="border-collapse:collapse"><td align="center" style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:11px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:17px;color:#333333">©2020 Apollo Care </p></td></tr></table></td></tr></table></td></tr></table></td></tr></table></td></tr></table></div></body>
 </html>
 `
-module.exports = router;

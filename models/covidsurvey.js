@@ -27,14 +27,4 @@ function ValidateCovidSurvey(request) {
     return constants.CleanErrorMessage(schema.validate(request));
 }
 
-function ValidateGetAppointments(request) {
-    const schema = Joi.object({
-        did: Joi.required(),
-        startdate: Joi.date().required(),
-    }).options({ stripUnknown: true });
-
-    return constants.CleanErrorMessage(schema.validate(request));
-}
-
-module.exports.ValidateBookAppointment = ValidateBookAppointment;
-module.exports.ValidateGetAppointments = ValidateGetAppointments;
+module.exports.ValidateCovidSurvey = ValidateCovidSurvey;
