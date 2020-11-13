@@ -470,6 +470,27 @@ router.post('/:id/subscribe/:iid', async function (req, res) {
   });
 });
 
+// Delete an insurance/patient relationship to create a subscription
+router.delete('/:id/subscribe/:iid', async function (req, res) {
+  // Data Validation
+  const { error } = ValidateSubscription(req.params);
+  if (error) return res.status(400).send({ error: error.message });
+
+  let query = `DELETE FROM insurancePatientSubscription
+  OUTPUT DELETED.*
+  WHERE patientInsurancePlans.pid = @pid AND patientInsurancePlans.iid = @iid`
+  let params = [
+    { name: 'pid', sqltype: sql.Int, value: req.params.id },
+    { name: 'iid', sqltype: sql.Int, value: req.params.iid },
+  ];
+
+  doQuery(res, query, params, function (deleteData) {
+    if (empty(deleteData.recordset)) return res.status(400).send({ error: "No record to delete was found." });
+
+    return res.status(200).send({ ...deleteData.recordset[0] });
+  });
+});
+
 // Probably not needed if we are doing search =/
 // Get insurance plan for certain insurance company
 router.get('/plans/:id/:planid', async function (req, res) {
