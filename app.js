@@ -16,6 +16,7 @@ var express = require('express'),
   patients = require('./routes/patients'),
   covidsurvey = require('./routes/covidsurvey'),
   doctorsearch = require('./routes/doctorsearch'),
+  insurancesearch = require('./routes/insurancesearch'),
   bookappointment = require('./routes/bookappointment'),
   insurance = require('./routes/insurance'),
   doctors = require('./routes/doctors'),
@@ -57,6 +58,7 @@ app.use('/api/patients', auth, patients);
 app.use('/api/covidsurvey', auth, covidsurvey);
 app.use('/api/doctorsearch', auth, doctorsearch);
 app.use('/api/bookappointment', auth, bookappointment);
+app.use('/api/insurancesearch', auth, insurancesearch);
 app.use('/api/doctors', auth, doctors);
 app.use('/api/insurance', auth, insurance);
 app.use(error);
