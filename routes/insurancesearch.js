@@ -12,6 +12,30 @@ const express = require('express');
 const { geocoder } = require('../utils/geocoder');
 const router = express.Router();
 
+// Slightly better query? Not really sure...
+/*
+SELECT insuranceUsers.id, insuranceUsers.fname, insuranceUsers.lname, insuranceUsers.email, insuranceUsers.phonenumber,
+            (SELECT * FROM insuranceDetails 
+                WHERE insuranceUsers.id = insuranceDetails.id 
+                AND(insuranceDetails.companyname LIKE '%%') FOR JSON PATH) AS detail,
+                (SELECT * FROM insurancePlans 
+                    WHERE insuranceUsers.id = insurancePlans.id 
+                    AND (insurancePlans.planname LIKE '%%')
+                    AND insurancePlans.includesmedical = 1
+                    AND insurancePlans.includesdental = 1
+                    AND insurancePlans.includesvision = 1 FOR JSON PATH) AS plans
+                FROM insuranceUsers
+            INNER JOIN insuranceDetails on insuranceDetails.id = insuranceUsers.id
+            INNER JOIN insurancePlans on insurancePlans.id = insuranceUsers.id
+            WHERE
+            (insuranceDetails.companyname LIKE '%%')
+            AND (insurancePlans.planname LIKE '%%')
+            AND insurancePlans.includesmedical = 1
+            AND insurancePlans.includesdental = 1
+            AND insurancePlans.includesvision = 1;
+*/
+
+
 // GET Insurances' based on params
 router.post('/', async function (req, res) {
     // Feel free to change this.
@@ -48,21 +72,22 @@ router.post('/', async function (req, res) {
             INNER JOIN insuranceDetails on insuranceDetails.id = insuranceUsers.id
             INNER JOIN insurancePlans on insurancePlans.id = insuranceUsers.id
             WHERE
-            ${!empty(companyname) ? `(insuranceDetails.companyname LIKE '%${companyname}%')` : ''}
-            ${!empty(companyname) ? ` AND ` : ''}
-            ${!empty(planname) ? `(insurancePlans.planname LIKE '%${planname}%')` : ''}
-            ${!empty(companyname) || !empty(planname) ? `AND` : ''}
+            ${!empty(companyname) ? `(insuranceDetails.companyname LIKE '%${companyname}%')  AND ` : ''}
+            ${!empty(planname) ? `(insurancePlans.planname LIKE '%${planname}%') AND` : ''}
             ${`insurancePlans.includesmedical = ${includesmedical === "Yes" ? 1 : 0}`}
-            ${`AND insurancePlans.includesmedical = ${includesdental === "Yes" ? 1 : 0}`}
-            ${`AND insurancePlans.includesmedical = ${includesvision === "Yes" ? 1 : 0}`};`;
+            ${`AND insurancePlans.includesdental = ${includesdental === "Yes" ? 1 : 0}`}
+            ${`AND insurancePlans.includesvision = ${includesvision === "Yes" ? 1 : 0}`};`;
+
+        winston.info(query);
 
         doQuery(res, query, [], function (selectData) {
+            return res.status(200).send(selectData.recordset);
             // This probably doesn't work either
-            res.send(selectData.recordset.map(item => {
-                let p = empty(JSON.parse(item.plan)) ? {} : JSON.parse(item.plan);
-                delete item.plan;
-                return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], plans: p })
-            }));
+            // return res.status(200).send(selectData.recordset.map(item => {
+            //     let p = empty(JSON.parse(item.plan)) ? {} : JSON.parse(item.plan);
+            //     delete item.plan;
+            //     return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], plans: p })
+            // }));
         });
 
     } else {
@@ -82,17 +107,19 @@ router.post('/', async function (req, res) {
                     ${!empty(planname) ? `(insurancePlans.planname LIKE '%${planname}%')` : ''}
                     ${!empty(companyname) || !empty(planname) ? `AND` : ''}
                     ${`insurancePlans.includesmedical = ${includesmedical === "Yes" ? 1 : 0}`}
-                    ${`AND insurancePlans.includesmedical = ${includesdental === "Yes" ? 1 : 0}`}
-                    ${`AND insurancePlans.includesmedical = ${includesvision === "Yes" ? 1 : 0}`}
+                    ${`AND insurancePlans.includesdental = ${includesdental === "Yes" ? 1 : 0}`}
+                    ${`AND insurancePlans.includesvision = ${includesvision === "Yes" ? 1 : 0}`}
                     and dbo.CalculateDistance(${result[0].longitude}, ${result[0].latitude}, insuranceDetails.lng, insuranceDetails.lat) < 50;`;
 
                 doQuery(res, query, [], function (selectData) {
                     // This probably doesn't work either
-                    res.send(selectData.recordset.map(item => {
-                        let p = empty(JSON.parse(item.plan)) ? {} : JSON.parse(item.plan);
-                        delete item.plan;
-                        return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], plans: p })
-                    }));
+                    return res.status(200).send(selectData.recordset);
+
+                    // return res.status(200).send(selectData.recordset.map(item => {
+                    //     let p = empty(JSON.parse(item.plan)) ? {} : JSON.parse(item.plan);
+                    //     delete item.plan;
+                    //     return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], plans: p })
+                    // }));
                 });
             })
             .catch(function (error) {
