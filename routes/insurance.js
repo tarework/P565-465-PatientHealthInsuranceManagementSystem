@@ -372,7 +372,7 @@ async function EmailUpdateToSubscribers(id, planData) {
         emails.push(selectData.recordset[i].patientemail);
       }
 
-      mail(emails, `${companyName} updated an insurance plan!`, insurancePlanCreated
+      mail(emails, `${companyName} updated an insurance plan!`, insurancePlanUpdate
         .replace("_INSURANCE_NAME_", companyName).replace("_INSURANCE_NAME_", companyName).replace("_INSURANCE_PREMIUM_", planData.premium)
         .replace("_INSURANCE_DEDUCTIBLE_", planData.deductible).replace("_INSURANCE_PLAN_", planData.planname))
         .then(() => {
@@ -412,7 +412,7 @@ async function EmailPDFUpdateToSubscribers(iid, planid) {
           emails.push(selectData.recordset[i].patientemail);
         }
 
-        mail(emails, `${companyName} updated an insurance plan!`, insurancePlanCreated
+        mail(emails, `${companyName} updated an insurance plan!`, insurancePlanUpdate
           .replace("_INSURANCE_NAME_", companyName).replace("_INSURANCE_NAME_", companyName).replace("_INSURANCE_PREMIUM_", planData.premium)
           .replace("_INSURANCE_DEDUCTIBLE_", planData.deductible).replace("_INSURANCE_PLAN_", planData.planname))
           .then(() => {
