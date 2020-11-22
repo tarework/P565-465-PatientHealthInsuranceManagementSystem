@@ -146,9 +146,9 @@ router.post('/onboard', async function (req, res) {
       return res.status(400).send({ error: "Address is invalid." });
     });
 
-  let query = `INSERT INTO patientMedicalData (id, address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq, lat, lng) 
+  let query = `INSERT INTO patientMedicalData (id, address1, address2, state1, city, zipcode, birthdate, sex, height, weight1, bloodtype, smoke, smokefreq, drink, drinkfreq, caffeine, caffeinefreq, lat, lng, exercise, exercisefreq) 
                OUTPUT INSERTED.* 
-               VALUES (@id, @address1, @address2, @state1, @city, @zipcode, @birthdate, @sex, @height, @weight1, @bloodtype, @smoke, @smokefreq, @drink, @drinkfreq, @caffeine, @caffeinefreq, @lat, @lng);`;
+               VALUES (@id, @address1, @address2, @state1, @city, @zipcode, @birthdate, @sex, @height, @weight1, @bloodtype, @smoke, @smokefreq, @drink, @drinkfreq, @caffeine, @caffeinefreq, @lat, @lng, @exercise, @exercisefreq);`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
     { name: 'address1', sqltype: sql.VarChar(255), value: req.body.address1 },
@@ -168,7 +168,9 @@ router.post('/onboard', async function (req, res) {
     { name: 'caffeine', sqltype: sql.Bit, value: req.body.caffeine },
     { name: 'caffeinefreq', sqltype: sql.Int, value: req.body.caffeinefreq || 0 },
     { name: 'lat', sqltype: sql.Float, value: lat },
-    { name: 'lng', sqltype: sql.Float, value: lng }
+    { name: 'lng', sqltype: sql.Float, value: lng },
+    { name: 'exercise', sqltype: sql.Bit, value: req.body.exercise },
+    { name: 'exercisefreq', sqltype: sql.Int, value: req.body.exercisefreq || 0 }
   ];
 
   doQuery(res, query, params, function (insertData) {
@@ -199,7 +201,7 @@ router.put('/details', async function (req, res) {
   let query = `UPDATE patientMedicalData 
               SET address1 = @address1, address2 = @address2, state1 = @state1, city = @city, zipcode = @zipcode, birthdate = @birthdate, 
               sex = @sex, height = @height, weight1 = @weight1, bloodtype = @bloodtype, smoke = @smoke, smokefreq = @smokefreq, drink = @drink, 
-              drinkfreq = @drinkfreq, caffeine = @caffeine, caffeinefreq = @caffeinefreq, lat = @lat, lng = @lng 
+              drinkfreq = @drinkfreq, caffeine = @caffeine, caffeinefreq = @caffeinefreq, lat = @lat, lng = @lng, exercise = @exercise, exercisefreq = @exercisefreq
               OUTPUT INSERTED.* WHERE id = @id;`;
   let params = [
     { name: 'id', sqltype: sql.Int, value: req.body.id },
@@ -220,7 +222,9 @@ router.put('/details', async function (req, res) {
     { name: 'caffeine', sqltype: sql.Bit, value: req.body.caffeine },
     { name: 'caffeinefreq', sqltype: sql.Int, value: req.body.caffeinefreq || 0 },
     { name: 'lat', sqltype: sql.Float, value: lat },
-    { name: 'lng', sqltype: sql.Float, value: lng }
+    { name: 'lng', sqltype: sql.Float, value: lng },
+    { name: 'exercise', sqltype: sql.Bit, value: req.body.exercise },
+    { name: 'exercisefreq', sqltype: sql.Int, value: req.body.exercisefreq || 0 }
   ];
 
   doQuery(res, query, params, function (updateData) {
