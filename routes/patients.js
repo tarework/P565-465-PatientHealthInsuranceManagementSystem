@@ -264,11 +264,9 @@ router.get('/:id/mybills', async function (req, res) {
 
 // Gets patientUser's doctors'
 router.get('/:id/mydoctors', async function (req, res) {
-
   let query = `SELECT * FROM appointments WHERE pid = @pid; `;
   let params = [
-    { name: 'did', sqltype: sql.Int, value: req.params.id },
-    { name: 'pid', sqltype: sql.Int, value: req.params.pid }
+    { name: 'pid', sqltype: sql.Int, value: req.params.id },
   ];
 
   doQuery(res, query, params, function (selectData) {
@@ -313,9 +311,8 @@ router.get('/:id/mydoctor/:did', async function (req, res) {
         (SELECT address1, address2, state1, city, zipcode, npinumber, treatscovid, bedsmax,
           (SELECT * FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specializations
         FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail,
-        (SELECT patientname, doctorname, rating, reviewmessage FROM doctorReviews WHERE doctorUsers.id = doctorReviews.did FOR JSON PATH) AS reviews
-        (SELECT totalrating, numberofreviews FROM doctorRatings WHERE doctorUsers.id = doctorReviews.id FOR JSON PATH) AS totalrating
-
+        (SELECT patientname, doctorname, rating, reviewmessage FROM doctorReviews WHERE doctorUsers.id = doctorReviews.did FOR JSON PATH) AS reviews,
+        (SELECT totalrating, numberofreviews FROM doctorRatings WHERE doctorUsers.id = doctorRatings.id FOR JSON PATH) AS totalrating
       FROM doctorUsers WHERE id = (${req.params.did});`;
     params = [];
     doQuery(res, query, params, async function (selectData) {
@@ -338,21 +335,22 @@ router.get('/:id/mydoctor/:did', async function (req, res) {
 
 //#region POST Review For Doctor GET can review doctor
 
-router.get('/:id/mydoctor/canreview', async function (req, res) {
+router.get('/:id/mydoctor/:did/canreview', async function (req, res) {
   // Data Validation
-  const { error } = ValidateCanReview(req.body);
-  if (error) return res.status(400).send({ error: error.message });
+  // const { error } = ValidateCanReview(req.params);
+  // if (error) return res.status(400).send({ error: error.message });
 
   let query = `SELECT * FROM appointments WHERE did = @did AND pid = @pid;`;
   let params = [
     { name: 'pid', sqltype: sql.Int, value: req.params.id },
     { name: 'did', sqltype: sql.Int, value: req.params.did }
   ];
-
   doQuery(res, query, params, function (selectData) {
 
     // No appointments means you can't review doctor
     if (empty(selectData.recordset)) return res.status(200).send({ canreview: false })
+
+    // Probably should check one appointmnet is in the past...
 
     let query = `SELECT * FROM doctorReviews WHERE did = @did and pid = @pid;`;
     doQuery(res, query, params, function (selectData) {
@@ -360,26 +358,26 @@ router.get('/:id/mydoctor/canreview', async function (req, res) {
       // No review, can add review
       if (empty(selectData.recordset)) return res.status(200).send({ canreview: true })
       // Yes review, can't add another review
-      else return res.status(200).skend({ canreview: false })
+      else return res.status(200).send({ canreview: false })
     });
   });
 });
 
-router.get('/:id/mydoctor/addreview', async function (req, res) {
+router.post('/:id/mydoctor/:did/addreview', async function (req, res) {
   // Data Validation
   const { error } = ValidateDoctorReview(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
   // Create new review for doctor by patient
-  let query = `INSERT INTO doctorReviews patientname, pid, doctorname, did, reviewmessage, rating) 
+  let query = `INSERT INTO doctorReviews (patientname, pid, doctorname, did, reviewmessage, rating) 
   OUTPUT INSERTED.* 
   VALUES (@patientname, @pid, @doctorname, @did, @reviewmessage, @rating);`;
   let params = [
     { name: 'pid', sqltype: sql.Int, value: req.params.id },
-    { name: 'patientname', sqltype: sql.Int, value: req.body.patientname },
-    { name: 'doctorname', sqltype: sql.Int, value: req.body.doctorname },
-    { name: 'did', sqltype: sql.Int, value: req.body.did },
-    { name: 'reviewmessage', sqltype: sql.Int, value: req.body.reviewmessage },
+    { name: 'patientname', sqltype: sql.VarChar, value: req.body.patientname },
+    { name: 'doctorname', sqltype: sql.VarChar, value: req.body.doctorname },
+    { name: 'did', sqltype: sql.Int, value: req.params.did },
+    { name: 'reviewmessage', sqltype: sql.VarChar, value: req.body.reviewmessage },
     { name: 'rating', sqltype: sql.Int, value: req.body.rating }
   ];
 
@@ -389,8 +387,8 @@ router.get('/:id/mydoctor/addreview', async function (req, res) {
     // Get current rating for doctor
     query = `SELECT * FROM doctorRatings WHERE id = @did;`;
     params = [
-      { name: 'did', sqltype: sql.Int, value: req.body.did },
-      { name: 'reviewmessage', sqltype: sql.Int, value: req.body.reviewmessage }
+      { name: 'did', sqltype: sql.Int, value: req.params.did },
+      { name: 'reviewmessage', sqltype: sql.VarChar, value: req.body.reviewmessage }
     ];
 
     doQuery(res, query, params, function (selectData) {
@@ -403,7 +401,7 @@ router.get('/:id/mydoctor/addreview', async function (req, res) {
       SET totalrating = @totalrating, numberofreviews = @numberofreviews
       OUTPUT INSERTED.* WHERE id = @did;`;
       params = [
-        { name: 'did', sqltype: sql.Int, value: req.body.did },
+        { name: 'did', sqltype: sql.Int, value: req.params.did },
         { name: 'totalrating', sqltype: sql.Int, value: totalrating },
         { name: 'numberofreviews', sqltype: sql.Int, value: numberofreviews }
       ];

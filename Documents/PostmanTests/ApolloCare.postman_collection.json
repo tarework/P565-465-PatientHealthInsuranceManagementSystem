@@ -4214,7 +4214,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 19,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7\r\n}",
+									"raw": "{\r\n    \"id\": 19,\r\n    \"address1\" : \"404 E 1st St\",\r\n    \"address2\" : \"\",\r\n    \"city\" : \"Bloomington\",\r\n    \"state1\" : \"IN\",\r\n    \"zipcode\" : \"47401\",\r\n    \"birthdate\" : \"1990-6-8\",\r\n    \"sex\" : \"Male\",\r\n    \"height\" : \"5 8\\\"\",\r\n    \"weight1\" : \"165.00\",\r\n    \"bloodtype\" : \"O-\",\r\n    \"smoke\" : false,\r\n    \"smokefreq\" : 0,\r\n    \"drink\" : true,\r\n    \"drinkfreq\" : 1,\r\n    \"caffeine\" : true,\r\n    \"caffeinefreq\" : 7,\r\n    \"exercise\" : true,\r\n    \"exercisefreq\" : 6\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4600,7 +4600,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": \"10\",\r\n    \"surveydate\": \"11-12-2020\",\r\n    \"feverorchills\": false,\r\n    \"cough\": false,\r\n    \"shortnessofbreathe\": false,\r\n    \"fatigue\": false,\r\n    \"muscleaches\": false,\r\n    \"headache\": false,\r\n    \"lossofsmelltaste\": false,\r\n    \"sorethroat\": false,\r\n    \"congestion\": false,\r\n    \"nauseaorvomiting\": false,\r\n    \"diarrhea\": false,\r\n    \"contactwithcovidperson\": false,\r\n    \"covidpositivetest\": false,\r\n    \"selfmonitor\": false,\r\n    \"requesttest\": true\r\n}",
+									"raw": "{\r\n    \"id\": \"10\",\r\n    \"surveydate\": \"11-16-2020\",\r\n    \"feverorchills\": true,\r\n    \"cough\": true,\r\n    \"shortnessofbreathe\": true,\r\n    \"fatigue\": true,\r\n    \"muscleaches\": true,\r\n    \"headache\": true,\r\n    \"lossofsmelltaste\": true,\r\n    \"sorethroat\": true,\r\n    \"congestion\": true,\r\n    \"nauseaorvomiting\": true,\r\n    \"diarrhea\": true,\r\n    \"contactwithcovidperson\": true,\r\n    \"covidpositivetest\": true,\r\n    \"selfmonitor\": true,\r\n    \"requesttest\": true\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4617,6 +4617,94 @@
 									"path": [
 										"api",
 										"covidsurvey"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Can/Add Review Doctor",
+					"item": [
+						{
+							"name": "Can Review Doctor - 153",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTQsInVzZXJ0eXBlIjoicGF0aWVudCIsImlhdCI6MTYwNjA3NTEyMywiZXhwIjoxNjA2MDc4NzIzfQ.Lhk0y9PpKYkShFEtL-873oBqsUgUgQ_pMZXzOJ8q5dY",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/14/mydoctor/8/canreview",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"14",
+										"mydoctor",
+										"8",
+										"canreview"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add Doctor Review - 154",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJ0eXBlIjoicGF0aWVudCIsImlhdCI6MTYwNjA3NDk2OSwiZXhwIjoxNjA2MDc4NTY5fQ.SO0GOTOh0yYkK5KQAH0AetxJAgfL0FkfdKdX6TAv-pA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"patientname\": \"Ethan Behar\",\r\n    \"doctorname\": \"Shelly Fergos\",\r\n    \"reviewmessage\":\"Poor experience.\",\r\n    \"rating\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3002/api/patients/14/mydoctor/8/addreview",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3002",
+									"path": [
+										"api",
+										"patients",
+										"14",
+										"mydoctor",
+										"8",
+										"addreview"
 									]
 								}
 							},
@@ -6068,6 +6156,117 @@
 							"path": [
 								"api",
 								"doctorsearch"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "InsuranceSearch",
+			"item": [
+				{
+					"name": "Search by Plan Name -",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJ0eXBlIjoicGF0aWVudCIsImlhdCI6MTYwNTgyMDAwMSwiZXhwIjoxNjA1ODIzNjAxfQ.bJExlHVZqT-xW7KU40griik8hE8ADBT07mQUlOdwyyk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"companyname\": \"Good\",\r\n    \"planname\": \"Bronze\",\r\n    \"includesmedical\": \"Yes\",\r\n    \"includesdental\": \"\",\r\n    \"includesvision\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/insurancesearch",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"insurancesearch"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search by Company Name -",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJ0eXBlIjoicGF0aWVudCIsImlhdCI6MTYwNTIxMDc4MSwiZXhwIjoxNjA1MjE0MzgxfQ.qc4yd4gJa1LwQgV10jOZO_-gm5aK3EHRtFBZt8UcC7E",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"companyname\": \"Good\",\r\n    \"planname\": \"Bronze\",\r\n    \"includesmedical\": \"Yes\",\r\n    \"includesdental\": \"Yes\",\r\n    \"includesvision\": \"Yes\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/insurancesearch",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"insurancesearch"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search by Specialty -",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJ0eXBlIjoicGF0aWVudCIsImlhdCI6MTYwNTIxMDc4MSwiZXhwIjoxNjA1MjE0MzgxfQ.qc4yd4gJa1LwQgV10jOZO_-gm5aK3EHRtFBZt8UcC7E",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"companyname\": \"Good\",\r\n    \"planname\": \"Bronze\",\r\n    \"includesmedical\": \"Yes\",\r\n    \"includesdental\": \"Yes\",\r\n    \"includesvision\": \"Yes\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/api/insurancesearch",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"api",
+								"insurancesearch"
 							]
 						}
 					},
