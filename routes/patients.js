@@ -1,6 +1,6 @@
 const { doQuery, sql } = require('../db');
 const { ValidatePassword, ValidateUpdateUser } = require('../models/user');
-const { ValidatePatientMedicalData, ValidateSubscription, ValidateAddInsurance } = require('../models/puser');
+const { ValidatePatientMedicalData, ValidateDoctorReview, ValidateCanReview, ValidateSubscription, ValidateAddInsurance } = require('../models/puser');
 const { geocoder } = require('../utils/geocoder');
 const storage = require('../utils/storage');
 const bcrypt = require('bcryptjs');
@@ -9,6 +9,7 @@ const moment = require('moment');
 const winston = require('winston');
 const express = require('express');
 const mail = require('../utils/mail');
+const { route } = require('./insurance');
 const router = express.Router();
 
 
@@ -263,23 +264,29 @@ router.get('/:id/mybills', async function (req, res) {
 
 // Gets patientUser's doctors'
 router.get('/:id/mydoctors', async function (req, res) {
-  let query = `SELECT * FROM patientDoctorRelations WHERE pid = @pid;`;
+
+  let query = `SELECT * FROM appointments WHERE pid = @pid; `;
   let params = [
-    { name: 'pid', sqltype: sql.Int, value: req.params.id }
+    { name: 'did', sqltype: sql.Int, value: req.params.id },
+    { name: 'pid', sqltype: sql.Int, value: req.params.pid }
   ];
+
   doQuery(res, query, params, function (selectData) {
-    if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve doctor records." });
+    if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient doctor relations." });
 
     const didList = [];
     for (d = 0; d < selectData.recordset.length; d++) {
-      didList.push(selectData.recordset[d].did);
+      if (!didList.includes(selectData.recordset[d].did))
+        didList.push(selectData.recordset[d].did);
     }
+
     let query = `SELECT email, fname, lname, phonenumber, 
       (SELECT address1, address2, state1, city, zipcode, npinumber, treatscovid, bedsmax,
         (SELECT * FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specializations
       FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail 
       FROM doctorUsers WHERE id IN (${didList});`;
     params = [];
+
     doQuery(res, query, params, async function (selectData) {
       if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve doctor records." });
 
@@ -290,14 +297,15 @@ router.get('/:id/mydoctors', async function (req, res) {
 
 // Gets doctorUser's patient 
 router.get('/:id/mydoctor/:did', async function (req, res) {
-  let query = `SELECT * FROM patientDoctorRelations WHERE pid = @pid and did = @did;`;
+
+  let query = `SELECT * FROM appointments WHERE did = @did AND pid = @pid; `;
   let params = [
     { name: 'pid', sqltype: sql.Int, value: req.params.id },
     { name: 'did', sqltype: sql.Int, value: req.params.did }
-
   ];
+
   doQuery(res, query, params, function (selectData) {
-    if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve doctor records." });
+    if (empty(selectData.recordset)) return res.status(500).send({ error: "Patient and doctor have no relation." });
 
     // This should probably change to like a inner join or something...
     let query =
@@ -306,6 +314,8 @@ router.get('/:id/mydoctor/:did', async function (req, res) {
           (SELECT * FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specializations
         FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail,
         (SELECT patientname, doctorname, rating, reviewmessage FROM doctorReviews WHERE doctorUsers.id = doctorReviews.did FOR JSON PATH) AS reviews
+        (SELECT totalrating, numberofreviews FROM doctorRatings WHERE doctorUsers.id = doctorReviews.id FOR JSON PATH) AS totalrating
+
       FROM doctorUsers WHERE id = (${req.params.did});`;
     params = [];
     doQuery(res, query, params, async function (selectData) {
@@ -315,8 +325,96 @@ router.get('/:id/mydoctor/:did', async function (req, res) {
         ...selectData.recordset.map(item => ({
           ...item,
           detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail),
-          reviews: empty(JSON.parse(item.reviews)) ? {} : JSON.parse(item.reviews)
+          reviews: empty(JSON.parse(item.reviews)) ? {} : JSON.parse(item.reviews),
+          totalrating: empty(JSON.parse(item.totalrating)) ? {} : JSON.parse(item.totalrating)
+
         }))
+      });
+    });
+  });
+});
+
+//#endregion
+
+//#region POST Review For Doctor GET can review doctor
+
+router.get('/:id/mydoctor/canreview', async function (req, res) {
+  // Data Validation
+  const { error } = ValidateCanReview(req.body);
+  if (error) return res.status(400).send({ error: error.message });
+
+  let query = `SELECT * FROM appointments WHERE did = @did AND pid = @pid;`;
+  let params = [
+    { name: 'pid', sqltype: sql.Int, value: req.params.id },
+    { name: 'did', sqltype: sql.Int, value: req.params.did }
+  ];
+
+  doQuery(res, query, params, function (selectData) {
+
+    // No appointments means you can't review doctor
+    if (empty(selectData.recordset)) return res.status(200).send({ canreview: false })
+
+    let query = `SELECT * FROM doctorReviews WHERE did = @did and pid = @pid;`;
+    doQuery(res, query, params, function (selectData) {
+
+      // No review, can add review
+      if (empty(selectData.recordset)) return res.status(200).send({ canreview: true })
+      // Yes review, can't add another review
+      else return res.status(200).skend({ canreview: false })
+    });
+  });
+});
+
+router.get('/:id/mydoctor/addreview', async function (req, res) {
+  // Data Validation
+  const { error } = ValidateDoctorReview(req.body);
+  if (error) return res.status(400).send({ error: error.message });
+
+  // Create new review for doctor by patient
+  let query = `INSERT INTO doctorReviews patientname, pid, doctorname, did, reviewmessage, rating) 
+  OUTPUT INSERTED.* 
+  VALUES (@patientname, @pid, @doctorname, @did, @reviewmessage, @rating);`;
+  let params = [
+    { name: 'pid', sqltype: sql.Int, value: req.params.id },
+    { name: 'patientname', sqltype: sql.Int, value: req.body.patientname },
+    { name: 'doctorname', sqltype: sql.Int, value: req.body.doctorname },
+    { name: 'did', sqltype: sql.Int, value: req.body.did },
+    { name: 'reviewmessage', sqltype: sql.Int, value: req.body.reviewmessage },
+    { name: 'rating', sqltype: sql.Int, value: req.body.rating }
+  ];
+
+  doQuery(res, query, params, function (insertData) {
+    if (empty(insertData.recordset)) return res.status(500).send({ error: "Review not saved." })
+
+    // Get current rating for doctor
+    query = `SELECT * FROM doctorRatings WHERE id = @did;`;
+    params = [
+      { name: 'did', sqltype: sql.Int, value: req.body.did },
+      { name: 'reviewmessage', sqltype: sql.Int, value: req.body.reviewmessage }
+    ];
+
+    doQuery(res, query, params, function (selectData) {
+      if (empty(selectData.recordset)) return res.status(500).send({ error: "Doctor Rating not found." })
+
+      // Update current rating for doctor
+      totalrating = selectData.recordset[0].totalrating + req.body.rating;
+      numberofreviews = selectData.recordset[0].numberofreviews + 1;
+      query = `UPDATE doctorRatings 
+      SET totalrating = @totalrating, numberofreviews = @numberofreviews
+      OUTPUT INSERTED.* WHERE id = @did;`;
+      params = [
+        { name: 'did', sqltype: sql.Int, value: req.body.did },
+        { name: 'totalrating', sqltype: sql.Int, value: totalrating },
+        { name: 'numberofreviews', sqltype: sql.Int, value: numberofreviews }
+      ];
+
+      doQuery(res, query, params, function (updateData) {
+        if (empty(updateData.recordset)) return res.status(500).send({ error: "Doctor Rating not updated." })
+
+        insertData.recordset[0].totalrating = updateData.recordset[0].totalrating;
+        insertData.recordset[0].numberofreviews = updateData.recordset[0].numberofreviews;
+
+        return res.status(200).send({ ...insertData.recordset[0] });
       });
     });
   });

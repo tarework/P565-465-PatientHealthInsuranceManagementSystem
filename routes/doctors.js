@@ -313,7 +313,8 @@ router.get('/:id/mypatients', async function (req, res) {
 
     const pidList = [];
     for (p = 0; p < selectData.recordset.length; p++) {
-      pidList.push(selectData.recordset[p].pid);
+      if (!pidList.includes(selectData.recordset[p].pid))
+        pidList.push(selectData.recordset[p].pid);
     }
 
     let query = `SELECT * FROM patientUsers 
@@ -374,9 +375,7 @@ router.get('/:id/mypatients', async function (req, res) {
 
 // Gets doctorUser's patient 
 router.get('/:id/mypatient/:pid', async function (req, res) {
-  // changed from patientDoctorRelations to appointments 10/29
-  // not tested yet. Remove these comments when tested
-  let query = `SELECT * FROM appointments WHERE did = @did and pid = @pid; `;
+  let query = `SELECT * FROM appointments WHERE did = @did AND pid = @pid; `;
   let params = [
     { name: 'did', sqltype: sql.Int, value: req.params.id },
     { name: 'pid', sqltype: sql.Int, value: req.params.pid }
