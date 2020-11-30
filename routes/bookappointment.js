@@ -1,5 +1,6 @@
 const { doQuery, sql } = require('../db');
 const { ValidateBookAppointment, ValidateGetAppointments } = require('../models/bookappointment');
+const { ValidateCovidSurvey } = require('../models/covidsurvey');
 // const { ValidatePatientMedicalData } = require('../models/puser');
 // const constants = require('../utils/constants');
 const { geocoder } = require('../utils/geocoder');
@@ -34,6 +35,64 @@ router.post('/get', async function (req, res) {
     });
 });
 
+async function saveCovidSurvey(req, res, callback) {
+    const { error } = ValidateCovidSurvey(req.body.survey);
+    if (error) {
+        callback(false);
+        return res.status(400).send({ error: error.message });
+    }
+
+    const survey = req.body.survey;
+
+    let query = "SELECT * FROM patientCovidSurvey WHERE id = @id;";
+    let params = [
+        { name: 'id', sqltype: sql.Int, value: survey.id }
+    ];
+
+    doQuery(res, query, params, function (selectData) {
+        params = [
+            { name: 'id', sqltype: sql.Int, value: survey.id },
+            { name: 'surveydate', sqltype: sql.Date, value: moment().format('YYYY-MM-DD') },
+            { name: 'symptoms', sqltype: sql.Bit, value: survey.symptoms === "YES" },
+            { name: 'contactwithcovidperson', sqltype: sql.Bit, value: survey.contactwithcovidperson === "YES" },
+            { name: 'covidpositivetest', sqltype: sql.Bit, value: survey.covidpositivetest === "YES" },
+            { name: 'selfmonitor', sqltype: sql.Bit, value: survey.selfmonitor === "YES" },
+            { name: 'requesttest', sqltype: sql.Bit, value: survey.requesttest === "YES" }
+        ];
+
+        // Create it
+        if (empty(selectData.recordset)) {
+            query = `INSERT INTO patientCovidSurvey (id, surveydate, symptoms, contactwithcovidperson, covidpositivetest, selfmonitor, requesttest)  
+                OUTPUT INSERTED.* 
+                VALUES (@id, @surveydate, @symptoms, @contactwithcovidperson, @covidpositivetest, @selfmonitor, @requesttest);`;
+            doQuery(res, query, params, function (insertData) {
+                if (empty(insertData.recordset)) {
+                    callback(false);
+                    return res.status(500).send({ error: "Saving COVID-19 survey failed." });
+                } else {
+                    callback(true);
+                }
+            });
+        }
+        // Update it
+        else {
+            query = `UPDATE patientCovidSurvey 
+            SET surveydate = @surveydate, symptoms = @symptoms,
+            contactwithcovidperson = @contactwithcovidperson, covidpositivetest = @covidpositivetest, selfmonitor = @selfmonitor, requesttest = @requesttest
+            OUTPUT INSERTED.* 
+            WHERE id = @id;`;
+            doQuery(res, query, params, function (updateData) {
+                if (empty(updateData.recordset)) {
+                    callback(false);
+                    return res.status(500).send({ error: "Saving COVID-19 survey failed." });
+                } else {
+                    callback(true);
+                }
+            });
+        }
+    });
+}
+
 // CREATE Appointment
 // FLOW
 //  -> Check appointment slot is open
@@ -41,79 +100,85 @@ router.post('/get', async function (req, res) {
 //          -> Grab e-mails for email confirmation
 //              -> DONE!
 router.post('/', async function (req, res) {
-    // Data Validation
-    const { error } = ValidateBookAppointment(req.body);
-    if (error) return res.status(400).send({ error: error.message });
 
-    let query = `SELECT * FROM appointments 
-    WHERE did = @did AND appointmentdate = @appointmentdate AND starttime = @starttime;`
-    let params = [
-        { name: 'did', sqltype: sql.Int, value: req.body.did },
-        { name: 'appointmentdate', sqltype: sql.Date, value: req.body.appointmentdate },
-        { name: 'starttime', sqltype: sql.Int, value: req.body.starttime }
-    ];
-    // Check if doctor is available
-    doQuery(res, query, params, async function (selectData) {
-        if (!empty(selectData.recordset)) return res.status(400).send({ error: "Doctor is already booked for selected time slot." });
+    saveCovidSurvey(req, res, function(complete) {
+        if(complete) {
+            // Data Validation
+            const { error } = ValidateBookAppointment(req.body);
+            if (error) return res.status(400).send({ error: error.message });
 
-        endtime = req.body.starttime + 30;
-        query = `INSERT INTO appointments (did, pid, appointmentdate, starttime, endtime) 
-            OUTPUT INSERTED.*
-            VALUES (@did, @pid, @appointmentdate, @starttime, @endtime);`;
-        params = [
-            { name: 'did', sqltype: sql.Int, value: req.body.did },
-            { name: 'pid', sqltype: sql.Int, value: req.body.pid },
-            { name: 'appointmentdate', sqltype: sql.Date, value: req.body.appointmentdate },
-            { name: 'starttime', sqltype: sql.Int, value: req.body.starttime },
-            { name: 'endtime', sqltype: sql.Int, value: endtime }
-        ];
-        // Save the appointment in DB 
-        doQuery(res, query, params, function (insertData) {
-            if (empty(insertData.recordset)) return res.status(400).send({ error: "Failed to create appointment." });
-
-            let appointmentData = insertData.recordset[0];
-
-            query = `SELECT email, fname, lname FROM doctorUsers
-                WHERE id = @did
-                UNION ALL
-                SELECT email, fname, lname FROM patientUsers
-                WHERE id = @pid;`
-            params = [
+            let query = `SELECT * FROM appointments 
+            WHERE did = @did AND appointmentdate = @appointmentdate AND starttime = @starttime;`
+            let params = [
                 { name: 'did', sqltype: sql.Int, value: req.body.did },
-                { name: 'pid', sqltype: sql.Int, value: req.body.pid }
+                { name: 'appointmentdate', sqltype: sql.Date, value: req.body.appointmentdate },
+                { name: 'starttime', sqltype: sql.Int, value: req.body.starttime }
             ];
-            // Grab e-mails for the email confirmation
+            // Check if doctor is available
             doQuery(res, query, params, async function (selectData) {
-                if (empty(selectData.recordset)) return res.status(400).send({ error: "Doctor and Patient are not in the system." });
 
-                let doctor = selectData.recordset[0];
-                let patient = selectData.recordset[1];
+                if (!empty(selectData.recordset)) return res.status(400).send({ error: "Doctor is already booked for selected time slot." });
 
-                // Can't send e-mails, kill the request?
-                // Honestly shouldn't be feasible but we'll log it if it comes up
-                if (empty(doctor) || empty(patient))
-                    winston.error('Doctor or Patient is empty. Email will fail to send but appointment created successfully?');
+                endtime = req.body.starttime + 30;
+                query = `INSERT INTO appointments (did, pid, appointmentdate, starttime, endtime) 
+                    OUTPUT INSERTED.*
+                    VALUES (@did, @pid, @appointmentdate, @starttime, @endtime);`;
+                params = [
+                    { name: 'did', sqltype: sql.Int, value: req.body.did },
+                    { name: 'pid', sqltype: sql.Int, value: req.body.pid },
+                    { name: 'appointmentdate', sqltype: sql.Date, value: req.body.appointmentdate },
+                    { name: 'starttime', sqltype: sql.Int, value: req.body.starttime },
+                    { name: 'endtime', sqltype: sql.Int, value: endtime }
+                ];
+                // Save the appointment in DB 
+                doQuery(res, query, params, function (insertData) {
+                    if (empty(insertData.recordset)) return res.status(400).send({ error: "Failed to create appointment." });
+
+                    let appointmentData = insertData.recordset[0];
+
+                    query = `SELECT email, fname, lname FROM doctorUsers
+                        WHERE id = @did
+                        UNION ALL
+                        SELECT email, fname, lname FROM patientUsers
+                        WHERE id = @pid;`
+                    params = [
+                        { name: 'did', sqltype: sql.Int, value: req.body.did },
+                        { name: 'pid', sqltype: sql.Int, value: req.body.pid }
+                    ];
+                    // Grab e-mails for the email confirmation
+                    doQuery(res, query, params, async function (selectData) {
+                        if (empty(selectData.recordset)) return res.status(400).send({ error: "Doctor and Patient are not in the system." });
+
+                        let doctor = selectData.recordset[0];
+                        let patient = selectData.recordset[1];
+
+                        // Can't send e-mails, kill the request?
+                        // Honestly shouldn't be feasible but we'll log it if it comes up
+                        if (empty(doctor) || empty(patient))
+                            winston.error('Doctor or Patient is empty. Email will fail to send but appointment created successfully?');
 
 
-                let minutes = (appointmentData.starttime % 60);
-                if (minutes !== 30) {
-                    minutes = "00"
-                }
-                mail(
-                    [doctor.email, patient.email],
-                    "Appointment Confirmation",
-                    appointmentEmail.replace('_P_FIRST_NAME', patient.fname).replace('_P_LAST_NAME', patient.lname)
-                        .replace('_D_LAST_NAME', doctor.lname).replace('_APPOINTMENT_DATE_', moment(appointmentData.appointmentdate).format('YYYY-MM-DD'))
-                        .replace('_APPOINTMENT_TIME_', (Math.floor(appointmentData.starttime / 60) + ":" + minutes)))
+                        let minutes = (appointmentData.starttime % 60);
+                        if (minutes !== 30) {
+                            minutes = "00"
+                        }
+                        mail(
+                            [doctor.email, patient.email],
+                            "Appointment Confirmation",
+                            appointmentEmail.replace('_P_FIRST_NAME', patient.fname).replace('_P_LAST_NAME', patient.lname)
+                                .replace('_D_LAST_NAME', doctor.lname).replace('_APPOINTMENT_DATE_', moment(appointmentData.appointmentdate).format('YYYY-MM-DD'))
+                                .replace('_APPOINTMENT_TIME_', (Math.floor(appointmentData.starttime / 60) + ":" + minutes)))
 
-                    .then(() => {
-                        return res.status(200).send(appointmentData);
-                    }).catch((error) => {
-                        return res.status(500).send({ error: `Confirmation emails failed to send.` });
+                            .then(() => {
+                                return res.status(200).send(appointmentData);
+                            }).catch((error) => {
+                                return res.status(500).send({ error: `Confirmation emails failed to send.` });
+                            });
                     });
+                });
             });
-        });
-    });
+        }
+    })
 });
 
 

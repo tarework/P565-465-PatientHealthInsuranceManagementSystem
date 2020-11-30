@@ -21,22 +21,12 @@ router.post('/', async function (req, res) {
     doQuery(res, query, params, function (selectData) {
         params = [
             { name: 'id', sqltype: sql.Int, value: req.body.id },
-            { name: 'surveydate', sqltype: sql.Date, value: moment(req.body.surveydate).format('YYYY-MM-DD') },
-            { name: 'symptoms', sqltype: sql.Bit, value: req.body.symptoms },
-            // { name: 'cough', sqltype: sql.Bit, value: req.body.cough },
-            // { name: 'shortnessofbreathe', sqltype: sql.Bit, value: req.body.shortnessofbreathe },
-            // { name: 'fatigue', sqltype: sql.Bit, value: req.body.fatigue },
-            // { name: 'muscleaches', sqltype: sql.Bit, value: req.body.muscleaches },
-            // { name: 'headache', sqltype: sql.Bit, value: req.body.headache },
-            // { name: 'lossofsmelltaste', sqltype: sql.Bit, value: req.body.lossofsmelltaste },
-            // { name: 'sorethroat', sqltype: sql.Bit, value: req.body.sorethroat },
-            // { name: 'congestion', sqltype: sql.Bit, value: req.body.congestion },
-            // { name: 'nauseaorvomiting', sqltype: sql.Bit, value: req.body.nauseaorvomiting },
-            // { name: 'diarrhea', sqltype: sql.Bit, value: req.body.diarrhea },
-            { name: 'contactwithcovidperson', sqltype: sql.Bit, value: req.body.contactwithcovidperson },
-            { name: 'covidpositivetest', sqltype: sql.Bit, value: req.body.covidpositivetest },
-            { name: 'selfmonitor', sqltype: sql.Bit, value: req.body.selfmonitor },
-            { name: 'requesttest', sqltype: sql.Bit, value: req.body.requesttest }
+            { name: 'surveydate', sqltype: sql.Date, value: moment().format('YYYY-MM-DD') },
+            { name: 'symptoms', sqltype: sql.Bit, value: req.body.symptoms === "YES" },
+            { name: 'contactwithcovidperson', sqltype: sql.Bit, value: req.body.contactwithcovidperson === "YES" },
+            { name: 'covidpositivetest', sqltype: sql.Bit, value: req.body.covidpositivetest === "YES" },
+            { name: 'selfmonitor', sqltype: sql.Bit, value: req.body.selfmonitor === "YES" },
+            { name: 'requesttest', sqltype: sql.Bit, value: req.body.requesttest === "YES" }
         ];
 
         // Create it
