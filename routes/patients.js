@@ -15,7 +15,7 @@ const router = express.Router();
 
 // GET patientUser and patientMedicalData
 router.get('/:id', async function (req, res) {
-  let query = `SELECT *, (SELECT * FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH) AS detail FROM patientUsers WHERE id = ${req.params.id};`;
+  let query = `SELECT *, (SELECT * FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH) AS detail, (SELECT * FROM patientCovidSurvey WHERE patientUsers.id = patientCovidSurvey.id FOR JSON PATH) AS survey FROM patientUsers WHERE id = ${req.params.id};`;
   let params = [];
 
   doQuery(res, query, params, function (selectData) {
@@ -24,7 +24,7 @@ router.get('/:id', async function (req, res) {
     delete selectData.recordset[0].pword;
     delete selectData.recordset[0].goauth;
 
-    data = selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0] }))[0];
+    data = selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], survey: empty(JSON.parse(item.survey)) ? {} : JSON.parse(item.survey)[0] }))[0];
     data.detail.birthdate = moment(data.detail.birthdate).format('YYYY-MM-DD');
 
     return res.status(200).send({ ...data, usertype: 'patient' });

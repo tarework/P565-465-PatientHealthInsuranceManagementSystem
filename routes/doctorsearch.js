@@ -12,6 +12,22 @@ const express = require('express');
 const { geocoder } = require('../utils/geocoder');
 const router = express.Router();
 
+router.get('/:id', async function (req, res) {
+    //validation needed - params.id
+
+    let query = `SELECT *, (SELECT * FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail, (SELECT doctorSpecializations.* FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specialization FROM doctorUsers WHERE id = ${req.params.id};`;
+    let params = [];
+
+    doQuery(res, query, params, function (selectData) {
+        if (empty(selectData.recordset)) return res.status(400).send({ error: "Doctor record does not exist." });
+
+        delete selectData.recordset[0].pword;
+
+        return res.status(200).send({ ...selectData.recordset.map(item => { let s = empty(JSON.parse(item.specialization)) ? {} : JSON.parse(item.specialization)[0]; delete item.specialization; return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], specializations: s }) })[0] });
+    });
+
+});
+
 // GET Doctor's based on params
 router.post('/', async function (req, res) {
     // Data Validation
