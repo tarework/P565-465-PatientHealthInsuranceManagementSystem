@@ -20,7 +20,7 @@ router.post('/get', async function (req, res) {
     const { error } = ValidateGetAppointments(req.body);
     if (error) return res.status(400).send({ error: error.message });
 
-    const enddate = addWeekday(moment(req.body.startdate), 5).format('MM-DD-YYYY');
+    const enddate = addWeekday(moment.utc(req.body.startdate), 5).format('MM-DD-YYYY');
 
     const query = `SELECT * FROM appointments
     WHERE did = @did AND appointmentdate BETWEEN @startdate AND @enddate`
@@ -52,7 +52,7 @@ async function saveCovidSurvey(req, res, callback) {
     doQuery(res, query, params, function (selectData) {
         params = [
             { name: 'id', sqltype: sql.Int, value: survey.id },
-            { name: 'surveydate', sqltype: sql.Date, value: moment().format('YYYY-MM-DD') },
+            { name: 'surveydate', sqltype: sql.Date, value: moment.utc().format('YYYY-MM-DD') },
             { name: 'symptoms', sqltype: sql.Bit, value: survey.symptoms === "YES" },
             { name: 'contactwithcovidperson', sqltype: sql.Bit, value: survey.contactwithcovidperson === "YES" },
             { name: 'covidpositivetest', sqltype: sql.Bit, value: survey.covidpositivetest === "YES" },
@@ -91,6 +91,13 @@ async function saveCovidSurvey(req, res, callback) {
             });
         }
     });
+}
+
+function createChatRooms(data) {
+
+    let query = `insert into last_message_view (user_id, user_type, room_id) values (${data.pid}, 'patient', '${data.id}appt'), (${data.did}, 'doctor', '${data.id}appt');`;
+
+    doQuery(null, query, [], () => {});
 }
 
 // CREATE Appointment
@@ -136,6 +143,8 @@ router.post('/', async function (req, res) {
 
                     let appointmentData = insertData.recordset[0];
 
+                    createChatRooms(appointmentData);
+
                     query = `SELECT email, fname, lname FROM doctorUsers
                         WHERE id = @did
                         UNION ALL
@@ -166,7 +175,7 @@ router.post('/', async function (req, res) {
                             [doctor.email, patient.email],
                             "Appointment Confirmation",
                             appointmentEmail.replace('_P_FIRST_NAME', patient.fname).replace('_P_LAST_NAME', patient.lname)
-                                .replace('_D_LAST_NAME', doctor.lname).replace('_APPOINTMENT_DATE_', moment(appointmentData.appointmentdate).format('YYYY-MM-DD'))
+                                .replace('_D_LAST_NAME', doctor.lname).replace('_APPOINTMENT_DATE_', moment.utc(appointmentData.appointmentdate).format('YYYY-MM-DD'))
                                 .replace('_APPOINTMENT_TIME_', (Math.floor(appointmentData.starttime / 60) + ":" + minutes)))
 
                             .then(() => {

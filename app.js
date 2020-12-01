@@ -4,6 +4,13 @@ const winston = require('winston');
 require('express-async-errors');
 var express = require('express'),
   app = express(),
+  server = require("http").createServer(app),
+  io = require("socket.io")(server, {
+    cors: {
+      origin: "http://localhost:3000",
+      credentials: true
+    }
+  }),
   path = require('path'),
   port = process.env.PORT || 3002,
   hostname = process.env.HOST || '127.0.0.1',
@@ -20,6 +27,7 @@ var express = require('express'),
   bookappointment = require('./routes/bookappointment'),
   insurance = require('./routes/insurance'),
   doctors = require('./routes/doctors'),
+  onConnect = require('./utils/socket'),
   error = require('./middleware/error');
 
 // Winston Log Configuration
@@ -73,6 +81,10 @@ app.get(['/', '/*'], function (req, res) {
 //   next(err);
 // });
 
-app.listen(port, () => {
+io.on('connection', socket => {
+  onConnect(socket, io);
+});
+
+server.listen(port, () => {
   winston.info(`Server running at ${hostname}:${port}/`);
 });

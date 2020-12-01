@@ -263,33 +263,28 @@ router.get('/:id/mybills', async function (req, res) {
 //#region GET Patient's Doctors
 
 // Gets patientUser's doctors'
-router.get('/:id/mydoctors', async function (req, res) {
-  let query = `SELECT * FROM appointments WHERE pid = @pid; `;
+router.get('/:id/myappointments', async function (req, res) {
+  let query = `SELECT id, starttime, endtime, appointmentdate,
+        (SELECT doctorUsers.id, doctorUsers.fname, doctorUsers.lname, doctorUsers.email, doctorUsers.phonenumber FROM doctorUsers where doctorUsers.id = appointments.did FOR JSON PATH) as doctorBasic,
+        (SELECT doctorDetails.* FROM doctorDetails WHERE appointments.did = doctorDetails.id FOR JSON PATH) AS doctorDetail,
+        (SELECT doctorSpecializations.* FROM doctorSpecializations WHERE appointments.did = doctorSpecializations.id FOR JSON PATH) AS doctorSpecializations
+        FROM appointments WHERE pid = @pid; `;
   let params = [
     { name: 'pid', sqltype: sql.Int, value: req.params.id },
   ];
 
   doQuery(res, query, params, function (selectData) {
-    if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient doctor relations." });
-
-    const didList = [];
-    for (d = 0; d < selectData.recordset.length; d++) {
-      if (!didList.includes(selectData.recordset[d].did))
-        didList.push(selectData.recordset[d].did);
-    }
-
-    let query = `SELECT email, fname, lname, phonenumber, 
-      (SELECT address1, address2, state1, city, zipcode, npinumber, treatscovid, bedsmax,
-        (SELECT * FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specializations
-      FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail 
-      FROM doctorUsers WHERE id IN (${didList});`;
-    params = [];
-
-    doQuery(res, query, params, async function (selectData) {
-      if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve doctor records." });
-
-      return res.status(200).send({ ...selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail) })) });
-    });
+    res.send(selectData.recordset.map(r => {
+      const record = r;
+      const doctorBasic = empty(JSON.parse(record.doctorBasic)) ? {} : JSON.parse(record.doctorBasic)[0];
+      const doctorDetail = empty(JSON.parse(record.doctorDetail)) ? {} : JSON.parse(record.doctorDetail)[0];
+      const doctorSpecializations = empty(JSON.parse(record.doctorSpecializations)) ? {} : JSON.parse(record.doctorSpecializations)[0];
+      const doctor = {...doctorBasic, detail: doctorDetail, specializations: doctorSpecializations}; 
+      delete record["doctorBasic"];
+      delete record["doctorDetail"];
+      delete record["doctorSpecializations"];
+      return {...record, doctor: doctor};
+    }));
   });
 });
 
