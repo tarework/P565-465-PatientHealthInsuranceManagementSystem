@@ -2,11 +2,13 @@ const { doQuery, sql } = require('../db');
 const { ValidatePassword, ValidateUpdateUser } = require('../models/user');
 const { ValidateDoctorDetails } = require('../models/duser');
 const { geocoder } = require('../utils/geocoder');
+const addWeekday = require('../utils/addWeekday');
 const storage = require('../utils/storage');
 const bcrypt = require('bcryptjs');
 const empty = require('is-empty');
 const winston = require('winston');
 const express = require('express');
+const moment = require('moment');
 const router = express.Router();
 
 
@@ -303,73 +305,33 @@ router.put('/details', async function (req, res) {
 //#region GET Doctor's Patient Details
 
 // Gets doctorUser's patients'
-router.get('/:id/mypatients', async function (req, res) {
-  let query = `SELECT * FROM appointments WHERE did = @did;`;
+router.get('/:id/myappointments', async function (req, res) {
+
+  const enddate = addWeekday(moment.utc(req.query.startdate), 5).format('MM-DD-YYYY');
+
+  let query = `SELECT id, starttime, endtime, appointmentdate, pid,
+        (SELECT patientUsers.id, patientUsers.fname, patientUsers.lname, patientUsers.email, patientUsers.phonenumber FROM patientUsers where patientUsers.id = appointments.pid FOR JSON PATH) as patientBasic,
+        (SELECT * FROM patientMedicalData WHERE appointments.pid = patientMedicalData.id FOR JSON PATH) AS patientDetail, 
+        (SELECT * FROM patientCovidSurvey WHERE appointments.pid = patientCovidSurvey.id FOR JSON PATH) AS patientSurvey
+        FROM appointments WHERE did = @did AND appointmentdate BETWEEN @startdate AND @enddate; `;
   let params = [
-    { name: 'did', sqltype: sql.Int, value: req.params.id }
+    { name: 'did', sqltype: sql.Int, value: req.params.id },
+    { name: 'startdate', sqltype: sql.Date, value: req.query.startdate },
+    { name: 'enddate', sqltype: sql.Date, value: enddate }
   ];
+
   doQuery(res, query, params, function (selectData) {
-    if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient records." });
-
-    const pidList = [];
-    for (p = 0; p < selectData.recordset.length; p++) {
-      if (!pidList.includes(selectData.recordset[p].pid))
-        pidList.push(selectData.recordset[p].pid);
-    }
-
-    let query = `SELECT * FROM patientUsers 
-      FULL OUTER JOIN patientMedicalData 
-      ON patientUsers.id = patientMedicalData.id
-      FULL OUTER JOIN patientInsurancePlans
-      ON patientUsers.id = patientInsurancePlans.id
-      FULL OUTER JOIN patientCovidSurvey
-      ON patientUsers.id = patientCovidSurvey.id
-      WHERE patientUsers.id IN (${pidList});`;
-
-    params = [];
-    doQuery(res, query, params, async function (selectData) {
-      if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient records." });
-
-      for (p = 0; p < selectData.recordset.length; p++) {
-        selectData.recordset[p].id = selectData.recordset[p].id[0]
-        delete selectData.recordset[p].pword;
-        delete selectData.recordset[p].goauth;
-      }
-      patientRecords = selectData.recordset;
-
-      const iidList = [];
-      const planidList = [];
-      for (i = 0; i < selectData.recordset.length; i++) {
-        iidList.push(selectData.recordset[i].iid);
-        planidList.push(selectData.recordset[i].planid);
-      }
-
-      query = `SELECT * FROM insuranceUsers
-      FULL OUTER JOIN insurancePlans
-      ON insuranceUsers.id = insurancePlans.id AND insurancePlans.planid IN (${planidList})
-      WHERE insuranceUsers.id IN (${iidList});`;
-      doQuery(res, query, params, async function (selectData) {
-        if (empty(selectData.recordset)) {
-          winston.error("Failed to retrieve patients' insurance records.");
-        }
-        else {
-          for (i = 0; i < patientRecords.length; i++) {
-            insuranceRecord = selectData.recordset.filter(record => record.planid == patientRecords[i].planid && record.id[1] === patientRecords[i].iid);
-            for (var key in insuranceRecord[0]) {
-              if (key !== "id" && key !== "pword" && key !== "goauth") {
-                let realKey = key;
-                if (realKey === "email") realKey = "iemail";
-                if (realKey === "fname") realKey = "ifname";
-                if (realKey === "lname") realKey = "ilname";
-                if (realKey === "phonenumber") realKey = "iphonenumber";
-                patientRecords[i][realKey] = insuranceRecord[0][key];
-              }
-            }
-          }
-          return res.status(200).send({ ...patientRecords });
-        }
-      });
-    });
+    res.send(selectData.recordset.map(r => {
+      const record = r;
+      const patientBasic = empty(JSON.parse(record.patientBasic)) ? {} : JSON.parse(record.patientBasic)[0];
+      const patientDetail = empty(JSON.parse(record.patientDetail)) ? {} : JSON.parse(record.patientDetail)[0];
+      const patientSurvey = empty(JSON.parse(record.patientSurvey)) ? {} : JSON.parse(record.patientSurvey)[0];
+      const patient = {...patientBasic, detail: patientDetail, survey: patientSurvey}; 
+      delete record["patientBasic"];
+      delete record["patientDetail"];
+      delete record["patientSurvey"];
+      return {...record, patient: patient};
+    }));
   });
 });
 

@@ -14,7 +14,7 @@ const winston = require('winston');
 const express = require('express');
 const router = express.Router();
 
-// GET Appointment
+// GET Appointments
 router.post('/get', async function (req, res) {
     // Data Validation
     const { error } = ValidateGetAppointments(req.body);
