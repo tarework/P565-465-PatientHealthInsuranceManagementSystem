@@ -4,6 +4,14 @@ const DB_PASS = process.env.DB_PASS;
 const JWT_SECRET = process.env.JWT_SECRET;
 const GMAIL_PASSWORD = process.env.GMAIL_PASSWORD;
 const AZURE_STORAGE_KEY = process.env.AZURE_STORAGE_KEY;
+
+// Chat Stuff
+const TWILIO_CHAT_SERVICE_SID = process.env.TWILIO_CHAT_SERVICE_SID;
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
+const TWILIO_API_KEY = process.env.TWILIO_API_KEY;
+const TWILIO_API_SECRET = process.env.TWILIO_API_SECRET;
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+
 const TOKEN_HEADER = 'Authorization';
 const USER_TYPES = {
     PATIENT: 'patient', //puser
@@ -21,7 +29,6 @@ const regexHeight = new RegExp(`^[3-7] (?:\\s*(?:[0][0-9]|[1][0-1]|[0-9])")?$`);
 const regexWeight = new RegExp(`^(\\d*\\.?\\d{1,2})$`);
 const regexTime = new RegExp(`^(\\d*\\.?\\d{1,2})$`);
 
-
 function UserTypeToTableName(userType) {
     if (userType === USER_TYPES.PATIENT) return "patientUsers";
     else if (userType === USER_TYPES.DOCTOR) return "doctorUsers";
@@ -36,7 +43,7 @@ function CleanErrorMessage(result) {
 }
 
 module.exports = {
-    DB_PASS, JWT_SECRET, TOKEN_HEADER, GMAIL_PASSWORD, AZURE_STORAGE_KEY, USER_TYPES, DEFAULT_PROFILE,
+    DB_PASS, JWT_SECRET, TOKEN_HEADER, GMAIL_PASSWORD, AZURE_STORAGE_KEY, TWILIO_CHAT_SERVICE_SID, TWILIO_ACCOUNT_SID, TWILIO_API_KEY, TWILIO_API_SECRET, TWILIO_AUTH_TOKEN, USER_TYPES, DEFAULT_PROFILE,
     regexLettersOnly, regexNumberOnly, regexPhoneNumber, regexHeight, regexWeight, regexTime,
     UserTypeToTableName, CleanErrorMessage
 };

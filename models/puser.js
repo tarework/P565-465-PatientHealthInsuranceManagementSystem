@@ -27,4 +27,55 @@ function ValidatePatientMedicalData(request) {
     return constants.CleanErrorMessage(schema.validate(request));
 }
 
+function ValidateDoctorReview(request) {
+    const schema = Joi.object({
+        patientname: Joi.string().required(),
+        doctorname: Joi.string().required(),
+        // did: Joi.string().required(),
+        reviewmessage: Joi.string().required(),
+        rating: Joi.number().required()
+    }).options({ stripUnknown: true });
+
+    return constants.CleanErrorMessage(schema.validate(request));
+}
+
+function ValidateCanReview(request) {
+    const schema = Joi.object({
+        did: Joi.string().required()
+    }).options({ stripUnknown: true });
+
+    return constants.CleanErrorMessage(schema.validate(request));
+}
+
+function ValidateSubscription(request) {
+    const schema = Joi.object({
+        id: Joi.string().required(),
+        iid: Joi.string().required()
+    }).options({ stripUnknown: true });
+
+    return constants.CleanErrorMessage(schema.validate(request));
+}
+
+function ValidateAddInsurance(request) {
+    const schema = Joi.object({
+        //pid: Joi.string().required(),
+        iid: Joi.string().required(),
+        planid: Joi.string().required()
+    }).options({ stripUnknown: true });
+
+    return constants.CleanErrorMessage(schema.validate(request));
+}
+
+// function ValidateRemoveInsurance(request) {
+//     const schema = Joi.object({
+//         pid: Joi.string().required()
+//     }).options({ stripUnknown: true });
+
+//     return constants.CleanErrorMessage(schema.validate(request));
+// }
+
 module.exports.ValidatePatientMedicalData = ValidatePatientMedicalData;
+module.exports.ValidateDoctorReview = ValidateDoctorReview;
+module.exports.ValidateCanReview = ValidateCanReview;
+module.exports.ValidateSubscription = ValidateSubscription;
+module.exports.ValidateAddInsurance = ValidateAddInsurance;

@@ -1,5 +1,6 @@
 const { doQuery, sql } = require('../db');
 const { ValidateBookAppointment, ValidateGetAppointments } = require('../models/bookappointment');
+const { ValidateCovidSurvey } = require('../models/covidsurvey');
 // const { ValidatePatientMedicalData } = require('../models/puser');
 // const constants = require('../utils/constants');
 const { geocoder } = require('../utils/geocoder');
@@ -13,13 +14,13 @@ const winston = require('winston');
 const express = require('express');
 const router = express.Router();
 
-// GET Appointment
+// GET Appointments
 router.post('/get', async function (req, res) {
     // Data Validation
     const { error } = ValidateGetAppointments(req.body);
     if (error) return res.status(400).send({ error: error.message });
 
-    const enddate = addWeekday(moment(req.body.startdate), 5).format('MM-DD-YYYY');
+    const enddate = addWeekday(moment.utc(req.body.startdate), 5).format('MM-DD-YYYY');
 
     const query = `SELECT * FROM appointments
     WHERE did = @did AND appointmentdate BETWEEN @startdate AND @enddate`
@@ -34,6 +35,71 @@ router.post('/get', async function (req, res) {
     });
 });
 
+async function saveCovidSurvey(req, res, callback) {
+    const { error } = ValidateCovidSurvey(req.body.survey);
+    if (error) {
+        callback(false);
+        return res.status(400).send({ error: error.message });
+    }
+
+    const survey = req.body.survey;
+
+    let query = "SELECT * FROM patientCovidSurvey WHERE id = @id;";
+    let params = [
+        { name: 'id', sqltype: sql.Int, value: survey.id }
+    ];
+
+    doQuery(res, query, params, function (selectData) {
+        params = [
+            { name: 'id', sqltype: sql.Int, value: survey.id },
+            { name: 'surveydate', sqltype: sql.Date, value: moment.utc().format('YYYY-MM-DD') },
+            { name: 'symptoms', sqltype: sql.Bit, value: survey.symptoms === "YES" },
+            { name: 'contactwithcovidperson', sqltype: sql.Bit, value: survey.contactwithcovidperson === "YES" },
+            { name: 'covidpositivetest', sqltype: sql.Bit, value: survey.covidpositivetest === "YES" },
+            { name: 'selfmonitor', sqltype: sql.Bit, value: survey.selfmonitor === "YES" },
+            { name: 'requesttest', sqltype: sql.Bit, value: survey.requesttest === "YES" }
+        ];
+
+        // Create it
+        if (empty(selectData.recordset)) {
+            query = `INSERT INTO patientCovidSurvey (id, surveydate, symptoms, contactwithcovidperson, covidpositivetest, selfmonitor, requesttest)  
+                OUTPUT INSERTED.* 
+                VALUES (@id, @surveydate, @symptoms, @contactwithcovidperson, @covidpositivetest, @selfmonitor, @requesttest);`;
+            doQuery(res, query, params, function (insertData) {
+                if (empty(insertData.recordset)) {
+                    callback(false);
+                    return res.status(500).send({ error: "Saving COVID-19 survey failed." });
+                } else {
+                    callback(true);
+                }
+            });
+        }
+        // Update it
+        else {
+            query = `UPDATE patientCovidSurvey 
+            SET surveydate = @surveydate, symptoms = @symptoms,
+            contactwithcovidperson = @contactwithcovidperson, covidpositivetest = @covidpositivetest, selfmonitor = @selfmonitor, requesttest = @requesttest
+            OUTPUT INSERTED.* 
+            WHERE id = @id;`;
+            doQuery(res, query, params, function (updateData) {
+                if (empty(updateData.recordset)) {
+                    callback(false);
+                    return res.status(500).send({ error: "Saving COVID-19 survey failed." });
+                } else {
+                    callback(true);
+                }
+            });
+        }
+    });
+}
+
+function createChatRooms(data) {
+
+    let query = `insert into last_message_view (user_id, user_type, room_id) values (${data.pid}, 'patient', '${data.id}appt'), (${data.did}, 'doctor', '${data.id}appt');`;
+
+    doQuery(null, query, [], () => {});
+}
+
 // CREATE Appointment
 // FLOW
 //  -> Check appointment slot is open
@@ -41,74 +107,87 @@ router.post('/get', async function (req, res) {
 //          -> Grab e-mails for email confirmation
 //              -> DONE!
 router.post('/', async function (req, res) {
-    // Data Validation
-    const { error } = ValidateBookAppointment(req.body);
-    if (error) return res.status(400).send({ error: error.message });
 
-    let query = `SELECT * FROM appointments 
-    WHERE did = @did AND appointmentdate = @appointmentdate AND starttime = @starttime;`
-    let params = [
-        { name: 'did', sqltype: sql.Int, value: req.body.did },
-        { name: 'appointmentdate', sqltype: sql.Date, value: req.body.appointmentdate },
-        { name: 'starttime', sqltype: sql.Int, value: req.body.starttime }
-    ];
-    // Check if doctor is available
-    doQuery(res, query, params, async function (selectData) {
-        if (!empty(selectData.recordset)) return res.status(400).send({ error: "Doctor is already booked for selected time slot." });
+    saveCovidSurvey(req, res, function(complete) {
+        if(complete) {
+            // Data Validation
+            const { error } = ValidateBookAppointment(req.body);
+            if (error) return res.status(400).send({ error: error.message });
 
-        endtime = req.body.starttime + 30;
-        query = `INSERT INTO appointments (did, pid, appointmentdate, starttime, endtime) 
-            OUTPUT INSERTED.*
-            VALUES (@did, @pid, @appointmentdate, @starttime, @endtime);`;
-        params = [
-            { name: 'did', sqltype: sql.Int, value: req.body.did },
-            { name: 'pid', sqltype: sql.Int, value: req.body.pid },
-            { name: 'appointmentdate', sqltype: sql.Date, value: req.body.appointmentdate },
-            { name: 'starttime', sqltype: sql.Int, value: req.body.starttime },
-            { name: 'endtime', sqltype: sql.Int, value: endtime }
-        ];
-        // Save the appointment in DB 
-        doQuery(res, query, params, function (insertData) {
-            if (empty(insertData.recordset)) return res.status(400).send({ error: "Failed to create appointment." });
-
-            let appointmentData = insertData.recordset[0];
-
-            query = `SELECT email, fname, lname FROM doctorUsers
-                WHERE id = @did
-                UNION ALL
-                SELECT email, fname, lname FROM patientUsers
-                WHERE id = @pid;`
-            params = [
+            let query = `SELECT * FROM appointments 
+            WHERE did = @did AND appointmentdate = @appointmentdate AND starttime = @starttime;`
+            let params = [
                 { name: 'did', sqltype: sql.Int, value: req.body.did },
-                { name: 'pid', sqltype: sql.Int, value: req.body.pid }
+                { name: 'appointmentdate', sqltype: sql.Date, value: req.body.appointmentdate },
+                { name: 'starttime', sqltype: sql.Int, value: req.body.starttime }
             ];
-            // Grab e-mails for the email confirmation
+            // Check if doctor is available
             doQuery(res, query, params, async function (selectData) {
-                if (empty(selectData.recordset)) return res.status(400).send({ error: "Doctor and Patient are not in the system." });
 
-                let doctor = selectData.recordset[0];
-                let patient = selectData.recordset[1];
+                if (!empty(selectData.recordset)) return res.status(400).send({ error: "Doctor is already booked for selected time slot." });
 
-                // Can't send e-mails, kill the request?
-                // Honestly shouldn't be feasible but we'll log it if it comes up
-                if (empty(doctor) || empty(patient))
-                    winston.error('Doctor or Patient is empty. Email will fail to send but appointment created successfully?');
+                endtime = req.body.starttime + 30;
+                query = `INSERT INTO appointments (did, pid, appointmentdate, starttime, endtime) 
+                    OUTPUT INSERTED.*
+                    VALUES (@did, @pid, @appointmentdate, @starttime, @endtime);`;
+                params = [
+                    { name: 'did', sqltype: sql.Int, value: req.body.did },
+                    { name: 'pid', sqltype: sql.Int, value: req.body.pid },
+                    { name: 'appointmentdate', sqltype: sql.Date, value: req.body.appointmentdate },
+                    { name: 'starttime', sqltype: sql.Int, value: req.body.starttime },
+                    { name: 'endtime', sqltype: sql.Int, value: endtime }
+                ];
+                // Save the appointment in DB 
+                doQuery(res, query, params, function (insertData) {
+                    if (empty(insertData.recordset)) return res.status(400).send({ error: "Failed to create appointment." });
 
-                mail(
-                    [doctor.email, patient.email],
-                    "Appointment Confirmation",
-                    appointmentEmail.replace('_P_FIRST_NAME', patient.fname).replace('_P_LAST_NAME', patient.lname)
-                        .replace('_D_LAST_NAME', doctor.lname).replace('_APPOINTMENT_DATE_', appointmentData.appointmentdate)
-                        .replace('_APPOINTMENT_TIME_', (Math.floor(appointmentData.starttime / 60) + ":" + (appointmentData.starttime % 60))))
+                    let appointmentData = insertData.recordset[0];
 
-                    .then(() => {
-                        return res.status(200).send(appointmentData);
-                    }).catch((error) => {
-                        return res.status(500).send({ error: `Confirmation emails failed to send.` });
+                    createChatRooms(appointmentData);
+
+                    query = `SELECT email, fname, lname FROM doctorUsers
+                        WHERE id = @did
+                        UNION ALL
+                        SELECT email, fname, lname FROM patientUsers
+                        WHERE id = @pid;`
+                    params = [
+                        { name: 'did', sqltype: sql.Int, value: req.body.did },
+                        { name: 'pid', sqltype: sql.Int, value: req.body.pid }
+                    ];
+                    // Grab e-mails for the email confirmation
+                    doQuery(res, query, params, async function (selectData) {
+                        if (empty(selectData.recordset)) return res.status(400).send({ error: "Doctor and Patient are not in the system." });
+
+                        let doctor = selectData.recordset[0];
+                        let patient = selectData.recordset[1];
+
+                        // Can't send e-mails, kill the request?
+                        // Honestly shouldn't be feasible but we'll log it if it comes up
+                        if (empty(doctor) || empty(patient))
+                            winston.error('Doctor or Patient is empty. Email will fail to send but appointment created successfully?');
+
+
+                        let minutes = (appointmentData.starttime % 60);
+                        if (minutes !== 30) {
+                            minutes = "00"
+                        }
+                        mail(
+                            [doctor.email, patient.email],
+                            "Appointment Confirmation",
+                            appointmentEmail.replace('_P_FIRST_NAME', patient.fname).replace('_P_LAST_NAME', patient.lname)
+                                .replace('_D_LAST_NAME', doctor.lname).replace('_APPOINTMENT_DATE_', moment.utc(appointmentData.appointmentdate).format('YYYY-MM-DD'))
+                                .replace('_APPOINTMENT_TIME_', (Math.floor(appointmentData.starttime / 60) + ":" + minutes)))
+
+                            .then(() => {
+                                return res.status(200).send(appointmentData);
+                            }).catch((error) => {
+                                return res.status(500).send({ error: `Confirmation emails failed to send.` });
+                            });
                     });
+                });
             });
-        });
-    });
+        }
+    })
 });
 
 
@@ -131,7 +210,7 @@ font-size:20px!important; display:block!important; border-width:10px 0px 10px 0p
 float:none!important; max-height:inherit!important; line-height:inherit!important } tr.es-desk-hidden { display:table-row!important } table.es-desk-hidden { display:table!important } td.es-desk-menu-hidden { display:table-cell!important } .es-menu td { width:1%!important } table.es-table-not-adapt, .esd-block-html table { width:auto!important } table.es-social { display:inline-block!important } table.es-social td { display:inline-block!important } }</style></head><body style="width:100%;font-family:arial, 'helvetica neue', helvetica, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0"><div class="es-wrapper-color" style="background-color:#F6F6F6"> <!--[if gte mso 9]><v:background xmlns:v="urn:schemas-microsoft-com:vml" fill="t"> <v:fill type="tile" color="#f6f6f6"></v:fill> </v:background><![endif]-->
 <table class="es-wrapper" width="100%" cellspacing="0" cellpadding="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;padding:0;Margin:0;width:100%;height:100%;background-repeat:repeat;background-position:center top"><tr style="border-collapse:collapse"><td valign="top" style="padding:0;Margin:0"><table class="es-content" cellspacing="0" cellpadding="0" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%"><tr style="border-collapse:collapse"><td align="center" style="padding:0;Margin:0"><table class="es-content-body" cellspacing="0" cellpadding="0" bgcolor="#ffffff" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:600px"><tr style="border-collapse:collapse">
 <td align="left" style="Margin:0;padding-top:20px;padding-bottom:20px;padding-left:20px;padding-right:20px"><table width="100%" cellspacing="0" cellpadding="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"><tr style="border-collapse:collapse"><td valign="top" align="center" style="padding:0;Margin:0;width:560px"><table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"><tr style="border-collapse:collapse"><td align="left" style="padding:0;Margin:0;padding-bottom:15px"><h2 style="Margin:0;line-height:29px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:24px;font-style:normal;font-weight:normal;color:#333333">Hello!</h2></td></tr><tr style="border-collapse:collapse"><td align="left" style="padding:0;Margin:0;padding-top:20px">
-<p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333">This is an appointment confirmation. Please mark it in your calendars. The appointment is for:<br><br>_P_FIRST_NAME _P_LAST_NAME<br>with<br>Dr. _D_LAST_NAME<br>on<br>_APPOINTMENT_DATE_<br>at<br>_APPOINTMENT_TIME_<br><br>Please arrive 10 minutes before hand to handle any paperwork that may be needed.<br></p></td></tr><tr style="border-collapse:collapse"><td align="left" style="padding:0;Margin:0;padding-top:15px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333">Be safe and healthy!<br><br></p>
+<p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333">This is an appointment confirmation. Please mark it in your calendars. The appointment is for:<br><br>_P_FIRST_NAME _P_LAST_NAME with Dr. _D_LAST_NAME<br>on _APPOINTMENT_DATE_ at _APPOINTMENT_TIME_<br><br>Please arrive 10 minutes before hand to handle any paperwork that may be needed.<br></p></td></tr><tr style="border-collapse:collapse"><td align="left" style="padding:0;Margin:0;padding-top:15px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333">Be safe and healthy!<br><br></p>
 <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333">Love,</p><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333">The Apollo Care IT Team</p></td></tr></table></td></tr></table></td></tr></table></td></tr></table><table class="es-footer" cellspacing="0" cellpadding="0" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%;background-color:transparent;background-repeat:repeat;background-position:center top"><tr style="border-collapse:collapse"><td align="center" style="padding:0;Margin:0">
 <table class="es-footer-body" cellspacing="0" cellpadding="0" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;width:600px"><tr style="border-collapse:collapse"><td align="left" style="Margin:0;padding-top:20px;padding-bottom:20px;padding-left:20px;padding-right:20px"><table width="100%" cellspacing="0" cellpadding="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"><tr style="border-collapse:collapse"><td valign="top" align="center" style="padding:0;Margin:0;width:560px"><table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"><tr style="border-collapse:collapse"><td style="padding:20px;Margin:0;font-size:0" align="center">
 <table width="75%" height="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px"><tr style="border-collapse:collapse"><td style="padding:0;Margin:0;border-bottom:1px solid #CCCCCC;background:none;height:1px;width:100%;margin:0px"></td></tr></table></td></tr><tr style="border-collapse:collapse"><td align="center" style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:11px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:17px;color:#333333">&lt;3 Apollo Care loves you and wants you to be healthy &lt;3<br></p></td></tr><tr style="border-collapse:collapse"><td align="center" style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px">

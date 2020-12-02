@@ -1,7 +1,7 @@
 const moment = require('moment');
 
 module.exports = (date, days) => {
-  date = moment(date); // use a clone
+  date = moment.utc(date); // use a clone
   while (days > 0) {
     date = date.add(1, 'days');
     // decrease "days" only if it's a weekday.
