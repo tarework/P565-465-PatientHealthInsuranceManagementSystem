@@ -19,7 +19,7 @@ module.exports = (socket, io) => {
           {name: 'user_type', sqltype: sql.VarChar(20), value: data.usertype}
       ];
       doQuery(null, query, params, function(selectData) {
-        socket.emit('add_conversations', selectData.recordset.map(convo => ({...convo, userTyping: false, userConnected: !empty(activeRooms.filter(room => room.room_id === convo.room_id)), messages: empty(JSON.parse(convo.messages)) ? [] : JSON.parse(convo.messages).reverse()})));
+        socket.emit('add_conversations', selectData.recordset.map(convo => ({...convo, userTyping: false, userConnected: !empty(activeRooms.filter(room => room.room_id === convo.room_id)), meConnected: false, messages: empty(JSON.parse(convo.messages)) ? [] : JSON.parse(convo.messages).reverse()})));
         selectData.recordset.forEach(function(convo) { 
           socket.join(convo.room_id);
         });

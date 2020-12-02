@@ -304,6 +304,33 @@ router.put('/details', async function (req, res) {
 
 //#region GET Doctor's Patient Details
 
+// Gets doctorUser's unread message appointments
+router.get('/:id/unread/myappointments', async function (req, res) {
+
+  let query = `SELECT id, starttime, endtime, appointmentdate, pid,
+        (SELECT patientUsers.id, patientUsers.fname, patientUsers.lname, patientUsers.email, patientUsers.phonenumber FROM patientUsers where patientUsers.id = appointments.pid FOR JSON PATH) as patientBasic,
+        (SELECT * FROM patientMedicalData WHERE appointments.pid = patientMedicalData.id FOR JSON PATH) AS patientDetail, 
+        (SELECT * FROM patientCovidSurvey WHERE appointments.pid = patientCovidSurvey.id FOR JSON PATH) AS patientSurvey
+        FROM appointments WHERE did = @did order by appointmentdate desc, starttime asc; `;
+  let params = [
+    { name: 'did', sqltype: sql.Int, value: req.params.id }
+  ];
+
+  doQuery(res, query, params, function (selectData) {
+    res.send(selectData.recordset.map(r => {
+      const record = r;
+      const patientBasic = empty(JSON.parse(record.patientBasic)) ? {} : JSON.parse(record.patientBasic)[0];
+      const patientDetail = empty(JSON.parse(record.patientDetail)) ? {} : JSON.parse(record.patientDetail)[0];
+      const patientSurvey = empty(JSON.parse(record.patientSurvey)) ? {} : JSON.parse(record.patientSurvey)[0];
+      const patient = {...patientBasic, detail: patientDetail, survey: patientSurvey}; 
+      delete record["patientBasic"];
+      delete record["patientDetail"];
+      delete record["patientSurvey"];
+      return {...record, patient: patient};
+    }));
+  });
+});
+
 // Gets doctorUser's patients'
 router.get('/:id/myappointments', async function (req, res) {
 
