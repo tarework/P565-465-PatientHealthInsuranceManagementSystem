@@ -2,6 +2,9 @@ var express = require("express"),
     empty = require('is-empty'),
     { poolPromise, doQuery, sql } = require('../db');
 
+let users = [];
+let activeRooms = [];
+
 module.exports = (socket, io) => {
 
   socket.on('socketConnect', function(data) {
@@ -16,8 +19,16 @@ module.exports = (socket, io) => {
           {name: 'user_type', sqltype: sql.VarChar(20), value: data.usertype}
       ];
       doQuery(null, query, params, function(selectData) {
-        socket.emit('add_conversations', selectData.recordset.map(convo => ({...convo, messages: empty(JSON.parse(convo.messages)) ? [] : JSON.parse(convo.messages).reverse()})));
-        selectData.recordset.forEach(function(convo) { socket.join(convo.room_id) });
+        socket.emit('add_conversations', selectData.recordset.map(convo => ({...convo, userTyping: false, userConnected: !empty(activeRooms.filter(room => room.room_id === convo.room_id)), messages: empty(JSON.parse(convo.messages)) ? [] : JSON.parse(convo.messages).reverse()})));
+        selectData.recordset.forEach(function(convo) { 
+          socket.join(convo.room_id);
+        });
+        users.push({
+          socket_id: socket.id,
+          user_id: data.id,
+          user_type: data.usertype,
+          rooms: selectData.recordset.map(convo => convo.room_id)
+        });
       });
     } catch(e) {
       console.log(e);
@@ -25,43 +36,57 @@ module.exports = (socket, io) => {
 
   });
 
-  // socket.on('joinroom', function(data) {
+  socket.on("disconnect", (reason) => {
+    
+    const userArr = users.filter(u => u.socket_id === socket.id);
+    users = users.filter(u => u.socket_id !== socket.id);
+    if(!empty(userArr)) {
+      const user = userArr[0];
+      user.rooms.forEach(function(room) {
+        socket.to(room).emit("user_disconnected", {connectedUser: {user_id: data.id, user_type: data.usertype}, room_id: room, userConnected: false});
+      });
+    }
+    activeRooms = activeRooms.filter(room => !(room.socket_id === socket.id));
 
-  //   try {
-  //     let query2 = `update last_message_view set time = GETDATE() where user_id = @user_id and room_id = @room_id and user_type = @user_type; 
-  //                   select last_message_view.*, (select count(*) from messages where last_message_view.room_id = messages.room_id and messages.timestamp > last_message_view.time and messages.user_id <> @user_id and last_message_view.user_id = @user_id) as unread from last_message_view inner join jobs on last_message_view.job_id = jobs.id where last_message_view.job_id = @job_id and last_message_view.customer_included = @customer_included and user_id = @user_id and (jobs.status = 'In-Progress' or jobs.status = 'Scheduled');`;
-  //     let params2 = [
-  //       {name: 'job_id', sqltype: sql.Int, value: data.job_id},
-  //       {name: 'customer_included', sqltype: sql.Bit, value: data.customer_included},
-  //       {name: 'user_id', sqltype: sql.Int, value: data.user_id}
-  //     ];
-  //     doQuery(null, query2, params2, function(records2) {
-  //       socket.emit('update_notifications', {...records2.recordset[0], room_id: `${data.customer_included ? "customer" : "worker"}${data.job_id}`});
-  //     });
-  //   } catch(e) {
-  //     console.log(e);
-  //   }
+  });
 
-  // });
+  socket.on('join_page', function(data) {
 
-  // socket.on('leaveroom', function(data) {
+    try {
+      let query2 = `update last_message_view set time = GETDATE() where user_id = @user_id and room_id = @room_id and user_type = @user_type;`;
+      let params2 = [
+        {name: 'room_id', sqltype: sql.VarChar(20), value: data.room_id},
+        {name: 'user_id', sqltype: sql.Int, value: data.id},
+        {name: 'user_type', sqltype: sql.VarChar(20), value: data.usertype}
+      ];
+      doQuery(null, query2, params2, function(records2) {
+        socket.to(data.room_id).emit("user_connected", {connectedUser: {user_id: data.id, user_type: data.usertype}, room_id: data.room_id, userConnected: true});
+        activeRooms.push({socket_id: socket.id, room_id: data.room_id});
+      });
+    } catch(e) {
+      console.log(e);
+    }
 
-  //   try {
-  //     let query2 = `update last_message_view set time = GETDATE() where user_id = @user_id and job_id = @job_id and customer_included = @customer_included; 
-  //                 select last_message_view.*, (select count(*) from messages where last_message_view.job_id = messages.job_id and last_message_view.customer_included = messages.customer_included and messages.timestamp > last_message_view.time and (messages.user_id <> @user_id or messages.is_customer = 1) and last_message_view.user_id = @user_id) as unread from last_message_view inner join jobs on last_message_view.job_id = jobs.id where last_message_view.job_id = @job_id and last_message_view.customer_included = @customer_included and user_id = @user_id and (jobs.status = 'In-Progress' or jobs.status = 'Scheduled');`;
-  //     let params2 = [
-  //       {name: 'job_id', sqltype: sql.Int, value: data.job_id},
-  //       {name: 'customer_included', sqltype: sql.Bit, value: data.customer_included},
-  //       {name: 'user_id', sqltype: sql.Int, value: data.user_id}
-  //     ];
-  //     doQuery(null, query2, params2, function(records2) {
-  //       socket.emit('update_notifications', {...records2.recordset[0], room_id: `${data.customer_included ? "customer" : "worker"}${data.job_id}`});
-  //     });
-  //   } catch(e) {
-  //     console.log(e);
-  //   }
+  });
 
-  // });
+  socket.on('leave_page', function(data) {
+
+    try {
+      let query2 = `update last_message_view set time = GETDATE() where user_id = @user_id and room_id = @room_id and user_type = @user_type;`;
+      let params2 = [
+        {name: 'room_id', sqltype: sql.VarChar(20), value: data.room_id},
+        {name: 'user_id', sqltype: sql.Int, value: data.id},
+        {name: 'user_type', sqltype: sql.VarChar(20), value: data.usertype}
+      ];
+      doQuery(null, query2, params2, function(records2) {
+        socket.to(data.room_id).emit("user_disconnected", {connectedUser: {user_id: data.id, user_type: data.usertype}, room_id: data.room_id, userConnected: false});
+        activeRooms = activeRooms.filter(room => !(room.socket_id === socket.id && room.room_id === data.room_id));
+      });
+    } catch(e) {
+      console.log(e);
+    }
+
+  });
 
   socket.on("send_chat", (data) => {
     let query = "insert into messages (user_id, room_id, user_type, message) output inserted.* values (@user_id, @room_id, @user_type, @message);";
@@ -78,7 +103,7 @@ module.exports = (socket, io) => {
   });
 
   socket.on("user_typing", (data) => {
-    io.in(`${data.room_id}`).emit('user_typing_received', data);
+    socket.to(`${data.room_id}`).emit('user_typing_received', data);
   });
 
 };
