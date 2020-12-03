@@ -29,9 +29,8 @@ function ValidatePatientMedicalData(request) {
 
 function ValidateDoctorReview(request) {
     const schema = Joi.object({
-        patientname: Joi.string().required(),
-        doctorname: Joi.string().required(),
-        // did: Joi.string().required(),
+        did: Joi.required(),
+        id: Joi.required(),
         reviewmessage: Joi.string().required(),
         rating: Joi.number().required()
     }).options({ stripUnknown: true });

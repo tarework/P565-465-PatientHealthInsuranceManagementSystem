@@ -15,7 +15,11 @@ const router = express.Router();
 router.get('/:id', async function (req, res) {
     //validation needed - params.id
 
-    let query = `SELECT *, (SELECT * FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail, (SELECT doctorSpecializations.* FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specialization FROM doctorUsers WHERE id = ${req.params.id};`;
+    let query = `SELECT *, 
+                (SELECT * FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail, 
+                (SELECT doctorSpecializations.* FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specialization,
+                (SELECT concat(patientUsers.fname, ' ', patientUsers.lname) as patientname, rating, reviewmessage FROM doctorReviews inner join patientUsers on patientUsers.id = doctorReviews.pid WHERE doctorReviews.did = doctorUsers.id FOR JSON PATH) AS reviews
+                FROM doctorUsers WHERE id = ${req.params.id};`;
     let params = [];
 
     doQuery(res, query, params, function (selectData) {
@@ -23,7 +27,7 @@ router.get('/:id', async function (req, res) {
 
         delete selectData.recordset[0].pword;
 
-        return res.status(200).send({ ...selectData.recordset.map(item => { let s = empty(JSON.parse(item.specialization)) ? {} : JSON.parse(item.specialization)[0]; delete item.specialization; return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], specializations: s }) })[0] });
+        return res.status(200).send({ ...selectData.recordset.map(item => { let s = empty(JSON.parse(item.specialization)) ? {} : JSON.parse(item.specialization)[0]; delete item.specialization; return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], specializations: s, reviews: empty(JSON.parse(item.reviews)) ? [] : JSON.parse(item.reviews) }) })[0] });
     });
 
 });
@@ -43,7 +47,8 @@ router.post('/', async function (req, res) {
     if (empty(address)) {
         let query = `SELECT doctorUsers.id, doctorUsers.fname, doctorUsers.lname, doctorUsers.email, doctorUsers.phonenumber, 
         (SELECT * FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail,
-        (SELECT doctorSpecializations.* FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specialization
+        (SELECT doctorSpecializations.* FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specialization,
+        (SELECT concat(patientUsers.fname, ' ', patientUsers.lname) as patientname, rating, reviewmessage FROM doctorReviews inner join patientUsers on patientUsers.id = doctorReviews.pid WHERE doctorReviews.did = doctorUsers.id FOR JSON PATH) AS reviews
         FROM doctorUsers 
         INNER JOIN doctorDetails on doctorDetails.id = doctorUsers.id 
         INNER JOIN doctorSpecializations on doctorUsers.id = doctorSpecializations.id
@@ -52,7 +57,7 @@ router.post('/', async function (req, res) {
         ${empty(covidOnly) ? '' : `and doctorDetails.treatscovid = ${covidOnly === "Yes" ? 1 : 0}`};`;
 
         doQuery(res, query, [], function (selectData) {
-            res.send(selectData.recordset.map(item => { let s = empty(JSON.parse(item.specialization)) ? {} : JSON.parse(item.specialization)[0]; delete item.specialization; return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], specializations: s }) }));
+            res.send(selectData.recordset.map(item => { let s = empty(JSON.parse(item.specialization)) ? {} : JSON.parse(item.specialization)[0]; delete item.specialization; return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], specializations: s, reviews: empty(JSON.parse(item.reviews)) ? [] : JSON.parse(item.reviews) }) }));
         });
 
     } else {
@@ -61,7 +66,8 @@ router.post('/', async function (req, res) {
                 if (empty(result)) return res.status(400).send({ error: "Location not found." });
                 let query = `SELECT doctorUsers.id, doctorUsers.fname, doctorUsers.lname, doctorUsers.email, doctorUsers.phonenumber, dbo.CalculateDistance(${result[0].longitude}, ${result[0].latitude}, doctorDetails.lng, doctorDetails.lat) as distance,
                 (SELECT * FROM doctorDetails WHERE doctorUsers.id = doctorDetails.id FOR JSON PATH) AS detail,
-                (SELECT doctorSpecializations.* FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specialization
+                (SELECT doctorSpecializations.* FROM doctorSpecializations WHERE doctorUsers.id = doctorSpecializations.id FOR JSON PATH) AS specialization,
+                (SELECT concat(patientUsers.fname, ' ', patientUsers.lname) as patientname, rating, reviewmessage FROM doctorReviews inner join patientUsers on patientUsers.id = doctorReviews.pid WHERE doctorReviews.did = doctorUsers.id FOR JSON PATH) AS reviews
                 FROM doctorUsers 
                 INNER JOIN doctorDetails on doctorDetails.id = doctorUsers.id 
                 INNER JOIN doctorSpecializations on doctorUsers.id = doctorSpecializations.id
@@ -71,7 +77,7 @@ router.post('/', async function (req, res) {
                 ${empty(covidOnly) ? '' : `and doctorDetails.treatscovid = ${covidOnly === "Yes" ? 1 : 0}`};`;
 
                 doQuery(res, query, [], function (selectData) {
-                    res.send(selectData.recordset.map(item => { let s = empty(JSON.parse(item.specialization)) ? {} : JSON.parse(item.specialization)[0]; delete item.specialization; return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], specializations: s }) }));
+                    res.send(selectData.recordset.map(item => { let s = empty(JSON.parse(item.specialization)) ? {} : JSON.parse(item.specialization)[0]; delete item.specialization; return ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], specializations: s, reviews: empty(JSON.parse(item.reviews)) ? [] : JSON.parse(item.reviews) }) }));
                 });
             })
             .catch(function (error) {
