@@ -15,7 +15,11 @@ const router = express.Router();
 
 // GET patientUser and patientMedicalData
 router.get('/:id', async function (req, res) {
-  let query = `SELECT *, (SELECT * FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH) AS detail, (SELECT * FROM patientCovidSurvey WHERE patientUsers.id = patientCovidSurvey.id FOR JSON PATH) AS survey FROM patientUsers WHERE id = ${req.params.id};`;
+  let query = `SELECT *, 
+              (SELECT * FROM patientMedicalData WHERE patientUsers.id = patientMedicalData.id FOR JSON PATH) AS detail, 
+              (SELECT * FROM patientCovidSurvey WHERE patientUsers.id = patientCovidSurvey.id FOR JSON PATH) AS survey, 
+              (SELECT insurancePlans.*, insuranceDetails.companyname, insuranceDetails.address1, insuranceDetails.address2, insuranceDetails.city, insuranceDetails.state1, insuranceDetails.zipcode, insuranceDetails.lng, insuranceDetails.lat FROM insurancePlans inner join patientInsurancePlans on patientInsurancePlans.planid = insurancePlans.id inner join insuranceDetails on insuranceDetails.id = insurancePlans.iid WHERE patientInsurancePlans.pid = patientUsers.id FOR JSON PATH) AS insurance 
+              FROM patientUsers WHERE id = ${req.params.id};`;
   let params = [];
 
   doQuery(res, query, params, function (selectData) {
@@ -24,7 +28,7 @@ router.get('/:id', async function (req, res) {
     delete selectData.recordset[0].pword;
     delete selectData.recordset[0].goauth;
 
-    data = selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], survey: empty(JSON.parse(item.survey)) ? {} : JSON.parse(item.survey)[0] }))[0];
+    data = selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], survey: empty(JSON.parse(item.survey)) ? {} : JSON.parse(item.survey)[0], insurance: empty(JSON.parse(item.insurance)) ? {} : JSON.parse(item.insurance)[0] }))[0];
     data.detail.birthdate = moment(data.detail.birthdate).format('YYYY-MM-DD');
 
     return res.status(200).send({ ...data, usertype: 'patient' });
@@ -324,203 +328,44 @@ router.post('/addreview', async function (req, res) {
 
 //#region Patient Insurance Plan 
 
-// Get Patient's Insurance Plan
-router.get('/:id/myinsurance/', async function (req, res) {
-  // Data Validation
-  // const { error } = ValidateAddInsurance(req.body);
-  // if (error) return res.status(400).send({ error: error.message });
-
-  query = "SELECT * FROM patientInsurancePlans WHERE id = @pid;";
-  let params = [
-    { name: 'pid', sqltype: sql.Int, value: req.params.id }
-  ];
-
-  doQuery(res, query, params, async function (selectData) {
-    if (empty(selectData.recordset)) return res.status(500).send({ error: "Patient does not have a insurance plan." });
-
-    let patientId = selectData.recordset[0].id
-
-    query = `SELECT * FROM insurancePlans WHERE id = @iid AND planid = @planid`;
-    params = [
-      { name: 'iid', sqltype: sql.Int, value: selectData.recordset[0].iid },
-      { name: 'planid', sqltype: sql.Int, value: selectData.recordset[0].planid }
-    ];
-    doQuery(res, query, params, async function (selectData) {
-      if (empty(selectData.recordset)) return res.status(500).send({ error: "Insurance plan does not exist." });
-
-      insuranceId = selectData.recordset[0].id;
-      selectData.recordset[0].id = patientId;
-      selectData.recordset[0].iid = insuranceId
-      return res.status(200).send({ ...selectData.recordset[0] });
-    });
-  });
-});
-
 // Create/Update Patient's Insurance Plan
-router.post('/:id/addinsurance/', async function (req, res) {
+router.post('/insurance/add', async function (req, res) {
   // Data Validation
   const { error } = ValidateAddInsurance(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
-  let query = "SELECT * FROM insurancePlans WHERE planid = @planid and id = @iid;";
+  let query = `INSERT INTO patientInsurancePlans (pid, planid) VALUES (@pid, @planid);
+               SELECT insurancePlans.*, insuranceDetails.companyname, insuranceDetails.address1, insuranceDetails.address2, insuranceDetails.city, insuranceDetails.state1, insuranceDetails.zipcode, insuranceDetails.lng, insuranceDetails.lat FROM insurancePlans inner join patientInsurancePlans on patientInsurancePlans.planid = insurancePlans.id inner join insuranceDetails on insuranceDetails.id = insurancePlans.iid WHERE patientInsurancePlans.pid = @pid;
+              `;
   let params = [
-    { name: 'id', sqltype: sql.Int, value: req.params.id },
-    { name: 'iid', sqltype: sql.Int, value: req.body.iid },
-    { name: 'planid', sqltype: sql.Int, value: req.body.planid }];
-
-  // Check Insurance User/Plan exists
-  doQuery(res, query, params, async function (selectData) {
-    if (empty(selectData.recordset)) return res.status(400).send({ error: "Insurance user or insurance plan does not exist." });
-
-    // Check if Patient has a plan already
-    query = "SELECT * FROM patientInsurancePlans WHERE id = @id;";
-    doQuery(res, query, params, async function (selectData) {
-
-      // If no plan create record
-      if (empty(selectData.recordset)) {
-        query = `INSERT INTO patientInsurancePlans (id, iid, planid) 
-          OUTPUT INSERTED.*
-          VALUES (@id, @iid, @planid);`;
-
-        doQuery(res, query, params, async function (insertData) {
-          if (empty(insertData.recordset)) return res.status(500).send({ error: "Failed to add insurance plan to patient." });
-
-          return res.status(200).send({ ...insertData.recordset[0] });
-        });
-
-        // If plan update it
-      } else {
-        query = `UPDATE patientInsurancePlans 
-          SET id = @id, iid = @iid, planid = @planid
-          OUTPUT INSERTED.*
-          WHERE id = @id;`;
-
-        doQuery(res, query, params, async function (updateData) {
-          if (empty(updateData.recordset)) return res.status(500).send({ error: "Failed to add insurance plan to patient." });
-
-          return res.status(200).send({ ...updateData.recordset[0] });
-        });
-      }
-    });
-  });
-});
-
-// Remove Patient's Insurance Plan
-router.delete('/:id/removeinsurance/', async function (req, res) {
-  // Data Validation
-  // const { error } = ValidateRemoveInsurance(req.body);
-  // if (error) return res.status(400).send({ error: error.message });
-
-  let query = `DELETE FROM patientInsurancePlans
-  OUTPUT DELETED.*
-  WHERE patientInsurancePlans.id = @id`
-  let params = [
-    { name: 'id', sqltype: sql.Int, value: req.params.id }
+    { name: 'pid', sqltype: sql.Int, value: req.body.id },
+    { name: 'planid', sqltype: sql.Int, value: req.body.planid }
   ];
 
-  doQuery(res, query, params, async function (deleteData) {
-    if (empty(deleteData.recordset)) return res.status(500).send({ error: "Failed to remove insurance plan to patient." });
+  doQuery(res, query, params, async function (insertData) {
+    if (empty(insertData.recordset)) return res.status(500).send({ error: "Failed to add insurance plan to patient." });
 
-    return res.status(200).send({ ...deleteData.recordset[0] });
+    return res.status(200).send(insertData.recordset[0]);
   });
 });
 
-// POST an insurance/patient relationship to create a subscription
-router.post('/:id/subscribe/:iid', async function (req, res) {
+router.put('/insurance/update', async function (req, res) {
   // Data Validation
-  const { error } = ValidateSubscription(req.params);
+  const { error } = ValidateAddInsurance(req.body);
   if (error) return res.status(400).send({ error: error.message });
 
-  let query = `SELECT email FROM patientUsers WHERE id = ${req.params.id};`;
-
-  doQuery(res, query, [], function (selectData) {
-    if (empty(selectData.recordset)) return res.status(400).send({ error: "Patient record does not exist." });
-
-    query = `INSERT INTO insurancePatientSubscription (pid, iid, patientemail) OUTPUT INSERTED.*
-      VALUES (@pid, @iid, @patientemail);`;
-    let params = [
-      { name: 'pid', sqltype: sql.Int, value: req.params.id },
-      { name: 'iid', sqltype: sql.Int, value: req.params.iid },
-      { name: 'patientemail', sqltype: sql.VarChar, value: selectData.recordset[0].email }
-    ];
-
-    doQuery(res, query, params, async function (insertData) {
-      if (empty(insertData.recordset)) return res.status(500).send({ error: "Failed to save patient subscription." });
-
-      query = `
-        SELECT email, fname, lname FROM patientUsers
-        WHERE id = @pid
-        UNION ALL
-        SELECT companyname, address1, address2 FROM insuranceDetails
-        WHERE id = @iid;`;
-
-      doQuery(res, query, params, async function (selectData) {
-        if (empty(selectData.recordset[0]) && empty(selectData.recordset[1])) return res.status(500).send({ error: "Records not found" });
-
-        const insuranceDetails = selectData.recordset[1];
-        const patientUser = selectData.recordset[0];
-
-        mail(patientUser.email, "Thank You For Subscribing!", subscription.replace("_FIRST_", patientUser.fname).replace("_LAST_", patientUser.lname).replace
-          ("_INSURANCE_NAME_", insuranceDetails.email).replace("_INSURANCE_NAME_", insuranceDetails.email))
-          .then(() => {
-            return res.status(200).send({ ...insertData.recordset[0] });
-          }).catch((error) => {
-            return res.status(500).send({ error: `Subscription Failed: + ${error}` });
-          });
-      });
-    });
-  });
-});
-
-// Delete an insurance/patient relationship to create a subscription
-router.delete('/:id/subscribe/:iid', async function (req, res) {
-  // Data Validation
-  const { error } = ValidateSubscription(req.params);
-  if (error) return res.status(400).send({ error: error.message });
-
-  let query = `DELETE FROM insurancePatientSubscription
-  OUTPUT DELETED.*
-  WHERE patientInsurancePlans.pid = @pid AND patientInsurancePlans.iid = @iid`
+  let query = `UPDATE patientInsurancePlans set planid = @planid where pid = @pid;
+               SELECT insurancePlans.*, insuranceDetails.companyname, insuranceDetails.address1, insuranceDetails.address2, insuranceDetails.city, insuranceDetails.state1, insuranceDetails.zipcode, insuranceDetails.lng, insuranceDetails.lat FROM insurancePlans inner join patientInsurancePlans on patientInsurancePlans.planid = insurancePlans.id inner join insuranceDetails on insuranceDetails.id = insurancePlans.iid WHERE patientInsurancePlans.pid = @pid;
+              `;
   let params = [
-    { name: 'pid', sqltype: sql.Int, value: req.params.id },
-    { name: 'iid', sqltype: sql.Int, value: req.params.iid },
+    { name: 'pid', sqltype: sql.Int, value: req.body.id },
+    { name: 'planid', sqltype: sql.Int, value: req.body.planid }
   ];
 
-  doQuery(res, query, params, function (deleteData) {
-    if (empty(deleteData.recordset)) return res.status(400).send({ error: "No record to delete was found." });
+  doQuery(res, query, params, async function (insertData) {
+    if (empty(insertData.recordset)) return res.send({});
 
-    return res.status(200).send({ ...deleteData.recordset[0] });
-  });
-});
-
-// Probably not needed if we are doing search =/
-// Get insurance plan for certain insurance company
-router.get('/plans/:id/:planid', async function (req, res) {
-
-  let query = `SELECT * FROM insurancePlans WHERE id = @id AND planid = @planid`;
-  let params = [
-    { name: 'id', sqltype: sql.Int, value: req.params.id },
-    { name: 'planid', sqltype: sql.Int, value: req.params.planid }
-  ];
-
-  doQuery(res, query, params, async function (selectData) {
-    if (empty(selectData.recordset)) return res.status(500).send({ error: "Invalid Insurance Plan" });
-
-    return res.status(200).send({ ...selectData.recordset });
-  });
-});
-// Probably not needed if we are doing search =/
-// Get all insurance plans for a certain insurance company
-router.get(`/plans/:id/`, async function (req, res) {
-  let query = `SELECT * FROM insurancePlans WHERE id = @id;`;
-  let params = [
-    { name: 'id', sqltype: sql.Int, value: req.params.id }
-  ]
-
-  doQuery(res, query, params, async function (selectData) {
-    if (empty(selectData.recordset)) return res.status(500).send({ error: "No Insurance Plans For Given ID" });
-
-    return res.status(200).send({ ...selectData.recordset });
+    return res.status(200).send(insertData.recordset[0]);
   });
 });
 //#endregion

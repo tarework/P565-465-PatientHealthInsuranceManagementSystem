@@ -310,7 +310,8 @@ router.get('/:id/unread/myappointments', async function (req, res) {
   let query = `SELECT id, starttime, endtime, appointmentdate, pid,
         (SELECT patientUsers.id, patientUsers.fname, patientUsers.lname, patientUsers.email, patientUsers.phonenumber FROM patientUsers where patientUsers.id = appointments.pid FOR JSON PATH) as patientBasic,
         (SELECT * FROM patientMedicalData WHERE appointments.pid = patientMedicalData.id FOR JSON PATH) AS patientDetail, 
-        (SELECT * FROM patientCovidSurvey WHERE appointments.pid = patientCovidSurvey.id FOR JSON PATH) AS patientSurvey
+        (SELECT * FROM patientCovidSurvey WHERE appointments.pid = patientCovidSurvey.id FOR JSON PATH) AS patientSurvey,
+        (SELECT insurancePlans.*, insuranceDetails.companyname, insuranceDetails.address1, insuranceDetails.address2, insuranceDetails.city, insuranceDetails.state1, insuranceDetails.zipcode, insuranceDetails.lng, insuranceDetails.lat FROM insurancePlans inner join patientInsurancePlans on patientInsurancePlans.planid = insurancePlans.id inner join insuranceDetails on insuranceDetails.id = insurancePlans.iid WHERE patientInsurancePlans.pid = appointments.pid FOR JSON PATH) AS patientInsurance 
         FROM appointments WHERE did = @did order by appointmentdate desc, starttime asc; `;
   let params = [
     { name: 'did', sqltype: sql.Int, value: req.params.id }
@@ -322,10 +323,12 @@ router.get('/:id/unread/myappointments', async function (req, res) {
       const patientBasic = empty(JSON.parse(record.patientBasic)) ? {} : JSON.parse(record.patientBasic)[0];
       const patientDetail = empty(JSON.parse(record.patientDetail)) ? {} : JSON.parse(record.patientDetail)[0];
       const patientSurvey = empty(JSON.parse(record.patientSurvey)) ? {} : JSON.parse(record.patientSurvey)[0];
-      const patient = {...patientBasic, detail: patientDetail, survey: patientSurvey}; 
+      const patientInsurance = empty(JSON.parse(record.patientInsurance)) ? {} : JSON.parse(record.patientInsurance)[0];
+      const patient = {...patientBasic, detail: patientDetail, survey: patientSurvey, insurance: patientInsurance}; 
       delete record["patientBasic"];
       delete record["patientDetail"];
       delete record["patientSurvey"];
+      delete record["patientInsurance"];
       return {...record, patient: patient};
     }));
   });
@@ -339,7 +342,8 @@ router.get('/:id/myappointments', async function (req, res) {
   let query = `SELECT id, starttime, endtime, appointmentdate, pid,
         (SELECT patientUsers.id, patientUsers.fname, patientUsers.lname, patientUsers.email, patientUsers.phonenumber FROM patientUsers where patientUsers.id = appointments.pid FOR JSON PATH) as patientBasic,
         (SELECT * FROM patientMedicalData WHERE appointments.pid = patientMedicalData.id FOR JSON PATH) AS patientDetail, 
-        (SELECT * FROM patientCovidSurvey WHERE appointments.pid = patientCovidSurvey.id FOR JSON PATH) AS patientSurvey
+        (SELECT * FROM patientCovidSurvey WHERE appointments.pid = patientCovidSurvey.id FOR JSON PATH) AS patientSurvey,
+        (SELECT insurancePlans.*, insuranceDetails.companyname, insuranceDetails.address1, insuranceDetails.address2, insuranceDetails.city, insuranceDetails.state1, insuranceDetails.zipcode, insuranceDetails.lng, insuranceDetails.lat FROM insurancePlans inner join patientInsurancePlans on patientInsurancePlans.planid = insurancePlans.id inner join insuranceDetails on insuranceDetails.id = insurancePlans.iid WHERE patientInsurancePlans.pid = appointments.pid FOR JSON PATH) AS patientInsurance 
         FROM appointments WHERE did = @did AND appointmentdate BETWEEN @startdate AND @enddate; `;
   let params = [
     { name: 'did', sqltype: sql.Int, value: req.params.id },
@@ -353,71 +357,14 @@ router.get('/:id/myappointments', async function (req, res) {
       const patientBasic = empty(JSON.parse(record.patientBasic)) ? {} : JSON.parse(record.patientBasic)[0];
       const patientDetail = empty(JSON.parse(record.patientDetail)) ? {} : JSON.parse(record.patientDetail)[0];
       const patientSurvey = empty(JSON.parse(record.patientSurvey)) ? {} : JSON.parse(record.patientSurvey)[0];
-      const patient = {...patientBasic, detail: patientDetail, survey: patientSurvey}; 
+      const patientInsurance = empty(JSON.parse(record.patientInsurance)) ? {} : JSON.parse(record.patientInsurance)[0];
+      const patient = {...patientBasic, detail: patientDetail, survey: patientSurvey, insurance: patientInsurance}; 
       delete record["patientBasic"];
       delete record["patientDetail"];
       delete record["patientSurvey"];
+      delete record["patientInsurance"];
       return {...record, patient: patient};
     }));
-  });
-});
-
-// Gets doctorUser's patient 
-router.get('/:id/mypatient/:pid', async function (req, res) {
-  let query = `SELECT * FROM appointments WHERE did = @did AND pid = @pid; `;
-  let params = [
-    { name: 'did', sqltype: sql.Int, value: req.params.id },
-    { name: 'pid', sqltype: sql.Int, value: req.params.pid }
-  ];
-  doQuery(res, query, params, function (selectData) {
-    if (empty(selectData.recordset)) return res.status(500).send({ error: "Doctor patient relation doesn't exist." });
-
-    query = `SELECT * FROM patientUsers
-      FULL OUTER JOIN patientMedicalData
-      ON patientUsers.id = patientMedicalData.id
-      FULL OUTER JOIN patientInsurancePlans
-      ON patientUsers.id = patientInsurancePlans.id
-      FULL OUTER JOIN patientCovidSurvey
-      ON patientUsers.id = patientCovidSurvey.id
-      WHERE patientUsers.id = (${req.params.pid}); `;
-
-    doQuery(res, query, [], async function (selectData) {
-      if (empty(selectData.recordset)) return res.status(500).send({ error: "Failed to retrieve patient records." });
-
-      selectData.recordset[0].id = selectData.recordset[0].id[0]
-      delete selectData.recordset[0].pword;
-      delete selectData.recordset[0].goauth;
-      patientRecord = selectData.recordset[0]
-
-      query = `SELECT * FROM insuranceUsers
-    FULL OUTER JOIN insurancePlans
-    ON insuranceUsers.id = insurancePlans.id AND insurancePlans.planid = @planid
-    WHERE insuranceUsers.id = @iid`;
-      params = [
-        { name: 'iid', sqltype: sql.Int, value: selectData.recordset[0].iid },
-        { name: 'planid', sqltype: sql.Int, value: selectData.recordset[0].planid }
-      ];
-
-      doQuery(res, query, params, async function (selectData) {
-        if (empty(selectData.recordset)) {
-          winston.error("Failed to retrieve patient's insurance records.");
-        }
-        else {
-          for (var key in selectData.recordset[0]) {
-            winston.info(key, selectData.recordset[0][key]);
-            if (key !== "id" && key !== "pword" && key !== "goauth") {
-              let realKey = key;
-              if (realKey === "email") realKey = "iemail";
-              if (realKey === "fname") realKey = "ifname";
-              if (realKey === "lname") realKey = "ilname";
-              if (realKey === "phonenumber") realKey = "iphonenumber";
-              patientRecord[realKey] = selectData.recordset[0][key];
-            }
-          }
-        }
-        return res.status(200).send({ ...patientRecord });
-      });
-    });
   });
 });
 

@@ -57,9 +57,8 @@ function ValidateSubscription(request) {
 
 function ValidateAddInsurance(request) {
     const schema = Joi.object({
-        //pid: Joi.string().required(),
-        iid: Joi.string().required(),
-        planid: Joi.string().required()
+        id: Joi.required(),
+        planid: Joi.required()
     }).options({ stripUnknown: true });
 
     return constants.CleanErrorMessage(schema.validate(request));
