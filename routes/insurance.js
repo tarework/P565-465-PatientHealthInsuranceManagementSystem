@@ -210,65 +210,53 @@ router.put('/details', async function (req, res) {
 //#region GET/POST/PUT insurancePlans
 
 // Get all insurance plans
-router.get('/insuranceplans/:id', async function (req, res) {
-  let query = `SELECT * FROM insurancePlans WHERE id = @id;`;
+router.get('/plans/:id', async function (req, res) {
+  let query = `SELECT insurancePlans.*, 
+              (select count(*) from patientInsurancePlans where planid = insurancePlans.id) as patientcount 
+              FROM insurancePlans WHERE iid = @id order by patientcount asc;`;
   let params = [
-    { name: 'id', sqltype: sql.Int, value: req.body.id },
+    { name: 'id', sqltype: sql.Int, value: req.params.id }
   ];
   doQuery(res, query, params, function (selectData) {
     if (empty(selectData.recordset)) return res.status(400).send({ error: "Insurance records do not exist." })
 
-    return res.status(200).send({ plans: selectData.recordset });
-  });
-});
-
-// Get a single insurance planid == planid, id = insuranceUser's id
-router.get('/insuranceplan/:planid', async function (req, res) {
-  let query = `SELECT * FROM insurancePlans WHERE id = @id and planid = @planid;`;
-  let params = [
-    { name: 'id', sqltype: sql.Int, value: req.body.id },
-    { name: 'planid', sqltype: sql.Int, value: req.params.planid }
-  ];
-  doQuery(res, query, params, function (selectData) {
-    if (empty(selectData.recordset)) return res.status(400).send({ error: "Insurance plan record does not exist." })
-
-    return res.status(200).send({ ...selectData.recordset[0] });
+    return res.status(200).send(selectData.recordset);
   });
 });
 
 // Create a single insurance plan
-router.post('/insuranceplan/', async function (req, res) {
+router.post('/plan', async function (req, res) {
   // Data Validation
   const { error } = ValidateInsurancePlan(req.body);
   if (error) return res.status(400).send({ error: error.message });
   if (req.body.includesmedical === false && req.body.includesdental === false && req.body.includesvision === false)
     return res.status(400).send({ error: "Insurance plan must cover at least one medical area(medical, dental, vision)." });
 
-  let query = `INSERT INTO insurancePlans (id, planname, policynumber, premium, deductible, includesmedical, includesdental, includesvision) 
+  let query = `INSERT INTO insurancePlans (iid, planname, policynumber, premium, deductible, includesmedical, includesdental, includesvision) 
                OUTPUT INSERTED.* 
-               VALUES (@id, @planname, @policynumber, @premium, @deductible, @includesmedical, @includesdental, @includesvision);`;
+               VALUES (@iid, @planname, @policynumber, @premium, @deductible, @includesmedical, @includesdental, @includesvision);`;
   let params = [
-    { name: 'id', sqltype: sql.Int, value: req.body.id },
+    { name: 'iid', sqltype: sql.Int, value: req.body.iid },
     { name: 'planname', sqltype: sql.VarChar(255), value: req.body.planname },
     { name: 'policynumber', sqltype: sql.VarChar(255), value: req.body.policynumber },
-    { name: 'premium', sqltype: sql.Int, value: req.body.premium },
-    { name: 'deductible', sqltype: sql.Int, value: req.body.deductible },
+    { name: 'premium', sqltype: sql.Float, value: req.body.premium },
+    { name: 'deductible', sqltype: sql.Float, value: req.body.deductible },
     { name: 'includesmedical', sqltype: sql.Bit, value: req.body.includesmedical },
     { name: 'includesdental', sqltype: sql.Bit, value: req.body.includesdental },
     { name: 'includesvision', sqltype: sql.Bit, value: req.body.includesvision }
   ];
 
   doQuery(res, query, params, function (insertData) {
-    if (empty(insertData.recordset)) return res.status(500).send({ error: "Data not saved." })
+    if (empty(insertData.recordset)) return res.status(500).send({ error: "Data not saved." });
 
-    EmailCreateToSubscribers(req.body.id, insertData.recordset[0])
+    res.status(200).send(insertData.recordset[0]);
 
-    return res.status(200).send({ ...insertData.recordset[0] });
+    EmailCreateToSubscribers(req.body.iid, insertData.recordset[0]);
   });
 });
 
 // Update a single insurance plan
-router.put('/insuranceplan/:planid', async function (req, res) {
+router.put('/plan/:id', async function (req, res) {
   // Data Validation
   const { error } = ValidateInsurancePlan(req.body);
   if (error) return res.status(400).send({ error: error.message });
@@ -277,13 +265,13 @@ router.put('/insuranceplan/:planid', async function (req, res) {
 
   let query = `UPDATE insurancePlans 
     SET planname = @planname, policynumber = @policynumber, premium = @premium, deductible = @deductible, includesmedical = @includesmedical, includesdental = @includesdental, includesvision = @includesvision
-    OUTPUT INSERTED.* WHERE planid = @planid;`;
+    OUTPUT INSERTED.* WHERE id = @id;`;
   let params = [
-    { name: 'planid', sqltype: sql.Int, value: req.params.planid },
+    { name: 'id', sqltype: sql.Int, value: req.params.id },
     { name: 'planname', sqltype: sql.VarChar(255), value: req.body.planname },
     { name: 'policynumber', sqltype: sql.VarChar(255), value: req.body.policynumber },
-    { name: 'premium', sqltype: sql.Int, value: req.body.premium },
-    { name: 'deductible', sqltype: sql.Int, value: req.body.deductible },
+    { name: 'premium', sqltype: sql.Float, value: req.body.premium },
+    { name: 'deductible', sqltype: sql.Float, value: req.body.deductible },
     { name: 'includesmedical', sqltype: sql.Bit, value: req.body.includesmedical },
     { name: 'includesdental', sqltype: sql.Bit, value: req.body.includesdental },
     { name: 'includesvision', sqltype: sql.Bit, value: req.body.includesvision }
@@ -294,7 +282,7 @@ router.put('/insuranceplan/:planid', async function (req, res) {
 
     EmailUpdateToSubscribers(req.body.id, updateData.recordset[0])
 
-    return res.status(200).send({ ...updateData.recordset[0] });
+    return res.status(200).send(updateData.recordset[0]);
   });
 });
 

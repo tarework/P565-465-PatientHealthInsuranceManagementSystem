@@ -19,7 +19,7 @@ function ValidateInsuranceDetails(request) {
 
 function ValidateInsurancePlan(request) {
     const schema = Joi.object({
-        id: Joi.number().required(),
+        iid: Joi.number().required(),
         planname: Joi.string().required(),
         policynumber: Joi.string(),
         premium: Joi.number().required(),

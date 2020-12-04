@@ -89,17 +89,22 @@ module.exports = (socket, io) => {
   });
 
   socket.on("send_chat", (data) => {
-    let query = "insert into messages (user_id, room_id, user_type, message) output inserted.* values (@user_id, @room_id, @user_type, @message);";
-    let params = [
-      {name: 'user_id', sqltype: sql.Int, value: data.id},
-      {name: 'room_id', sqltype: sql.VarChar(20), value: data.room_id},
-      {name: 'message', sqltype: sql.VarChar(1000), value: data.message},
-      {name: 'user_type', sqltype: sql.VarChar(20), value: data.usertype}
-    ];
-    doQuery(null, query, params, function(records) {
-      const record = records.recordset[0];
-      io.in(`${data.room_id}`).emit('chat_received', [{...record}]);
-    });
+    try {
+      let query = "insert into messages (user_id, room_id, user_type, message) output inserted.* values (@user_id, @room_id, @user_type, @message);";
+      let params = [
+        {name: 'user_id', sqltype: sql.Int, value: data.id},
+        {name: 'room_id', sqltype: sql.VarChar(20), value: data.room_id},
+        {name: 'message', sqltype: sql.VarChar(1000), value: data.message},
+        {name: 'user_type', sqltype: sql.VarChar(20), value: data.usertype}
+      ];
+      doQuery(null, query, params, function(records) {
+        const record = records.recordset[0];
+        io.in(`${data.room_id}`).emit('chat_received', [{...record}]);
+      });
+    } catch(e) {
+      console.log(e)
+    }
+    
   });
 
   socket.on("user_typing", (data) => {

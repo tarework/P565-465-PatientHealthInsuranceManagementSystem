@@ -6,7 +6,6 @@ const constants = require('../utils/constants');
 function ValidateInsuranceSearch(request) {
     const schema = Joi.object({
         companyname: Joi.string().required().allow("", null),
-        planname: Joi.string().required().allow("", null),
         includesmedical: Joi.string().required().allow("", null),
         includesdental: Joi.string().required().allow("", null),
         includesvision: Joi.string().required().allow("", null),
