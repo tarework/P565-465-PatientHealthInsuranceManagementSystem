@@ -6168,77 +6168,7 @@
 			"name": "InsuranceSearch",
 			"item": [
 				{
-					"name": "Search by Plan Name -",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJ0eXBlIjoicGF0aWVudCIsImlhdCI6MTYwNTgyMDAwMSwiZXhwIjoxNjA1ODIzNjAxfQ.bJExlHVZqT-xW7KU40griik8hE8ADBT07mQUlOdwyyk",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"companyname\": \"Good\",\r\n    \"planname\": \"Bronze\",\r\n    \"includesmedical\": \"Yes\",\r\n    \"includesdental\": \"\",\r\n    \"includesvision\": \"\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3002/api/insurancesearch",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3002",
-							"path": [
-								"api",
-								"insurancesearch"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Search by Company Name -",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJ0eXBlIjoicGF0aWVudCIsImlhdCI6MTYwNTIxMDc4MSwiZXhwIjoxNjA1MjE0MzgxfQ.qc4yd4gJa1LwQgV10jOZO_-gm5aK3EHRtFBZt8UcC7E",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"companyname\": \"Good\",\r\n    \"planname\": \"Bronze\",\r\n    \"includesmedical\": \"Yes\",\r\n    \"includesdental\": \"Yes\",\r\n    \"includesvision\": \"Yes\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3002/api/insurancesearch",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3002",
-							"path": [
-								"api",
-								"insurancesearch"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Search by Specialty -",
+					"name": "Search by Company Name - 155",
 					"request": {
 						"method": "POST",
 						"header": [
