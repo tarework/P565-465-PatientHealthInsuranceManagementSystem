@@ -35,4 +35,20 @@ router.post('/', async function (req, res) {
     });
 });
 
+// GET Insurances' based on params
+router.get('/similar/:id', async function (req, res) {
+    
+    let query = `SELECT insurancePlans.*, 
+                insuranceDetails.companyname, insuranceDetails.address1, insuranceDetails.address2, insuranceDetails.city, insuranceDetails.state1, insuranceDetails.zipcode, insuranceDetails.lng, insuranceDetails.lat 
+                FROM insurancePlans inner join insuranceDetails on insuranceDetails.id = insurancePlans.iid WHERE iid = @id;`
+
+    const params = [
+        { name: 'id', sqltype: sql.Int, value: req.params.id }
+    ];
+
+    doQuery(res, query, params, function (selectData) {
+        return res.status(200).send(selectData.recordset);
+    });
+});
+
 module.exports = router;
