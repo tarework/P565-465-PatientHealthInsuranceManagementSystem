@@ -111,5 +111,9 @@ module.exports = (socket, io) => {
     socket.to(`${data.room_id}`).emit('user_typing_received', data);
   });
 
+  socket.on("join_room", (data) => {
+    socket.join(data.room_id);
+  });
+
 };
 
