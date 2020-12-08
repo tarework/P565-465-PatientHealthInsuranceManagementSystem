@@ -29,7 +29,6 @@ router.get('/:id', async function (req, res) {
     delete selectData.recordset[0].goauth;
 
     data = selectData.recordset.map(item => ({ ...item, detail: empty(JSON.parse(item.detail)) ? {} : JSON.parse(item.detail)[0], survey: empty(JSON.parse(item.survey)) ? {} : JSON.parse(item.survey)[0], insurance: empty(JSON.parse(item.insurance)) ? {} : JSON.parse(item.insurance)[0] }))[0];
-    data.detail.birthdate = moment(data.detail.birthdate).format('YYYY-MM-DD');
 
     return res.status(200).send({ ...data, usertype: 'patient' });
   });
